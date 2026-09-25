@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ignatius at Home</title>
+  <meta name="description" content="Turn a prayer handout or reading into a guided audio retreat.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site">
+    <h1>Ignatius at Home</h1>
+    <p class="tagline">Build a practice from your own material. Upload a prayer handout, a few scripture passages or a reading, and get a retreat with three audio tracks for each day: the reading, a reflection for the heart, and a deep dive into its theology and history.</p>
+    <p id="server-status" class="status" role="status">Checking the server…</p>
+  </header>
+
+  <main>
+    <section id="signin-section" class="card" hidden>
+      <h2>Sign in</h2>
+      <p>Sign in with your email so your retreats are saved. Build them on your laptop, then open this page on your phone and sign in with the same email to pray with them.</p>
+      <form id="signin-form">
+        <label>Email
+          <input id="email" type="email" autocomplete="email" required>
+        </label>
+        <button type="submit" id="signin-button">Email me a sign-in link</button>
+      </form>
+      <p id="signin-note" class="hint" hidden></p>
+    </section>
+
+    <section id="account-bar" class="account" hidden>
+      <span id="account-email"></span>
+      <button type="button" id="signout" class="link">Sign out</button>
+    </section>
+
+    <section id="library-section" class="card" hidden>
+      <h2>My retreats</h2>
+      <p id="library-empty" class="hint" hidden>No retreats yet. Upload your first document below.</p>
+      <ul id="library" class="library"></ul>
+    </section>
+
+    <section id="upload-section" class="card" hidden>
+      <h2>1. Upload your material</h2>
+      <form id="upload-form">
+        <label>PDF or Word document
+          <input id="file" name="file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
+        </label>
+        <details class="prompt-box">
+          <summary>Customize how the retreat is planned</summary>
+          <label>Planning prompt
+            <textarea id="plan-prompt" rows="10" spellcheck="true"></textarea>
+          </label>
+          <button type="button" class="link" data-reset="plan">Reset to default</button>
+        </details>
+        <label class="check">
+          <input id="rights" type="checkbox" required>
+          I own this material or have permission to use it.
+        </label>
+        <button id="upload-button" type="submit">Plan my retreat</button>
+      </form>
+      <p class="hint">Only upload material you have rights to. Your retreats are private to your account.</p>
+    </section>
+
+    <p id="message" class="message" role="alert" hidden></p>
+
+    <section id="retreat-section" hidden>
+      <div class="card">
+        <p id="retreat-status" class="status" role="status"></p>
+        <h2 id="retreat-title"></h2>
+        <p id="retreat-summary"></p>
+        <p id="retreat-meta" class="meta"></p>
+        <div id="gallery" class="gallery"></div>
+      </div>
+
+      <div id="voice-controls" class="card" hidden>
+        <h2>2. Choose a voice, then build a day</h2>
+        <div class="row">
+          <label>Voice quality
+            <select id="tier"></select>
+          </label>
+          <label>Voice
+            <select id="voice"></select>
+          </label>
+        </div>
+        <p id="tier-note" class="hint"></p>
+        <div class="row">
+          <label>Prayer order
+            <select id="sequence">
+              <option value="lectio">Lectio: reading, reflection, reading, deep dive, reading, pause, reading</option>
+              <option value="simple">Simple: reading, reflection, deep dive, pause</option>
+            </select>
+          </label>
+          <label>Pause to reflect
+            <select id="pause">
+              <option value="30">30 seconds</option>
+              <option value="60">1 minute</option>
+              <option value="120">2 minutes</option>
+              <option value="300">5 minutes</option>
+            </select>
+          </label>
+        </div>
+        <details class="prompt-box">
+          <summary>Customize the reflections</summary>
+          <p class="hint">These prompts are sent to Claude when you build a day. The server adds the length limit and output format.</p>
+          <label>Reflection for the heart
+            <textarea id="heart-prompt" rows="10" spellcheck="true"></textarea>
+          </label>
+          <p class="preset-row">Start from:
+            <button type="button" class="link" data-preset="companion">A spiritual companion</button>
+            <button type="button" class="link" data-preset="christ">In the voice of Jesus</button>
+          </p>
+          <label>Deep dive
+            <textarea id="deep-prompt" rows="10" spellcheck="true"></textarea>
+          </label>
+          <button type="button" class="link" data-reset="deep">Reset to default</button>
+        </details>
+      </div>
+
+      <ol id="days" class="days"></ol>
+    </section>
+  </main>
+
+  <div id="player-bar" class="player-bar" hidden>
+    <div class="player-inner">
+      <p class="now"><span id="now-step"></span> <span id="now-count" class="meta"></span></p>
+      <p id="pause-text" class="pause-text" hidden></p>
+      <audio id="player" controls></audio>
+      <div class="player-buttons">
+        <button type="button" id="prev-step" class="secondary">Back</button>
+        <button type="button" id="next-step" class="secondary">Skip</button>
+        <button type="button" id="stop-player" class="secondary">Stop</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site">
+    <p>Built for CMU HW4 (backend on Render, frontend on GitHub Pages). Sample material: World English Bible and public-domain paintings. Premium voices by ElevenLabs.</p>
+  </footer>
+
+  <template id="day-template">
+    <li class="card day">
+      <h3 class="day-title"></h3>
+      <p class="day-ref meta"></p>
+      <img class="day-image" alt="" hidden>
+      <p class="day-grace"></p>
+      <details class="passage">
+        <summary>Passage</summary>
+        <p class="passage-text"></p>
+      </details>
+      <div class="day-actions">
+        <button class="pray" type="button" hidden>Pray this day</button>
+        <button class="build" type="button">Build audio</button>
+      </div>
+      <p class="day-status status" role="status"></p>
+      <div class="tracks"></div>
+    </li>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
