@@ -11,13 +11,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=36">
-  <link rel="icon" href="icons/icon-192.png?v=36" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=36">
+  <link rel="manifest" href="manifest.webmanifest?v=37">
+  <link rel="icon" href="icons/icon-192.png?v=37" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=37">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..700,0..100&family=Inter:wght@400..700&display=swap">
-  <link rel="stylesheet" href="style.css?v=36">
+  <link rel="stylesheet" href="style.css?v=37">
 </head>
 <body>
   <header class="topbar">
@@ -260,7 +260,6 @@
               A conversation, in a natural voice, with a companion that knows this retreat. It listens, asks a gentle question or two, and helps you notice where God has been at work. It's an AI, and it remembers what you share.
             </span>
           </span>
-          <button type="button" id="retreat-pdf" class="secondary" hidden>Whole retreat (PDF)</button>
           <button type="button" id="playback-button" class="icon-button" aria-label="Prayer settings" title="Prayer settings">⚙︎</button>
         </div>
       </div>
@@ -293,6 +292,7 @@
         <article id="day-panel" class="card day-panel"></article>
       </div>
 
+      <p class="foot-links"><button type="button" id="retreat-pdf" class="link" hidden>The whole retreat as a printable PDF</button></p>
       <p class="foot-links desktop-only"><a id="research-link" data-nav="" hidden>Research notes for this retreat: every search, result and source behind each day</a>
         <button type="button" id="log-link" class="link" hidden>Build log: every step and call that made this retreat</button></p>
     </section>
@@ -588,20 +588,20 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=36"></script>
+  <script src="config.js?v=37"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=36"></script>
-  <script src="js/settings.js?v=36"></script>
-  <script src="js/router.js?v=36"></script>
-  <script src="js/library.js?v=36"></script>
-  <script src="js/new-retreat.js?v=36"></script>
-  <script src="js/retreat.js?v=36"></script>
-  <script src="js/build-log.js?v=36"></script>
-  <script src="js/research.js?v=36"></script>
-  <script src="js/pray.js?v=36"></script>
-  <script src="js/about-me.js?v=36"></script>
-  <script src="js/talk.js?v=36"></script>
-  <script src="js/costs.js?v=36"></script>
-  <script src="js/start.js?v=36"></script>
+  <script src="js/core.js?v=37"></script>
+  <script src="js/settings.js?v=37"></script>
+  <script src="js/router.js?v=37"></script>
+  <script src="js/library.js?v=37"></script>
+  <script src="js/new-retreat.js?v=37"></script>
+  <script src="js/retreat.js?v=37"></script>
+  <script src="js/build-log.js?v=37"></script>
+  <script src="js/research.js?v=37"></script>
+  <script src="js/pray.js?v=37"></script>
+  <script src="js/about-me.js?v=37"></script>
+  <script src="js/talk.js?v=37"></script>
+  <script src="js/costs.js?v=37"></script>
+  <script src="js/start.js?v=37"></script>
 </body>
 </html>
