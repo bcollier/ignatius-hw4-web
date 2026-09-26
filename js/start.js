@@ -22,6 +22,7 @@ function wireForms() {
   wireNewRetreat();
   wireRetreatPage();
   wireAboutMeAndTalk();
+  wireCompanionPrompt();
   wirePlayer();
 }
 

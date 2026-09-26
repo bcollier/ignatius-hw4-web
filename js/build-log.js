@@ -5,11 +5,20 @@ let logState = null; // { rid, after, timer, busy }
 const logTime = (iso) => (iso ? new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "");
 const VENDOR_NAMES = { openrouter: "Anthropic via OpenRouter", jetstream: "Jetstream", microsoft: "Microsoft voice", elevenlabs: "ElevenLabs", openai: "OpenAI", xai: "xAI" };
 
+// Each call is shown in full, for troubleshooting: the whole system prompt, every
+// message exactly as sent, the whole response, and the response's metadata.
 function logLine(row) {
   const t = el("span", { class: "t-time", text: logTime(row.created_at) });
   if (row.purpose === "step") {
     return el("div", { class: `t-step${/fail|didn't finish/i.test(row.response) ? " t-bad" : ""}` }, t, " ", el("span", { text: `▸ ${row.response}` }));
   }
+  const entry = el("details", { class: "t-entry" }, logSummary(row, t));
+  // Build the (possibly very long) body only when it's opened.
+  entry.addEventListener("toggle", () => entry.open && entry.children.length === 1 && entry.append(...logBody(row)), { once: false });
+  return entry;
+}
+
+function logSummary(row, time) {
   const who = options?.search_providers?.[row.provider] || VENDOR_NAMES[row.provider] || row.provider;
   const what = row.purpose === "voice" ? `recording (${row.model})` : `${row.purpose}${row.model && row.purpose !== "research" ? ` · ${row.model}` : ""}`;
   const facts = [
@@ -17,12 +26,41 @@ function logLine(row) {
     row.duration_ms ? `${(row.duration_ms / 1000).toFixed(1)} s` : "",
     row.input_tokens ? `${row.input_tokens.toLocaleString()} tokens in, ${(row.output_tokens || 0).toLocaleString()} out` : "",
     row.web_searches && row.purpose !== "research" ? `${row.web_searches} web searches` : "",
-    row.system_chars ? `system prompt ${row.system_chars.toLocaleString()} chars` : "",
+    row.usd ? `$${row.usd.toFixed(4)}` : "",
+    `#${row.id}`,
   ].filter(Boolean).join(" · ");
-  const head = el("summary", {}, t, " ", el("span", { class: row.status === "error" ? "t-bad" : "t-call", text: `→ ${who}: ${what}` }), el("span", { class: "t-dim", text: facts ? `  ${facts}` : "" }));
-  return el("details", { class: "t-entry" }, head,
-    row.prompt && el("pre", { class: "t-sent", text: `sent:\n${row.prompt}` }),
-    row.error ? el("pre", { class: "t-bad", text: `error: ${row.error}` }) : row.response && el("pre", { class: "t-got", text: `received:\n${row.response}` }));
+  return el("summary", {}, time, " ", el("span", { class: row.status === "error" ? "t-bad" : "t-call", text: `→ ${who}: ${what}` }), el("span", { class: "t-dim", text: `  ${facts}` }));
+}
+
+const chars = (text) => `${(text || "").length.toLocaleString()} characters`;
+
+function logSection(label, text, cls, open = false) {
+  return el("details", { class: "t-section", open }, el("summary", { class: "t-dim", text: label }), el("pre", { class: cls, text }));
+}
+
+function messageText(m) {
+  if (typeof m.content === "string") return m.content;
+  return (m.content || []).map((b) => (b.text != null ? b.text : `[${b.type}${b.bytes ? `, ${b.bytes.toLocaleString()} bytes` : ""}${b.media_type ? `, ${b.media_type}` : ""}]`)).join("\n");
+}
+
+function logBody(row) {
+  const parts = [];
+  if (row.system) parts.push(logSection(`system prompt · ${chars(row.system)}`, row.system, "t-sent"));
+  (row.messages || []).forEach((m, i) => {
+    const text = messageText(m);
+    parts.push(logSection(`message ${i + 1} · ${m.role} · ${chars(text)}`, text, "t-sent", row.messages.length === 1 && text.length < 4000));
+  });
+  if (!row.messages && row.prompt) parts.push(logSection(`sent · ${chars(row.prompt)}`, row.prompt, "t-sent"));
+  if (row.error) parts.push(el("pre", { class: "t-bad", text: `error: ${row.error}` }));
+  if (row.response) parts.push(logSection(`response · ${chars(row.response)}`, row.response, "t-got", true));
+  const meta = { model: row.model, provider: row.provider, purpose: row.purpose, day: row.day, status: row.status,
+    input_tokens: row.input_tokens, output_tokens: row.output_tokens, web_searches: row.web_searches, usd: row.usd,
+    duration_ms: row.duration_ms, created_at: row.created_at, ...(row.details || {}) };
+  parts.push(logSection("metadata (JSON)", JSON.stringify(meta, null, 2), "t-dim"));
+  const copy = el("button", { type: "button", class: "link t-copy", text: "Copy this call as JSON" });
+  copy.onclick = () => navigator.clipboard?.writeText(JSON.stringify(row, null, 2)).then(() => (copy.textContent = "Copied"));
+  parts.push(copy);
+  return parts;
 }
 
 function openLog(rid) {
@@ -50,7 +88,7 @@ async function pollLog() {
   if (!s) return;
   let page;
   try {
-    page = await api(`/api/retreats/${s.rid}/log?after=${s.after}`);
+    page = await api(`/api/retreats/${s.rid}/log?after=${s.after}&full=true`);
   } catch (err) {
     page = { rows: [], busy: true };
   }

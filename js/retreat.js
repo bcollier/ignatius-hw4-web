@@ -81,10 +81,10 @@ function renderSeriesLine() {
 }
 
 function renderHeaderButtons(plan) {
-  // The PDF only once there's something written to print.
+  // The whole-retreat PDF only once the retreat is finished (each day has its own PDF link sooner).
   const written = Object.values(retreat.days).some((d) => d.tracks?.heart?.script && d.tracks?.deep?.script);
-  $("retreat-pdf").hidden = !written;
-  $("talk-button").hidden = !options.talk?.enabled || !plan;
+  $("retreat-pdf").hidden = !written || retreat.status !== "ready" || busy();
+  showTalkButton(!!options.talk?.enabled && !!plan);
   const ro = !!retreat.read_only;
   $("example-note").hidden = !ro;
   $("example-note").textContent = ro ? `${retreat.demo?.label || "An example retreat"}. It's ready to listen to and pray; your progress and notes are yours alone.` : "";
@@ -393,5 +393,23 @@ async function downloadScript(day, button) {
   } finally {
     button.disabled = false;
     button.textContent = label;
+  }
+}
+
+
+// "Talk it over": the button arrives with a glow, and the first time someone sees it
+// the explanation opens by itself for a few seconds (after that, on hover or focus).
+function showTalkButton(show) {
+  const cta = $("talk-cta");
+  const wasHidden = cta.hidden;
+  cta.hidden = !show;
+  if (!show || !wasHidden) return;
+  cta.classList.remove("arrive");
+  void cta.offsetWidth; // restart the entrance animation
+  cta.classList.add("arrive");
+  if (!store.get("talkIntroSeen")) {
+    store.set("talkIntroSeen", true);
+    setTimeout(() => cta.classList.add("intro"), 900);
+    setTimeout(() => cta.classList.remove("intro"), 9000);
   }
 }

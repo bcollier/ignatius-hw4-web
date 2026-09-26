@@ -11,10 +11,10 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=34">
-  <link rel="icon" href="icons/icon-192.png?v=34" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=34">
-  <link rel="stylesheet" href="style.css?v=34">
+  <link rel="manifest" href="manifest.webmanifest?v=35">
+  <link rel="icon" href="icons/icon-192.png?v=35" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=35">
+  <link rel="stylesheet" href="style.css?v=35">
 </head>
 <body>
   <header class="topbar">
@@ -223,6 +223,12 @@
               <div id="guide-fields" class="guide-fields"></div>
               <button type="button" class="link" id="reset-guide">Reset the guidance</button>
             </details>
+            <details class="prompt-box">
+              <summary>What every prompt starts with (read only)</summary>
+              <p class="hint">Every call to a model begins with this background on the Exercises, retreats and lectio divina, then your About me notes, then the instructions above. The reflection, deep dive and guidance also get the house style.</p>
+              <textarea id="background-prompt" rows="10" readonly aria-label="Background"></textarea>
+              <textarea id="house-style-prompt" rows="8" readonly aria-label="House style"></textarea>
+            </details>
             <button type="button" class="link" id="reset-all">Reset every option to its default</button>
           </div>
         </div>
@@ -241,7 +247,16 @@
           <p id="retreat-series" class="meta" hidden></p>
         </div>
         <div class="head-actions">
-          <button type="button" id="talk-button" class="secondary" hidden>Talk it over</button>
+          <span class="talk-cta" id="talk-cta" hidden>
+            <button type="button" id="talk-button" class="talk-button" aria-describedby="talk-tip">
+              <span class="talk-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span>Talk it over</span>
+            </button>
+            <span class="talk-tip" id="talk-tip" role="tooltip">
+              <strong>Say out loud what's stirring.</strong>
+              A conversation, in a natural voice, with a companion that knows this retreat. It listens, asks a gentle question or two, and helps you notice where God has been at work. It's an AI, and it remembers what you share.
+            </span>
+          </span>
           <button type="button" id="retreat-pdf" class="secondary" hidden>Whole retreat (PDF)</button>
           <button type="button" id="playback-button" class="icon-button" aria-label="Prayer settings" title="Prayer settings">⚙︎</button>
         </div>
@@ -311,6 +326,16 @@
           </p>
           <p class="hint">Your choice is remembered on this device. What you want from the companion is set under <a href="./?me" data-nav="me">About me</a>.</p>
         </div>
+        <details class="talk-prompt" id="talk-prompt">
+          <summary>The companion's instructions (advanced)</summary>
+          <p class="hint">The full instructions the companion follows, before what it knows about you and this retreat. Change them if you like; they're saved to your account and used in every conversation. The shared background (under New retreat → Advanced) is always added after them.</p>
+          <textarea id="companion-prompt" rows="16" spellcheck="true" aria-label="Companion instructions"></textarea>
+          <p class="row-buttons">
+            <button type="button" id="companion-save">Save</button>
+            <button type="button" id="companion-reset" class="link">Restore the default</button>
+            <span id="companion-status" class="meta" role="status"></span>
+          </p>
+        </details>
         <div class="talk-controls">
           <button type="button" id="talk-start" class="big">Start talking</button>
           <button type="button" id="talk-stop" class="secondary" hidden>End conversation</button>
@@ -560,20 +585,20 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=34"></script>
+  <script src="config.js?v=35"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=34"></script>
-  <script src="js/settings.js?v=34"></script>
-  <script src="js/router.js?v=34"></script>
-  <script src="js/library.js?v=34"></script>
-  <script src="js/new-retreat.js?v=34"></script>
-  <script src="js/retreat.js?v=34"></script>
-  <script src="js/build-log.js?v=34"></script>
-  <script src="js/research.js?v=34"></script>
-  <script src="js/pray.js?v=34"></script>
-  <script src="js/about-me.js?v=34"></script>
-  <script src="js/talk.js?v=34"></script>
-  <script src="js/costs.js?v=34"></script>
-  <script src="js/start.js?v=34"></script>
+  <script src="js/core.js?v=35"></script>
+  <script src="js/settings.js?v=35"></script>
+  <script src="js/router.js?v=35"></script>
+  <script src="js/library.js?v=35"></script>
+  <script src="js/new-retreat.js?v=35"></script>
+  <script src="js/retreat.js?v=35"></script>
+  <script src="js/build-log.js?v=35"></script>
+  <script src="js/research.js?v=35"></script>
+  <script src="js/pray.js?v=35"></script>
+  <script src="js/about-me.js?v=35"></script>
+  <script src="js/talk.js?v=35"></script>
+  <script src="js/costs.js?v=35"></script>
+  <script src="js/start.js?v=35"></script>
 </body>
 </html>

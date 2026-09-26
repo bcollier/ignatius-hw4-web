@@ -89,6 +89,8 @@ function fillPlaybackFields() {
 
 // A prompt equal to the default isn't saved, so a later change to the default applies.
 function fillPromptFields() {
+  $("background-prompt").value = options.prompts.background || "";
+  $("house-style-prompt").value = options.prompts.house_style || "";
   for (const [key, id] of Object.entries(PROMPT_FIELDS)) {
     $(id).value = store.get(`prompt.${key}`) || defaultPrompt(key);
     $(id).oninput = () => store.set(`prompt.${key}`, $(id).value.trim() === defaultPrompt(key).trim() ? null : $(id).value);

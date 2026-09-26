@@ -459,3 +459,38 @@ function cleanupTalk(t = talkState) {
   t.stream?.getTracks().forEach((track) => track.stop());
   if (t.audio) t.audio.srcObject = null;
 }
+
+
+// ---------------------------------------------------------------- the companion's instructions
+
+async function fillCompanionPrompt() {
+  const box = $("companion-prompt");
+  const fallback = options.prompts?.companion || "";
+  try {
+    const me = await api("/api/profile");
+    box.value = me.companion_prompt || fallback;
+  } catch {
+    box.value = fallback;
+  }
+  $("companion-status").textContent = box.value === fallback ? "Using the default." : "Using your own instructions.";
+}
+
+async function saveCompanionPrompt(text) {
+  $("companion-status").textContent = "Saving…";
+  try {
+    const custom = text.trim() === (options.prompts?.companion || "").trim() ? "" : text;
+    await postJson("/api/profile", { companion_prompt: custom }, "PUT");
+    $("companion-status").textContent = custom ? "Saved. Your instructions are used from the next conversation." : "Using the default.";
+  } catch (err) {
+    $("companion-status").textContent = err.message;
+  }
+}
+
+function wireCompanionPrompt() {
+  $("talk-prompt").addEventListener("toggle", () => $("talk-prompt").open && fillCompanionPrompt());
+  $("companion-save").onclick = () => saveCompanionPrompt($("companion-prompt").value);
+  $("companion-reset").onclick = () => {
+    $("companion-prompt").value = options.prompts?.companion || "";
+    saveCompanionPrompt("");
+  };
+}
