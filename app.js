@@ -218,7 +218,7 @@ function render() {
   const plan = retreat.plan;
 
   if (retreat.status === "planning") {
-    status.textContent = `Reading ${retreat.filename} and planning the retreat. This usually takes under a minute…`;
+    status.textContent = `Reading ${retreat.filename} and planning the retreat. This takes a few minutes; you can leave this page open or come back to it from My retreats…`;
     status.className = "status working";
   } else if (retreat.status === "failed") {
     status.textContent = `Planning failed: ${retreat.error}`;
