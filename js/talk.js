@@ -214,7 +214,8 @@ async function startTalk(provider, voice, retreatId) {
     else await startOpenAI(stream, voice, retreatId);
   } catch (err) {
     status.className = "status bad";
-    status.textContent = err.name === "NotAllowedError" ? "The microphone wasn't allowed. Allow it in the browser's settings to talk." : err.message;
+    status.textContent = err.name === "NotAllowedError" || err.name === "SecurityError" ? microphoneHelp() : err.message;
+    status.append(el("small", { class: "error-code", text: ` (${err.name || "error"})` }));
     $("talk-start").disabled = false;
     cleanupTalk();
     talkState = null;
@@ -493,4 +494,21 @@ function wireCompanionPrompt() {
     $("companion-prompt").value = options.prompts?.companion || "";
     saveCompanionPrompt("");
   };
+}
+
+
+// Where to turn the microphone on, for the browser the person is using. On an iPhone
+// the browser asks only once per site; after that it has to be allowed in Settings.
+function microphoneHelp() {
+  const ua = navigator.userAgent;
+  const iphone = /iPhone|iPad|iPod/.test(ua);
+  if (iphone && /CriOS/.test(ua)) {
+    return "The microphone is blocked for Chrome. Open the iPhone's Settings app, tap Apps, then Chrome, and turn on Microphone. "
+      + "Then come back, reload this page and tap Start talking; when Chrome asks, choose Allow.";
+  }
+  if (iphone) {
+    return "The microphone is blocked. In Safari, tap the page menu (aA) next to the address, then Website Settings, and set Microphone to Allow. "
+      + "If it's still blocked, open the Settings app, tap Apps, then Safari, and set Microphone to Allow.";
+  }
+  return "The microphone wasn't allowed. Click the icon at the left of the address bar, allow the microphone for this site, and try again.";
 }
