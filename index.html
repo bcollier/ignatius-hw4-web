@@ -5,16 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Ignatius at Home</title>
   <meta name="description" content="Make a guided audio retreat from your own prayer material, and pray it day by day.">
-  <meta name="theme-color" content="#f7f4ee" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#1b1916" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f7f5f1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0c0d1d" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=35">
-  <link rel="icon" href="icons/icon-192.png?v=35" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=35">
-  <link rel="stylesheet" href="style.css?v=35">
+  <link rel="manifest" href="manifest.webmanifest?v=36">
+  <link rel="icon" href="icons/icon-192.png?v=36" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=36">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..700,0..100&family=Inter:wght@400..700&display=swap">
+  <link rel="stylesheet" href="style.css?v=36">
 </head>
 <body>
   <header class="topbar">
@@ -241,7 +244,7 @@
     <!-- ============================================================ retreat -->
     <section id="view-retreat" class="view" hidden>
       <a href="./" data-nav="library" class="back">← My retreats</a>
-      <div class="retreat-head">
+      <div class="retreat-head" id="retreat-head">
         <div>
           <h1 id="retreat-title"></h1>
           <p id="retreat-series" class="meta" hidden></p>
@@ -585,20 +588,20 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=35"></script>
+  <script src="config.js?v=36"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=35"></script>
-  <script src="js/settings.js?v=35"></script>
-  <script src="js/router.js?v=35"></script>
-  <script src="js/library.js?v=35"></script>
-  <script src="js/new-retreat.js?v=35"></script>
-  <script src="js/retreat.js?v=35"></script>
-  <script src="js/build-log.js?v=35"></script>
-  <script src="js/research.js?v=35"></script>
-  <script src="js/pray.js?v=35"></script>
-  <script src="js/about-me.js?v=35"></script>
-  <script src="js/talk.js?v=35"></script>
-  <script src="js/costs.js?v=35"></script>
-  <script src="js/start.js?v=35"></script>
+  <script src="js/core.js?v=36"></script>
+  <script src="js/settings.js?v=36"></script>
+  <script src="js/router.js?v=36"></script>
+  <script src="js/library.js?v=36"></script>
+  <script src="js/new-retreat.js?v=36"></script>
+  <script src="js/retreat.js?v=36"></script>
+  <script src="js/build-log.js?v=36"></script>
+  <script src="js/research.js?v=36"></script>
+  <script src="js/pray.js?v=36"></script>
+  <script src="js/about-me.js?v=36"></script>
+  <script src="js/talk.js?v=36"></script>
+  <script src="js/costs.js?v=36"></script>
+  <script src="js/start.js?v=36"></script>
 </body>
 </html>

@@ -92,6 +92,7 @@ function renderContinueCard() {
     const pick = nextDay(r, r.day_states || []);
     if (!pick) continue;
     cont.append(...continueCard(r, pick));
+    cont.style.setProperty("--cover", r.cover ? `url("${fileUrl(r.cover)}")` : "none");
     cont.hidden = false;
     return;
   }

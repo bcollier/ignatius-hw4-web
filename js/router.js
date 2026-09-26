@@ -21,8 +21,15 @@ window.addEventListener("popstate", () => route());
 
 const VIEWS = ["signin", "library", "new", "retreat", "research", "talk", "me", "about", "costs"];
 function show(view) {
-  for (const v of VIEWS) $(`view-${v}`).hidden = v !== view;
-  window.scrollTo(0, 0);
+  const swap = () => {
+    for (const v of VIEWS) $(`view-${v}`).hidden = v !== view;
+    window.scrollTo(0, 0);
+  };
+  // A soft cross-fade between views where the browser supports it.
+  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const current = VIEWS.find((v) => !$(`view-${v}`).hidden);
+  if (document.startViewTransition && !calm && current && current !== view) document.startViewTransition(swap);
+  else swap();
 }
 
 async function route() {

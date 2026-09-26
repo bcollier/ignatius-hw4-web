@@ -55,6 +55,10 @@ const planDay = (n) => retreat.plan?.days.find((d) => d.day === n);
 function renderRetreat() {
   const plan = retreat.plan;
   $("retreat-title").textContent = plan?.title || retreat.filename;
+  // The retreat's first painting, blurred, behind its title.
+  const banner = retreat.images?.find((img) => img.url);
+  $("retreat-head").classList.toggle("has-banner", !!banner);
+  $("retreat-head").style.setProperty("--banner", banner ? `url("${fileUrl(banner.url)}")` : "none");
   document.title = `${plan?.title || "Retreat"} · Ignatius at Home`;
   renderSeriesLine();
   renderHeaderButtons(plan);
