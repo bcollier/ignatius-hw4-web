@@ -44,6 +44,12 @@ async function api(path, init = {}) {
   return body;
 }
 
+// Files come back either as full signed Storage URLs (Supabase) or as paths on
+// the API server (local development).
+function fileUrl(url) {
+  return /^https?:\/\//.test(url) ? url : API + url;
+}
+
 function showMessage(text) {
   $("message").textContent = text;
   $("message").hidden = !text;
@@ -208,11 +214,11 @@ function render() {
   gallery.innerHTML = "";
   for (const info of retreat.images) {
     const link = document.createElement("a");
-    link.href = API + info.url;
+    link.href = fileUrl(info.url);
     link.target = "_blank";
     link.rel = "noopener";
     const img = document.createElement("img");
-    img.src = API + info.url;
+    img.src = fileUrl(info.url);
     img.alt = info.description || "Image from your document";
     img.loading = "lazy";
     link.append(img);
@@ -235,7 +241,7 @@ function renderDay(day, state) {
   if (day.image_index >= 0) {
     const img = node.querySelector(".day-image");
     const info = retreat.images[day.image_index];
-    img.src = API + info.url;
+    img.src = fileUrl(info.url);
     img.alt = info.description || "Image from your document"; // for screen readers only
     img.hidden = false;
   }
@@ -277,7 +283,7 @@ function renderTrack(key, track) {
   const audio = document.createElement("audio");
   audio.controls = true;
   audio.preload = "none";
-  audio.src = API + track.url;
+  audio.src = fileUrl(track.url);
   const details = document.createElement("details");
   const summary = document.createElement("summary");
   summary.textContent = track.trimmed ? "Script (trimmed to the length cap)" : "Script";
@@ -369,7 +375,7 @@ let stepIndex = 0;
 let prayerDay = null;
 
 function buildSequence(day, state) {
-  const track = (key) => ({ label: TRACK_LABELS[key], src: API + state.tracks[key].url });
+  const track = (key) => ({ label: TRACK_LABELS[key], src: fileUrl(state.tracks[key].url) });
   const pauseSeconds = Number($("pause").value);
   const pause = [{ label: "Pause and reflect", src: "sounds/bell.mp3", pause: true }];
   for (let s = 0; s < pauseSeconds; s += 30) pause.push({ label: "Pause and reflect", src: "sounds/quiet30.mp3", pause: true });
