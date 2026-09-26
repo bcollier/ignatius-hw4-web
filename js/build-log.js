@@ -3,7 +3,7 @@
 let logState = null; // { rid, after, timer, busy }
 
 const logTime = (iso) => (iso ? new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "");
-const VENDOR_NAMES = { openrouter: "Anthropic via OpenRouter", jetstream: "Jetstream", microsoft: "Microsoft voice", elevenlabs: "ElevenLabs", openai: "OpenAI", xai: "xAI" };
+const VENDOR_NAMES = { openrouter: "Anthropic via OpenRouter", jetstream: "Open models", microsoft: "Microsoft voice", elevenlabs: "ElevenLabs", openai: "OpenAI", xai: "xAI" };
 
 // Each call is shown in full, for troubleshooting: the whole system prompt, every
 // message exactly as sent, the whole response, and the response's metadata.

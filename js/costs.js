@@ -72,7 +72,7 @@ function costPricesCard(p) {
     el("h3", { text: "Prices" }),
     p.models.length ? costTable(p.models, [["Model", (m) => m.label], ["Per million tokens", (m) => `$${m.input_per_m} in, $${m.output_per_m} out`]]) : "",
     el("p", { text: `ElevenLabs voices are counted at $${p.elevenlabs_usd_per_1k_chars.toFixed(2)} per 1,000 characters (list price; your plan may cost less).${bal ? ` This period: ${bal.remaining.toLocaleString()} of ${bal.limit.toLocaleString()} characters left.` : ""}` }),
-    el("p", { text: `Talk it over: OpenAI about $${p.talk_usd_per_minute.openai.toFixed(2)} a minute, Grok about $${p.talk_usd_per_minute.xai.toFixed(2)} a minute. Microsoft voices, Jetstream models and most search services' free tiers cost nothing.` }),
+    el("p", { text: `Talk it over: OpenAI about $${p.talk_usd_per_minute.openai.toFixed(2)} a minute, Grok about $${p.talk_usd_per_minute.xai.toFixed(2)} a minute. Microsoft voices, the free open models and most search services' free tiers cost nothing.` }),
     e ? el("p", { text: `A new seven-day retreat with your current Advanced settings (${modelLabel(e.model.id)}${e.voice ? ", ElevenLabs voices" : ""}) would cost about ${money(e.total)}.` }) : "",
     el("p", { class: "hint", text: "Model, search and conversation costs come from the log of every call (the llm_calls table). Voice costs count the recordings each retreat has now." }));
 }
