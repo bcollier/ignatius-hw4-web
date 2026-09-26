@@ -296,3 +296,6 @@ body.praying { overflow: hidden; }
 .talk-history details { margin-top: 4px; }
 .talk-history pre { white-space: pre-wrap; font: 0.9rem/1.5 var(--sans); margin: 6px 0 0; }
 #me-summary-note { color: var(--work); border-color: var(--work); }
+
+/* Costs are for making a retreat on a larger screen, never on a phone. */
+@media (max-width: 700px) { .cost-info { display: none !important; } }

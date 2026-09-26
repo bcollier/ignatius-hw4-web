@@ -1697,11 +1697,14 @@ function renderCosts() {
     const w = c.llm;
     lines.push(`Day ${d.day}: ${money(c.total_usd)} (writing ${money(w.usd)}, ${Math.round(w.input_tokens / 1000)}k tokens in, ${Math.round(w.output_tokens / 1000)}k out${w.web_searches ? `, ${w.web_searches} searches` : ""}; ${c.voice_characters.premium ? `ElevenLabs ${c.voice_characters.premium.toLocaleString()} characters, ${money(c.voice_usd)}` : "free voices"}).`);
   }
-  $("costs").hidden = !premium || !lines.length;
+  // Costs belong to making a retreat: shown while it's being made (or a day is being
+  // rebuilt), never while praying; phones hide them entirely (CSS .cost-info).
+  const making = busy();
+  $("costs").hidden = !premium || !lines.length || !making;
   $("costs-body").innerHTML = "";
   lines.forEach((t) => $("costs-body").append(el("p", { text: t })));
-  $("retreat-cost").hidden = !premium || !total;
-  $("retreat-cost").textContent = total ? `This retreat has cost ${money(total)} so far.` : "";
+  $("retreat-cost").hidden = !premium || !total || !making;
+  $("retreat-cost").textContent = total ? `Spent so far on this retreat: ${money(total)}.` : "";
 }
 
 // ================================================================ start-up

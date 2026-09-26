@@ -116,7 +116,7 @@
                 <select id="search-provider"></select>
                 <span class="hint">If this service is paused or out of credits, the next one is used.</span>
               </label>
-              <p id="balance-note" class="hint" hidden></p>
+              <p id="balance-note" class="hint cost-info" hidden></p>
             </fieldset>
             <fieldset>
               <legend>Voices</legend>
@@ -198,7 +198,7 @@
           <input id="rights" type="checkbox" required>
           I own this material or have permission to use it.
         </label>
-        <p id="new-estimate" class="hint" hidden></p>
+        <p id="new-estimate" class="hint cost-info" hidden></p>
         <button type="submit" id="make-button" class="big">Make my retreat</button>
         <p class="hint">Planning, writing and recording every day takes a while, often 15 to 30 minutes. You can close the page; it keeps going.</p>
       </form>
@@ -211,7 +211,7 @@
         <div>
           <h1 id="retreat-title"></h1>
           <p id="retreat-series" class="meta" hidden></p>
-          <p id="retreat-cost" class="meta" hidden></p>
+          <p id="retreat-cost" class="meta cost-info" hidden></p>
         </div>
         <div class="head-actions">
           <button type="button" id="talk-button" class="secondary" hidden>Talk it over</button>
@@ -234,7 +234,7 @@
         <article id="day-panel" class="card day-panel"></article>
       </div>
 
-      <details id="costs" class="card costs" hidden>
+      <details id="costs" class="card costs cost-info" hidden>
         <summary>Costs</summary>
         <div id="costs-body" class="hint"></div>
       </details>
