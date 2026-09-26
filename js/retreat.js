@@ -215,7 +215,7 @@ function dayHeading(d, s) {
     el("h2", { class: "day-title", text: dayTitle(d.title) }),
   ];
   // The reference only when it says something the title doesn't.
-  if (d.source_ref && d.source_ref.trim() !== dayTitle(d.title).trim()) out.push(el("p", { class: "meta source-ref", text: d.source_ref }));
+  if (d.source_ref) out.push(el("p", { class: "meta source-ref", text: scriptureRef(d.source_ref) }));
   if (d.grace) {
     const text = d.grace.replace(/^ask for the grace\s*/i, "").replace(/^the grace\s*/i, "");
     out.push(el("p", { class: "grace" }, el("span", { class: "rubric-inline", text: "The grace " }), text));
@@ -232,7 +232,7 @@ function exercisePage(d, st, s) {
     el("p", { class: "running-head", text: head }),
     el("p", { class: "rubric", text: s.today || !s.date ? "Today's exercise" : "An exercise" }),
     el("h2", { class: "day-title", text: dayTitle(d.title) }),
-    d.source_ref && d.source_ref.trim() !== dayTitle(d.title).trim() && el("p", { class: "meta source-ref", text: d.source_ref }),
+    d.source_ref && el("p", { class: "meta source-ref", text: scriptureRef(d.source_ref) }),
     el("p", { class: "exercise-text", text: d.passage_text }));
   if (s.prayed) {
     page.append(el("p", { class: "state-line done", text: `Completed · ${longDate(st.prayed_at)}` }),

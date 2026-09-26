@@ -186,7 +186,7 @@ async function fillTodayCard(r, dayNo) {
     $("today-art").hidden = true;
     $("continue").classList.add("no-art");
   }
-  if (d.source_ref) $("today-ref").textContent = `${d.source_ref} · ${$("today-ref").textContent}`;
+  if (d.source_ref) $("today-ref").textContent = `${scriptureRef(d.source_ref)} · ${$("today-ref").textContent}`;
   if (d.grace && !isExercise(d, st)) {
     const grace = $("today-grace");
     grace.hidden = false;

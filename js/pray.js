@@ -203,7 +203,9 @@ function playStep(index) {
   $("now-part").textContent = shown.label;
   const left = totalSeconds(steps.slice(stepIndex));
   const blocks = steps[steps.length - 1].block + 1;
-  $("now-meta").textContent = `Day ${prayerDay.day} · part ${step.block + 1} of ${blocks}${left != null ? ` · ${formatClock(left)} left` : ""}`;
+  // The scripture reference is shown, never read aloud.
+  const ref = scriptureRef(prayerDay.source_ref);
+  $("now-meta").textContent = [`Day ${prayerDay.day}`, ref, left != null ? `${formatClock(left)} left` : ""].filter(Boolean).join(" · ");
   $("stage-caption").hidden = !step.pause;
   $("stage-caption").textContent = step.pause ? "Stay with one word or phrase that caught you. Let it rest in you until the bell." : "";
   $("pause-text").textContent = step.pause ? "Silence. Stay with one word or phrase until the bell." : "";
@@ -269,6 +271,9 @@ function showStepText(step, shown) {
   if (shownText && shownText.source === source) return;
   const box = $("stage-text");
   box.innerHTML = "";
+  // Above the reading (and during the silence), where it comes from.
+  const isReading = source.still || /^reading/.test(step.part || shown?.part || "");
+  if (isReading && prayerDay.source_ref) box.append(el("p", { class: "text-ref", text: scriptureRef(prayerDay.source_ref) }));
   const starts = [];
   const spans = [];
   let offset = 0;

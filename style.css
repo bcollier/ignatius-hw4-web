@@ -682,3 +682,6 @@ body.praying { overflow: hidden; }
 .page-text.exercise .rubric { margin: 0; }
 .state-line.done { color: var(--gold-ink); font-style: normal; font-variant-caps: all-small-caps; letter-spacing: 0.08em; font-size: 1.05rem; }
 .today-note { margin: 4px 0 2px; font-style: italic; color: var(--muted); }
+
+/* The reading's reference above the text on the prayer screen (shown, not read aloud). */
+.stage-text .text-ref { font-variant-caps: all-small-caps; letter-spacing: .09em; font-size: .95rem; color: var(--rubric-night, #e0806a); opacity: .9; margin-bottom: .6em; }

@@ -102,6 +102,16 @@ function localTimeWithOffset() {
   return `${isoDate(d)}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}${sign}${pad(Math.floor(Math.abs(off) / 60))}:${pad(Math.abs(off) % 60)}`;
 }
 // Titles the planner copied from the source often start with "Day 3:"; the app adds its own.
+// The scripture reference alone ("John 4:7–15"), for the screen: planners sometimes add
+// the handout's unit or day names, or a translation, which the listener doesn't need.
+const BIBLE_BOOKS = "Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Joshua|Judges|Ruth|Samuel|Kings|Chronicles|Ezra|Nehemiah|Tobit|Judith|Esther|Maccabees|Job|Psalms?|Proverbs|Ecclesiastes|Qoheleth|Song of (?:Songs|Solomon)|Wisdom|Sirach|Ecclesiasticus|Isaiah|Jeremiah|Lamentations|Baruch|Ezekiel|Daniel|Hosea|Joel|Amos|Obadiah|Jonah|Micah|Nahum|Habakkuk|Zephaniah|Haggai|Zechariah|Malachi|Matthew|Mark|Luke|John|Acts|Romans|Corinthians|Galatians|Ephesians|Philippians|Colossians|Thessalonians|Timothy|Titus|Philemon|Hebrews|James|Peter|Jude|Revelation";
+const SCRIPTURE_REF = new RegExp(`\\b(?:(?:[1-3]|I{1,3})\\s?)?(?:${BIBLE_BOOKS})\\s+\\d+(?::\\d+(?:\\s*[-–]\\s*\\d+(?::\\d+)?)?(?:,\\s*\\d+(?:[-–]\\d+)?)*)?`);
+function scriptureRef(sourceRef) {
+  if (!sourceRef) return "";
+  const m = sourceRef.match(SCRIPTURE_REF);
+  return (m ? m[0] : sourceRef).replace(/\s*-\s*/g, "–").trim();
+}
+
 const dayTitle = (t) => (t || "").replace(/^\s*day\s+\d+\s*[:.\-–]\s*/i, "").trim() || t || "";
 const weekday = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, { weekday: "short" });
 const longDate = (value) =>
