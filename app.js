@@ -69,6 +69,7 @@ async function checkServer() {
       : "Connected.";
     status.classList.add("ok");
     fillTierMenu();
+    fillModels();
     fillPrompts();
     fillGuide();
     return true;
@@ -115,6 +116,7 @@ function fillTierMenu() {
       try {
         localStorage.setItem(`voice.${section}`, select.value);
       } catch {}
+      if (retreat?.plan) render();
     };
   }
   const caps = Object.values(options.tiers).map(
@@ -141,6 +143,7 @@ async function upload(event) {
   const form = new FormData();
   form.append("file", file);
   if (promptChanged("plan")) form.append("plan_prompt", $("plan-prompt").value);
+  form.append("model", $("plan-model").value);
 
   const button = $("upload-button");
   button.disabled = true;
@@ -195,6 +198,7 @@ async function buildDay(day, keepScripts = false) {
         deep_prompt: $("deep-prompt").value,
         guide: guideTexts(),
         keep_scripts: keepScripts,
+        model: $("write-model").value,
       }),
     });
     render();
@@ -233,6 +237,8 @@ function render() {
   if (s.scanned_pages) bits.push(`${s.scanned_pages} scanned page${s.scanned_pages === 1 ? "" : "s"} read by the model`);
   if (s.truncated) bits.push("long document, only the first part was used");
   if (plan) bits.push(plan.mode === "follows_source" ? "days taken from your document" : "days composed from your material");
+  const spent = retreatSpent();
+  if (spent.usd > 0 || spent.plan) bits.push(`spent so far ${money(spent.usd)}${spent.plan ? ` (planning ${money(spent.plan.usd)} with ${modelLabel(spent.plan.model)})` : ""}`);
   $("retreat-meta").textContent = bits.join(" · ");
 
   const gallery = $("gallery");
@@ -292,6 +298,8 @@ function renderDay(day, state) {
     status.textContent = `Some tracks failed: ${state.error}`;
     status.className = "day-status status bad";
   }
+
+  node.querySelector(".day-cost").textContent = building ? "" : dayCostText(day, state);
 
   const pray = node.querySelector(".pray");
   const allReady = state.status === "ready" && Object.values(state.tracks).every((t) => t.status === "ready");
@@ -404,6 +412,106 @@ function wirePrompts() {
       savePrompt("heart");
     };
   });
+}
+
+// ------------------------------------------------------------------ models and costs
+
+function fillModels() {
+  let saved = null;
+  try {
+    saved = localStorage.getItem("model");
+  } catch {}
+  for (const select of document.querySelectorAll(".model-select")) {
+    select.innerHTML = "";
+    for (const m of options.models) {
+      select.add(new Option(`${m.label} · $${m.input_per_m} in / $${m.output_per_m} out per million tokens`, m.id));
+    }
+    select.value = options.models.some((m) => m.id === saved) ? saved : options.default_model;
+    select.onchange = () => {
+      document.querySelectorAll(".model-select").forEach((other) => (other.value = select.value));
+      try {
+        localStorage.setItem("model", select.value);
+      } catch {}
+      if (retreat?.plan) render();
+    };
+  }
+  const bal = options.elevenlabs?.balance;
+  $("balance-note").hidden = !bal;
+  if (bal) {
+    $("balance-note").textContent =
+      `ElevenLabs: ${bal.remaining.toLocaleString()} of ${bal.limit.toLocaleString()} characters left this period ` +
+      `(${bal.tier} plan). Estimates use $${options.elevenlabs.usd_per_1k_chars.toFixed(2)} per 1,000 characters.`;
+  }
+}
+
+const money = (usd) => (usd < 0.01 && usd > 0 ? "under 1¢" : `$${usd.toFixed(2)}`);
+const modelLabel = (id) => (options.models.find((m) => m.id === id)?.label || id).replace(/ \(.*\)$/, "");
+
+function tierOfVoice(voice) {
+  return Object.entries(options.tiers).find(([, t]) => voice in t.voices)?.[0] || "free";
+}
+
+// A rough cost before building. Output tokens include the model's thinking, which
+// varies, so they're estimated at about two and a half times the script length.
+function estimateDay(day, state, keepScripts) {
+  const voices = chosenVoices();
+  const model = options.models.find((m) => m.id === $("write-model").value);
+  const cap = (section) => options.tiers[tierOfVoice(voices[section])].max_chars;
+  const words = (section) => (cap(section) / 6) * 0.85;
+  let llm = 0;
+  let searches = 0;
+  if (!keepScripts && model) {
+    const perIn = model.input_per_m / 1e6;
+    const perOut = model.output_per_m / 1e6;
+    searches = options.web_search ? 5 : 0;
+    llm += 2500 * perIn + words("heart") * 1.35 * 2.5 * perOut; // reflection
+    llm += (2500 + searches * 8000) * perIn + (words("deep") * 1.35 * 2.5 + 400) * perOut; // deep dive
+    llm += searches * model.web_search_each;
+  }
+  const written = (key) => (keepScripts && state.tracks?.[key]?.characters) || cap(key) * 0.9;
+  const guideChars = Object.values(guideTexts()).reduce((n, t) => n + (t.trim() ? t.length + (t.includes("{grace}") ? day.grace.length : 0) : 0), 0);
+  const chars = { free: 0, premium: 0 };
+  chars[tierOfVoice(voices.reading)] += Math.min(day.passage_text.length, cap("reading"));
+  chars[tierOfVoice(voices.heart)] += written("heart");
+  chars[tierOfVoice(voices.deep)] += written("deep");
+  chars[tierOfVoice(voices.guide)] += guideChars;
+  const voiceUsd = (chars.premium / 1000) * (options.elevenlabs?.usd_per_1k_chars || 0);
+  return { llm, searches, chars, voiceUsd, total: llm + voiceUsd, model };
+}
+
+function voicePart(chars, usd) {
+  if (!chars.premium) return "voices free";
+  let text = `ElevenLabs ${Math.round(chars.premium).toLocaleString()} characters ≈ ${money(usd)}`;
+  const bal = options.elevenlabs?.balance;
+  if (bal && chars.premium > bal.remaining) text += ` (more than the ${bal.remaining.toLocaleString()} left on your plan)`;
+  return text;
+}
+
+function dayCostText(day, state) {
+  const parts = [];
+  if (state.cost) {
+    const c = state.cost;
+    const writing = c.llm.usd
+      ? `writing ${money(c.llm.usd)} with ${modelLabel(c.llm.model)} (${Math.round(c.llm.input_tokens / 1000)}k tokens in, ${Math.round(c.llm.output_tokens / 1000)}k out${c.llm.web_searches ? `, ${c.llm.web_searches} searches` : ""})`
+      : "no writing";
+    parts.push(`Last build cost ${money(c.total_usd)}: ${writing}, ${voicePart(c.voice_characters, c.voice_usd)}.`);
+  }
+  const fresh = estimateDay(day, state, false);
+  let next = `${state.status === "idle" ? "Estimated" : "Rewriting and recording would cost about"} ${money(fresh.total)}: writing about ${money(fresh.llm)} with ${modelLabel(fresh.model?.id)}, ${voicePart(fresh.chars, fresh.voiceUsd)}.`;
+  if (state.status === "idle") next = next.replace("Estimated", "Estimated cost");
+  parts.push(next);
+  if (state.tracks?.heart?.script) {
+    const again = estimateDay(day, state, true);
+    parts.push(`Re-recording with these voices: ${again.voiceUsd ? money(again.voiceUsd) : "free"}.`);
+  }
+  return parts.join(" ");
+}
+
+function retreatSpent() {
+  const plan = retreat.costs?.plan;
+  let usd = plan?.usd || 0;
+  for (const d of Object.values(retreat.days || {})) usd += d.cost?.total_usd || 0;
+  return { usd, plan };
 }
 
 // ------------------------------------------------------------------ spoken guidance

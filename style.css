@@ -154,3 +154,4 @@ footer.site { color: var(--muted); font-size: 0.85rem; padding-bottom: 40px; }
 .guide-fields textarea { font: 0.95rem/1.5 system-ui, -apple-system, sans-serif; }
 .day-length { margin: 8px 0 0; }
 code { font-size: 0.85em; }
+.day-cost { margin: 4px 0 10px; }
