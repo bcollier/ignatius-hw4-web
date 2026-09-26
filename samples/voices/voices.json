@@ -1,0 +1,77 @@
+{
+ "text": "Jesus said to her, \"Mary.\" She turned and said to him, \"Rabboni!\" which is to say, \"Teacher!\" Take a moment now. Let the name spoken to you settle in your heart, and notice what stirs.",
+ "voices": [
+  {
+   "tier": "free",
+   "id": "en-US-AndrewMultilingualNeural",
+   "label": "Andrew (warm, male)",
+   "file": "samples/voices/free-andrew.mp3"
+  },
+  {
+   "tier": "free",
+   "id": "en-US-AvaMultilingualNeural",
+   "label": "Ava (caring, female)",
+   "file": "samples/voices/free-ava.mp3"
+  },
+  {
+   "tier": "free",
+   "id": "en-US-BrianMultilingualNeural",
+   "label": "Brian (easygoing, male)",
+   "file": "samples/voices/free-brian.mp3"
+  },
+  {
+   "tier": "free",
+   "id": "en-US-EmmaMultilingualNeural",
+   "label": "Emma (clear, female)",
+   "file": "samples/voices/free-emma.mp3"
+  },
+  {
+   "tier": "free",
+   "id": "en-US-ChristopherNeural",
+   "label": "Christopher (steady, male)",
+   "file": "samples/voices/free-christopher.mp3"
+  },
+  {
+   "tier": "free",
+   "id": "en-US-AriaNeural",
+   "label": "Aria (confident, female)",
+   "file": "samples/voices/free-aria.mp3"
+  },
+  {
+   "tier": "premium",
+   "id": "nPczCjzI2devNBz1zQrb",
+   "label": "Brian (deep, comforting, male)",
+   "file": "samples/voices/premium-brian.mp3"
+  },
+  {
+   "tier": "premium",
+   "id": "JBFqnCBsd6RMkjVDRZzb",
+   "label": "George (warm storyteller, British male)",
+   "file": "samples/voices/premium-george.mp3"
+  },
+  {
+   "tier": "premium",
+   "id": "pqHfZKP75CvOlQylNhV4",
+   "label": "Bill (wise, mature, male)",
+   "file": "samples/voices/premium-bill.mp3"
+  },
+  {
+   "tier": "premium",
+   "id": "EXAVITQu4vr4xnSDxMaL",
+   "label": "Sarah (reassuring, female)",
+   "file": "samples/voices/premium-sarah.mp3"
+  },
+  {
+   "tier": "premium",
+   "id": "Xb7hH8MSUJpSbSDYk0k2",
+   "label": "Alice (clear educator, British female)",
+   "file": "samples/voices/premium-alice.mp3"
+  },
+  {
+   "tier": "premium",
+   "id": "pFZP5JQG7iQjIQuC4Bku",
+   "label": "Lily (velvety, British female)",
+   "file": "samples/voices/premium-lily.mp3"
+  }
+ ]
+}

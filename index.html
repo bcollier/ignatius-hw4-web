@@ -11,10 +11,10 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=20">
-  <link rel="icon" href="icons/icon-192.png?v=20" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=20">
-  <link rel="stylesheet" href="style.css?v=20">
+  <link rel="manifest" href="manifest.webmanifest?v=21">
+  <link rel="icon" href="icons/icon-192.png?v=21" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=21">
+  <link rel="stylesheet" href="style.css?v=21">
 </head>
 <body>
   <header class="topbar">
@@ -78,6 +78,12 @@
         <a href="./?new" data-nav="new" class="button">Make my first retreat</a>
       </div>
       <div id="groups"></div>
+
+      <div id="examples" class="examples" hidden>
+        <h2>Examples</h2>
+        <p class="hint">Ready-made retreats to listen to and pray: "Come and See," seven encounters with Jesus, with a painting for each day. One was written by open models and read by free voices; the other by Claude Fable and read by ElevenLabs voices. Your progress in them is your own.</p>
+        <div id="example-list" class="example-list"></div>
+      </div>
     </section>
 
     <!-- ============================================================ new retreat -->
@@ -114,8 +120,9 @@
               <label>Writing the reflection and deep dive <select id="write-model" class="model-select"></select></label>
               <label id="research-label" hidden>Web research for the deep dive
                 <select id="search-provider"></select>
-                <span class="hint">If this service is paused or out of credits, the next one is used.</span>
+                <span class="hint">"All services, combined" asks every search service at once and gives the model the mix. A paused or out-of-credit service is skipped.</span>
               </label>
+              <label class="check desktop-only"><input id="show-research" type="checkbox"> Show a "Research" page for each retreat: every search, result and source behind each day</label>
               <p id="balance-note" class="hint cost-info" hidden></p>
             </fieldset>
             <fieldset>
@@ -216,6 +223,7 @@
         <div class="head-actions">
           <button type="button" id="talk-button" class="secondary" hidden>Talk it over</button>
           <button type="button" id="retreat-pdf" class="secondary" hidden>Whole retreat (PDF)</button>
+          <a id="research-link" class="button secondary desktop-only" data-nav="" hidden>Research</a>
           <button type="button" id="playback-button" class="icon-button" aria-label="Prayer settings" title="Prayer settings">⚙︎</button>
         </div>
       </div>
@@ -227,6 +235,7 @@
         <p class="hint">It's fine to close this page; your retreat keeps being made and will be here when you come back.</p>
         <button type="button" id="notify-button" class="link" hidden>Tell me when it's ready</button>
       </div>
+      <p id="example-note" class="quiet-note" hidden></p>
       <p id="retreat-error" class="banner bad" hidden></p>
 
       <div id="days-area" hidden>
@@ -238,6 +247,16 @@
         <summary>Costs</summary>
         <div id="costs-body" class="hint"></div>
       </details>
+    </section>
+
+    <!-- ============================================================ research -->
+    <section id="view-research" class="view research" hidden>
+      <a href="./" data-nav="back" class="back">← Back to the retreat</a>
+      <h1 id="research-title">Research done for this retreat</h1>
+      <p class="lede">How each day was made: the passage and notes taken from your document, the searches run for the deep dive, every result that came back (with the service that found it), and which of them the deep dive cites.</p>
+      <p id="research-meta" class="meta"></p>
+      <nav id="research-toc" class="research-toc" aria-label="Days"></nav>
+      <div id="research-days"></div>
     </section>
 
     <!-- ============================================================ talk it over -->
@@ -338,6 +357,49 @@
         <li><strong>Silence</strong> between two bells, resting with a word (contemplatio).</li>
         <li><strong>Last reading,</strong> then speak to God in your own words (oratio, the colloquy), and close.</li>
       </ol>
+      <h2 id="voices">The voices</h2>
+      <p>Every part of a day is read aloud by a synthetic voice, and you can choose a different voice for the guide, the reading, the reflection and the deep dive. Each sample below reads the same lines: John 20:16 from the World English Bible, then a line of spoken guidance.</p>
+      <blockquote class="hint">Jesus said to her, "Mary." She turned and said to him, "Rabboni!" which is to say, "Teacher!" Take a moment now. Let the name spoken to you settle in your heart, and notice what stirs.</blockquote>
+      <h3>Free: Microsoft neural voices</h3>
+      <p>Read through Microsoft's Edge "Read aloud" service (the open-source <a href="https://github.com/rany2/edge-tts" target="_blank" rel="noopener">edge-tts</a> package). They cost nothing and need no key, are clear and even, and handle scripture well. Their weaknesses: the pacing is steadier and less expressive than a human reader, long scripts are recorded in 400-character pieces so the tone can shift a little between sentences, and because the service is unofficial it occasionally drops a request (the app retries, with backoff).</p>
+      <div class="voice-grid">
+          <figure class="voice-sample"><figcaption><strong>Andrew</strong> <span class="meta">warm, male</span></figcaption><audio controls preload="none" src="samples/voices/free-andrew.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Ava</strong> <span class="meta">caring, female</span></figcaption><audio controls preload="none" src="samples/voices/free-ava.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Brian</strong> <span class="meta">easygoing, male</span></figcaption><audio controls preload="none" src="samples/voices/free-brian.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Emma</strong> <span class="meta">clear, female</span></figcaption><audio controls preload="none" src="samples/voices/free-emma.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Christopher</strong> <span class="meta">steady, male</span></figcaption><audio controls preload="none" src="samples/voices/free-christopher.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Aria</strong> <span class="meta">confident, female</span></figcaption><audio controls preload="none" src="samples/voices/free-aria.mp3"></audio></figure>
+      </div>
+      <h3>Premium: ElevenLabs</h3>
+      <p><a href="https://elevenlabs.io" target="_blank" rel="noopener">ElevenLabs</a> voices breathe, slow down and lower their voice the way a person does when reading something that matters, and they hold one tone across a whole reflection (the app sends 2,500-character pieces with the text before each piece, so the joins are seamless). For prayer that difference is real: a reflection meant to be listened to in silence sounds less like an announcement and more like someone sitting with you. They cost money: about 10,000–15,000 characters for a day, charged against the account's monthly credits, so they are for premium accounts; everyone can hear them in the premium example retreat.</p>
+      <div class="voice-grid">
+          <figure class="voice-sample"><figcaption><strong>Brian</strong> <span class="meta">deep, comforting, male</span></figcaption><audio controls preload="none" src="samples/voices/premium-brian.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>George</strong> <span class="meta">warm storyteller, British male</span></figcaption><audio controls preload="none" src="samples/voices/premium-george.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Bill</strong> <span class="meta">wise, mature, male</span></figcaption><audio controls preload="none" src="samples/voices/premium-bill.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Sarah</strong> <span class="meta">reassuring, female</span></figcaption><audio controls preload="none" src="samples/voices/premium-sarah.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Alice</strong> <span class="meta">clear educator, British female</span></figcaption><audio controls preload="none" src="samples/voices/premium-alice.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Lily</strong> <span class="meta">velvety, British female</span></figcaption><audio controls preload="none" src="samples/voices/premium-lily.mp3"></audio></figure>
+      </div>
+      <h3>Conversation voices</h3>
+      <p><strong>Talk it over</strong> uses live speech-to-speech models rather than recorded audio. <strong>OpenAI GPT-Live</strong> connects your browser straight to OpenAI over WebRTC, with very low delay and natural turn-taking; it costs about 5¢ a minute. <strong>xAI Grok voice</strong> streams audio over a WebSocket with a short-lived key from the server, has a choice of distinct voices (Eve, Ara, Rex, Sal, Leo), and costs about 8¢ a minute. The server never sends your key-holding credentials to the browser, only a single-use session.</p>
+
+      <h2 id="research">The research services</h2>
+      <p>With the free open models, the deep dive is written from web research the server does first: the model proposes three searches, the services run them, and the model writes from what comes back, citing only pages that were actually returned. (Claude models search the web themselves.) By default <strong>all services, combined</strong> are asked at once and their results are interleaved, one from each in turn, so no single index decides what the model reads. If a service runs out of monthly credits it's paused until next month and the others carry on; every query and result is logged. The research behind each day can be read on its "Research" page (turn it on under Advanced, on a computer).</p>
+      <dl class="services">
+        <dt>Brave Search</dt>
+        <dd>Brave's own independent web index (not a reseller of Google or Bing). Fast, broad, and good for mainstream reference pages. The snippets are short, so the model sees less of each page.</dd>
+        <dt>Brave Answers</dt>
+        <dd>An AI-written answer from the Brave index, with its citations. A quick summary with sources in one call; but the answer is itself AI-generated, so it's one step removed from the pages.</dd>
+        <dt>Exa</dt>
+        <dd>A search engine built for AI that searches by meaning rather than keywords, and returns highlighted passages. Strong at finding essays, commentaries and scholarly writing on an idea; weaker for exact phrases and very recent news.</dd>
+        <dt>Tavily</dt>
+        <dd>A search API made for AI agents that returns cleaned, relevance-ranked extracts of each page. Good all-round results with useful content; its free tier is a modest monthly number of searches.</dd>
+        <dt>Firecrawl</dt>
+        <dd>Mainly a tool for reading web pages; its search returns results with page content. Useful for getting the substance of a page; slower than the others, and free credits go quickly.</dd>
+        <dt>Linkup</dt>
+        <dd>A search API with a standard mode and a <em>deep</em> mode that researches a question over several steps and returns a sourced answer. Deep research is thorough but takes about 20 seconds a question, so it's offered only on its own, not in the combined mix.</dd>
+      </dl>
+
       <p class="hint">The spoken guidance, reflection and deep dive are written by AI models from your material, and the voices are synthetic. Treat them as a companion to your own prayer and, if you have one, your spiritual director, not a replacement. Upload only material you have the right to use; your retreats are private to your account.</p>
       <p class="hint">Built for CMU HW4: a FastAPI backend on Render, this page on GitHub Pages. <a href="https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">How it works</a>.</p>
     </section>
@@ -410,7 +472,7 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=20"></script>
-  <script src="app.js?v=20"></script>
+  <script src="config.js?v=21"></script>
+  <script src="app.js?v=21"></script>
 </body>
 </html>
