@@ -125,6 +125,7 @@ function blockLabel(block) {
 function openPrayScreen() {
   document.body.classList.add("praying");
   $("view-pray").hidden = false;
+  showFullscreenButton();
 }
 
 const UNKNOWN_STEP_SECONDS = 30; // for sizing the progress bar before a clip's length is known
@@ -449,6 +450,7 @@ async function saveAfter() {
 }
 
 function closePrayer(navigate = true) {
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
   if (!document.body.classList.contains("praying")) return;
   const player = $("player");
   if (player.getAttribute("src") && $("after").hidden) reportProgress(false);
@@ -569,6 +571,9 @@ function wirePlayerButtons(player) {
   $("pray-close").onclick = () => closePrayer();
   $("dock-expand").onclick = () => setDockExpanded($("dock-more").hidden);
   $("view-toggle").onclick = cyclePrayView;
+  $("fullscreen").onclick = toggleFullscreen;
+  $("home-screen-done").onclick = () => ($("home-screen-tip").hidden = true);
+  document.addEventListener("fullscreenchange", showFullscreenState);
   $("stage").onclick = (e) => e.target.id !== "pray-close" && setDockExpanded(false);
   $("after-save").onclick = saveAfter;
   $("after-done").onclick = () => closePrayer();
@@ -581,4 +586,37 @@ function wireLockScreenControls(player) {
   navigator.mediaSession.setActionHandler("previoustrack", () => nextBlock(-1));
   navigator.mediaSession.setActionHandler("play", () => player.play());
   navigator.mediaSession.setActionHandler("pause", () => player.pause());
+}
+
+
+// ---------------------------------------------------------------- full screen
+// Where the browser allows it (computers, Android, iPad) the prayer goes full screen.
+// An iPhone doesn't let a website hide the browser, so there the button explains how
+// to add the app to the Home Screen, where it opens full screen by itself.
+
+const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+
+async function toggleFullscreen() {
+  const pray = $("view-pray");
+  if (document.fullscreenElement) return document.exitFullscreen().catch(() => {});
+  if (pray.requestFullscreen && document.fullscreenEnabled) {
+    try {
+      await pray.requestFullscreen({ navigationUI: "hide" });
+      return;
+    } catch {}
+  }
+  $("home-screen-tip").hidden = false;
+}
+
+function showFullscreenState() {
+  const on = !!document.fullscreenElement;
+  const b = $("fullscreen");
+  b.innerHTML = "";
+  b.append(icon(on ? "shrink" : "expand"));
+  b.setAttribute("aria-label", on ? "Leave full screen" : "Full screen");
+}
+
+// Installed to the Home Screen it's already full screen: no button needed.
+function showFullscreenButton() {
+  $("fullscreen").hidden = isStandalone();
 }

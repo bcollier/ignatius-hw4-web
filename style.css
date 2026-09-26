@@ -685,3 +685,7 @@ body.praying { overflow: hidden; }
 
 /* The reading's reference above the text on the prayer screen (shown, not read aloud). */
 .stage-text .text-ref { font-variant-caps: all-small-caps; letter-spacing: .09em; font-size: .95rem; color: var(--rubric-night, #e0806a); opacity: .9; margin-bottom: .6em; }
+
+/* "Pray without the browser" (iPhone): how to add the app to the Home Screen. */
+.tip-steps { padding-left: 1.2em; display: grid; gap: 8px; margin: 4px 0 8px; }
+.tip-steps .icon-wrap { vertical-align: -4px; }
