@@ -159,3 +159,4 @@ code { font-size: 0.85em; }
 #guest-box { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 4px; }
 .inline-form { display: flex; gap: 8px; flex-wrap: wrap; } .inline-form input { flex: 1 1 220px; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); }
 #retreat-pdf { margin-top: 10px; }
+.series-box { border: 1px dashed var(--line); border-radius: 8px; padding: 10px 12px; } .series-list { list-style: none; padding: 0; margin: 6px 0 0; display: grid; gap: 4px; max-height: 260px; overflow-y: auto; }

@@ -13,6 +13,7 @@ let pollTimer = null;
 let sb = null; // Supabase client, when the server uses sign-in
 let session = null;
 let me = null; // {mode: "full" | "free", anonymous, max_retreats} from /api/me
+let library = []; // the user's retreats, newest first
 
 // ------------------------------------------------------------------ API helper
 
@@ -145,6 +146,11 @@ async function upload(event) {
   form.append("file", file);
   if (promptChanged("plan")) form.append("plan_prompt", $("plan-prompt").value);
   form.append("model", $("plan-model").value);
+  if ($("series-toggle").checked) {
+    const ids = [...document.querySelectorAll("#series-list input:checked")].map((box) => box.value);
+    if (!ids.length) return showMessage("Choose at least one earlier retreat for the series, or untick the series box.");
+    form.append("series", ids.join(","));
+  }
 
   const button = $("upload-button");
   button.disabled = true;
@@ -242,6 +248,15 @@ function render() {
   const spent = retreatSpent();
   if (spent.usd > 0 || spent.plan) bits.push(`spent so far ${money(spent.usd)}${spent.plan ? ` (planning ${money(spent.plan.usd)} with ${modelLabel(spent.plan.model)})` : ""}`);
   $("retreat-meta").textContent = bits.join(" · ");
+  const inSeries = retreat.series?.length;
+  $("retreat-series").hidden = !inSeries;
+  if (inSeries) {
+    const titles = retreat.series.map((id) => library.find((r) => r.id === id)?.title || "a deleted retreat");
+    const info = retreat.series_info;
+    let line = `Week ${retreat.series.length + 1} of a series, continuing: ${titles.join(" → ")}.`;
+    if (info?.shortened) line += ` The oldest weeks were shortened to fit (${info.characters.toLocaleString()} characters sent).`;
+    $("retreat-series").textContent = line;
+  }
 
   const gallery = $("gallery");
   gallery.innerHTML = "";
@@ -424,6 +439,28 @@ function wirePrompts() {
       savePrompt("heart");
     };
   });
+}
+
+// ------------------------------------------------------------------ series
+
+function fillSeriesList() {
+  const ul = $("series-list");
+  const checked = new Set([...ul.querySelectorAll("input:checked")].map((b) => b.value));
+  ul.innerHTML = "";
+  // Oldest first, the order the model reads them in.
+  for (const r of [...library].reverse().filter((r) => r.status === "ready")) {
+    const li = document.createElement("li");
+    const label = document.createElement("label");
+    label.className = "check";
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.value = r.id;
+    box.checked = checked.has(r.id);
+    label.append(box, ` ${r.title} · ${new Date(r.created_at * 1000).toLocaleDateString()}`);
+    li.append(label);
+    ul.append(li);
+  }
+  if (!ul.children.length) ul.innerHTML = '<li class="hint">No finished retreats yet.</li>';
 }
 
 // ------------------------------------------------------------------ printable script
@@ -891,6 +928,8 @@ async function loadLibrary() {
   } catch (err) {
     return showMessage(err.message);
   }
+  library = list;
+  fillSeriesList();
   const ul = $("library");
   ul.innerHTML = "";
   $("library-empty").hidden = list.length > 0;
@@ -971,6 +1010,8 @@ $("reset-guide").onclick = () => {
 for (const id of ["sequence", "pause", "grace-silence"]) $(id).addEventListener("change", () => retreat?.plan && render());
 $("signin-form").addEventListener("submit", sendSignInLink);
 $("retreat-pdf").onclick = () => downloadScript(null, $("retreat-pdf"));
+$("series-toggle").onchange = () => ($("series-box").hidden = !$("series-toggle").checked);
+$("series-all").onclick = () => document.querySelectorAll("#series-list input").forEach((b) => (b.checked = true));
 // A guest adds an email: Supabase keeps the same user id (and so the same
 // retreats) and sends a confirmation link. After confirming, the email signs in anywhere.
 $("upgrade-form").addEventListener("submit", async (event) => {

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ignatius at Home</title>
   <meta name="description" content="Turn a prayer handout or reading into a guided audio retreat.">
-  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
   <header class="site">
@@ -69,6 +69,15 @@
           <button type="button" class="link" data-reset="plan">Reset to default</button>
         </details>
         <label class="check">
+          <input id="series-toggle" type="checkbox">
+          This retreat is part of a series
+        </label>
+        <div id="series-box" class="series-box" hidden>
+          <p class="hint">Choose the earlier retreats in the series. Everything from them (each day's reading, reflection and deep dive) is given to the model, oldest first, so this one continues the thread. For a very long series the oldest weeks are shortened to fit.</p>
+          <button type="button" class="link" id="series-all">Select all</button>
+          <ul id="series-list" class="series-list"></ul>
+        </div>
+        <label class="check">
           <input id="rights" type="checkbox" required>
           I own this material or have permission to use it.
         </label>
@@ -85,6 +94,7 @@
         <h2 id="retreat-title"></h2>
         <p id="retreat-summary"></p>
         <p id="retreat-meta" class="meta"></p>
+        <p id="retreat-series" class="meta" hidden></p>
         <button type="button" id="retreat-pdf" class="secondary" hidden>Download the whole retreat (PDF)</button>
         <div id="gallery" class="gallery"></div>
       </div>
@@ -205,7 +215,7 @@
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=15"></script>
-  <script src="app.js?v=15"></script>
+  <script src="config.js?v=16"></script>
+  <script src="app.js?v=16"></script>
 </body>
 </html>
