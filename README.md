@@ -1,5 +1,11 @@
 # Ignatius at Home: web
 
+> ## 📐 How it all works: [ARCHITECTURE.md](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/ARCHITECTURE.md)
+>
+> The full documentation lives in the API repo, with diagrams: the system and hosting on GitHub Pages, Render and Supabase, the database ERD, sign-in and guest flows, how a retreat is made step by step, the prayer player, status lifecycles, every API endpoint, costs, security, and failure handling.
+>
+> **Live app:** https://bcollier.github.io/ignatius-hw4-web/ · **Backend repo:** [ignatius-hw4-api](https://github.com/bcollier/ignatius-hw4-api)
+
 The frontend for **Ignatius at Home**: sign in, upload a PDF or Word document you have rights to, get a retreat planned from it, build each day's three audio tracks, and pray them on any device.
 
 Plain HTML, CSS and JavaScript with no build step, hosted on GitHub Pages. The backend is [ignatius-hw4-api](https://github.com/bcollier/ignatius-hw4-api) on Render.
