@@ -484,7 +484,11 @@ function fillResearch() {
   const select = $("search-provider");
   const providers = options.search_providers || {};
   select.innerHTML = "";
-  for (const [id, label] of Object.entries(providers)) select.add(new Option(label, id));
+  for (const [id, label] of Object.entries(providers)) {
+    const st = options.search_status?.[id];
+    const until = st?.until ? new Date(st.until).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "";
+    select.add(new Option(st?.paused ? `${label} · paused, ${st.reason}${until ? ` until ${until}` : ""}` : label, id));
+  }
   select.add(new Option("None", "none"));
   let saved = null;
   try {
