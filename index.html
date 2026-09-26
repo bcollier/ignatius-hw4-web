@@ -11,10 +11,10 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=22">
-  <link rel="icon" href="icons/icon-192.png?v=22" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=22">
-  <link rel="stylesheet" href="style.css?v=22">
+  <link rel="manifest" href="manifest.webmanifest?v=25">
+  <link rel="icon" href="icons/icon-192.png?v=25" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=25">
+  <link rel="stylesheet" href="style.css?v=25">
 </head>
 <body>
   <header class="topbar">
@@ -160,6 +160,13 @@
                       <option value="300">5 minutes</option>
                     </select>
                   </label>
+                  <label>On screen while praying
+                    <select id="pray-view" class="playback">
+                      <option value="both">Image and text</option>
+                      <option value="image">Image only</option>
+                      <option value="text">Text only</option>
+                    </select>
+                  </label>
                   <label>Start date <input id="start-date" type="date"></label>
                 </div>
               </fieldset>
@@ -171,6 +178,11 @@
                 <label>Voice service <select id="talk-provider"></select></label>
                 <label>Voice <select id="talk-voice"></select></label>
               </div>
+              <p class="row-buttons">
+                <button type="button" id="talk-hear" class="link">▶ Hear this voice</button>
+                <span id="talk-no-sample" class="hint" hidden>No sample for this voice: OpenAI offers it only in live conversation. Marin and Cedar have samples.</span>
+                <audio id="talk-sample-player" preload="none"></audio>
+              </p>
               <p class="hint">Used by "Talk it over." What you want from the companion is set under <a href="./?me" data-nav="me">About me</a>.</p>
             </fieldset>
             <details class="prompt-box">
@@ -244,7 +256,7 @@
       </div>
 
       <details id="costs" class="card costs cost-info" hidden>
-        <summary>Costs</summary>
+        <summary id="costs-summary">Costs</summary>
         <div id="costs-body" class="hint"></div>
       </details>
     </section>
@@ -383,6 +395,41 @@
       <h3>Conversation voices</h3>
       <p><strong>Talk it over</strong> uses live speech-to-speech models rather than recorded audio. <strong>OpenAI GPT-Live</strong> connects your browser straight to OpenAI over WebRTC, with very low delay and natural turn-taking; it costs about 5¢ a minute. <strong>xAI Grok voice</strong> streams audio over a WebSocket with a short-lived key from the server, has a choice of distinct voices (Eve, Ara, Rex, Sal, Leo), and costs about 8¢ a minute. The server never sends your key-holding credentials to the browser, only a single-use session.</p>
 
+      <h3 id="talk-voices">Hear the conversation voices</h3>
+      <p>Each says the same line: "Hello. I'm glad you're here. What stayed with you from today's prayer?" These were recorded with each company's text-to-speech. In a live conversation the same voice sounds a little more relaxed and conversational. OpenAI's other live voices (Vesper, Willow, Quartz, Meridian, Stone, Gleam, Beacon, Delta, Cinder and Ripple) are only available live, so they can't be sampled here; start a conversation to hear them.</p>
+      <div class="voice-grid">
+          <figure class="voice-sample"><figcaption><strong>Marin</strong> <span class="meta">OpenAI</span></figcaption><audio controls preload="none" src="samples/talk/openai-marin.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Cedar</strong> <span class="meta">OpenAI</span></figcaption><audio controls preload="none" src="samples/talk/openai-cedar.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Altair</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-altair.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Ara</strong> <span class="meta">xAI Grok, female</span></figcaption><audio controls preload="none" src="samples/talk/xai-ara.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Atlas</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-atlas.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Aurora</strong> <span class="meta">xAI Grok, female</span></figcaption><audio controls preload="none" src="samples/talk/xai-aurora.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Carina</strong> <span class="meta">xAI Grok, female</span></figcaption><audio controls preload="none" src="samples/talk/xai-carina.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Castor</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-castor.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Celeste</strong> <span class="meta">xAI Grok, female</span></figcaption><audio controls preload="none" src="samples/talk/xai-celeste.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Cosmo</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-cosmo.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Eve</strong> <span class="meta">xAI Grok, female</span></figcaption><audio controls preload="none" src="samples/talk/xai-eve.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Helios</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-helios.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Helix</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-helix.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Iris</strong> <span class="meta">xAI Grok, female</span></figcaption><audio controls preload="none" src="samples/talk/xai-iris.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Kepler</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-kepler.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Leo</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-leo.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Liora</strong> <span class="meta">xAI Grok, female</span></figcaption><audio controls preload="none" src="samples/talk/xai-liora.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Lumen</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-lumen.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Luna</strong> <span class="meta">xAI Grok, female</span></figcaption><audio controls preload="none" src="samples/talk/xai-luna.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Lux</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-lux.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Naksh</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-naksh.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Orion</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-orion.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Perseus</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-perseus.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Rex</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-rex.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Rigel</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-rigel.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Sal</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-sal.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Sirius</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-sirius.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Ursa</strong> <span class="meta">xAI Grok, female</span></figcaption><audio controls preload="none" src="samples/talk/xai-ursa.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Zagan</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-zagan.mp3"></audio></figure>
+          <figure class="voice-sample"><figcaption><strong>Zenith</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-zenith.mp3"></audio></figure>
+      </div>
+
       <h2 id="research">The research services</h2>
       <p>With the free open models, the deep dive is written from web research the server does first: the model proposes three searches, the services run them, and the model writes from what comes back, citing only pages that were actually returned. (Claude models search the web themselves.) By default <strong>all services, combined</strong> are asked at once and their results are interleaved, one from each in turn, so no single index decides what the model reads. If a service runs out of monthly credits it's paused until next month and the others carry on; every query and result is logged. The research behind each day can be read on its "Research" page (turn it on under Advanced, on a computer).</p>
       <dl class="services">
@@ -414,6 +461,7 @@
         <p id="stage-title" class="stage-title"></p>
         <p id="stage-grace" class="stage-grace"></p>
       </div>
+      <div id="stage-text" class="stage-text" aria-live="off"></div>
       <p id="stage-caption" class="stage-caption" hidden></p>
       <button type="button" id="pray-close" class="pray-close" aria-label="Stop and close">✕</button>
     </div>
@@ -424,6 +472,7 @@
           <p id="now-part" class="now-part"></p>
           <p id="now-meta" class="now-meta"></p>
         </div>
+        <button type="button" id="view-toggle" class="view-toggle" aria-label="Show image, text or both" title="Image, text or both">Aa</button>
         <button type="button" id="dock-expand" class="dock-expand" aria-expanded="false" aria-label="More">⌃</button>
       </div>
       <div id="segments" class="segments" aria-hidden="true"></div>
@@ -472,7 +521,7 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=22"></script>
-  <script src="app.js?v=22"></script>
+  <script src="config.js?v=25"></script>
+  <script src="app.js?v=25"></script>
 </body>
 </html>

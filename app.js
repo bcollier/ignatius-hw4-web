@@ -189,10 +189,11 @@ function fillSettings() {
   $("balance-note").hidden = !bal;
   if (bal) $("balance-note").textContent = `ElevenLabs: ${bal.remaining.toLocaleString()} of ${bal.limit.toLocaleString()} characters left this period.`;
 
-  for (const [id, fallback] of [["sequence", "lectio"], ["grace-silence", "3"], ["pause", "30"]]) {
+  for (const [id, fallback] of [["sequence", "lectio"], ["grace-silence", "3"], ["pause", "30"], ["pray-view", "both"]]) {
     $(id).value = store.get(`play.${id}`, fallback);
     $(id).onchange = () => {
       store.set(`play.${id}`, $(id).value);
+      if (id === "pray-view") applyPrayView();
       if (retreat && params().get("r")) renderRetreat();
     };
   }
@@ -270,6 +271,19 @@ function talkProviders() {
   return out;
 }
 
+// Recorded samples of the conversation voices (samples/talk/voices.json).
+let talkSamples = null;
+async function loadTalkSamples() {
+  if (talkSamples) return talkSamples;
+  try {
+    talkSamples = await (await fetch("samples/talk/voices.json")).json();
+  } catch {
+    talkSamples = { xai: {}, openai: {} };
+  }
+  return talkSamples;
+}
+const talkSample = (provider, voice) => talkSamples?.[provider]?.[voice];
+
 function fillTalkSettings() {
   const providers = talkProviders();
   $("talk-fields").hidden = !Object.keys(providers).length;
@@ -283,11 +297,31 @@ function fillTalkSettings() {
     const info = providers[psel.value];
     const vsel = $("talk-voice");
     vsel.innerHTML = "";
-    for (const [id, label] of Object.entries(info.voices)) vsel.add(new Option(label, id));
+    for (const [id, label] of Object.entries(info.voices)) {
+      const gender = talkSample(psel.value, id)?.gender;
+      vsel.add(new Option(gender ? `${label} (${gender})` : label, id));
+    }
     const savedV = store.get(`talk.voice.${psel.value}`);
     vsel.value = info.voices[savedV] ? savedV : info.default_voice in info.voices ? info.default_voice : Object.keys(info.voices)[0];
-    vsel.onchange = () => store.set(`talk.voice.${psel.value}`, vsel.value);
+    const hear = () => {
+      const sample = talkSample(psel.value, vsel.value);
+      $("talk-hear").hidden = !sample;
+      $("talk-no-sample").hidden = !!sample;
+    };
+    vsel.onchange = () => {
+      store.set(`talk.voice.${psel.value}`, vsel.value);
+      hear();
+    };
+    hear();
   };
+  $("talk-hear").onclick = () => {
+    const sample = talkSample(psel.value, $("talk-voice").value);
+    if (!sample) return;
+    const a = $("talk-sample-player");
+    a.src = sample.file;
+    a.play().catch(() => {});
+  };
+  if (!talkSamples) loadTalkSamples().then(fillVoices);
   psel.onchange = () => {
     store.set("talk.provider", psel.value);
     fillVoices();
@@ -1070,7 +1104,7 @@ function buildSequence(day, state) {
   const gap = () => seq.push({ label: "…", src: "sounds/quiet5.mp3", block, quiet: true });
   const speak = (clip, label, part) => {
     if (clip?.status !== "ready" || !clip.url) return false;
-    seq.push({ label, part, src: fileUrl(clip.url), seconds: clip.seconds, block });
+    seq.push({ label, part, src: fileUrl(clip.url), seconds: clip.seconds, block, text: clip.script, words: clip.words });
     return true;
   };
   const labels = options.prompts.guide_labels || {};
@@ -1169,7 +1203,8 @@ function startPrayer(dayNo) {
   setDockExpanded(false);
 
   const images = dayImages(d);
-  $("stage-empty").hidden = images.length > 0;
+  shownText = null;
+  applyPrayView();
   $("stage-title").textContent = `Day ${d.day} · ${dayTitle(d.title)}`;
   $("stage-grace").textContent = d.grace ? (/^ask /i.test(d.grace) ? d.grace : `Ask for the grace ${d.grace.replace(/^the grace\s+/i, "")}`) : "";
   shownImage = -1;
@@ -1236,6 +1271,7 @@ function playStep(index) {
     n.classList.toggle("now", b === step.block);
   });
   if (dayImages(prayerDay).length > 1) showImage(step.block);
+  showStepText(step, shown);
   if ("mediaSession" in navigator) {
     const img = dayImages(prayerDay)[0];
     navigator.mediaSession.metadata = new MediaMetadata({
@@ -1244,6 +1280,116 @@ function playStep(index) {
     });
   }
   reportProgress(false);
+}
+
+// ---------------------------------------------------------------- text on screen
+
+const PRAY_VIEWS = ["both", "image", "text"];
+let shownText = null; // the text on screen, split into words
+let followFrame = 0;
+let stillText = null;
+
+function applyPrayView() {
+  const view = $("pray-view").value || "both";
+  const hasImages = !!(prayerDay && dayImages(prayerDay).length);
+  // Without images, "image" shows the title and grace, and "both" is just the text.
+  const mode = !hasImages && view === "both" ? "text" : view;
+  const pray = $("view-pray");
+  PRAY_VIEWS.forEach((v) => pray.classList.toggle(`view-${v}`, v === mode));
+  $("stage-empty").hidden = hasImages || mode === "text";
+  $("view-toggle").textContent = { both: "Aa", image: "▣", text: "¶" }[view];
+  $("view-toggle").setAttribute("aria-label", `On screen: ${$("pray-view").selectedOptions[0]?.text || view}. Change`);
+}
+
+function cyclePrayView() {
+  const next = PRAY_VIEWS[(PRAY_VIEWS.indexOf($("pray-view").value) + 1) % PRAY_VIEWS.length];
+  $("pray-view").value = next;
+  store.set("play.pray-view", next);
+  applyPrayView();
+  toast({ both: "Image and text", image: "Image only", text: "Text only" }[next]);
+}
+
+// The words of what is being spoken, each in a span with its position in the script,
+// so the one being read can be highlighted.
+function showStepText(step, shown) {
+  let source = step.text ? step : null;
+  if (!source && step.pause) { // rest with the reading through the silence
+    if (stillText?.day !== prayerDay) stillText = { day: prayerDay, text: prayerDay.passage_text || "", still: true };
+    source = stillText;
+  }
+  if (!source) source = shown?.text ? shown : null; // a short quiet gap: keep what was just heard
+  if (!source) return;
+  if (shownText && shownText.source === source) return;
+  const box = $("stage-text");
+  box.innerHTML = "";
+  const starts = [];
+  const spans = [];
+  let offset = 0;
+  for (const para of source.text.split(/\n{2,}/)) {
+    const p = el("p");
+    const base = source.text.indexOf(para, offset);
+    offset = base + para.length;
+    for (const m of para.matchAll(/\S+/g)) {
+      const span = el("span", { text: m[0] });
+      starts.push(base + m.index);
+      spans.push(span);
+      p.append(span, " ");
+    }
+    box.append(p);
+  }
+  box.classList.toggle("still", !!source.still);
+  box.scrollTop = 0;
+  shownText = { source, starts, spans, current: -1, step: source.still ? null : step };
+}
+
+// Which word is being spoken: from the recording's word timings when it has them,
+// otherwise estimated from how far through the recording we are.
+function followWord() {
+  followFrame = 0;
+  const player = $("player");
+  const t = shownText;
+  if (t && t.step && t.step === steps[stepIndex] && t.spans.length) {
+    let char;
+    const words = t.step.words;
+    if (words?.length) {
+      let lo = 0, hi = words.length - 1, k = -1;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (words[mid][0] <= player.currentTime + 0.05) { k = mid; lo = mid + 1; } else hi = mid - 1;
+      }
+      char = k < 0 ? -1 : words[k][1];
+    } else if (player.duration > 0) {
+      char = (player.currentTime / player.duration) * t.step.text.length;
+    }
+    if (char != null) {
+      let lo = 0, hi = t.starts.length - 1, i = -1;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (t.starts[mid] <= char) { i = mid; lo = mid + 1; } else hi = mid - 1;
+      }
+      if (i !== t.current) highlightWord(i);
+    }
+  }
+  if (!player.paused) followFrame = requestAnimationFrame(followWord);
+}
+
+function highlightWord(i) {
+  const t = shownText;
+  const from = Math.max(0, Math.min(t.current, i));
+  const to = Math.max(t.current, i);
+  for (let k = from; k <= to && k < t.spans.length; k++) t.spans[k].classList.toggle("said", k < i);
+  t.spans[t.current]?.classList.remove("now");
+  t.current = i;
+  const span = t.spans[i];
+  if (!span) return;
+  span.classList.add("now");
+  // Keep the spoken line in the middle third of the text area.
+  const box = $("stage-text");
+  const top = span.offsetTop - box.scrollTop;
+  if (top < box.clientHeight * 0.25 || top > box.clientHeight * 0.6) {
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    box.scrollTo({ top: span.offsetTop - box.clientHeight * 0.35, behavior: reduce ? "auto" : "smooth" });
+  }
 }
 
 function setPlayIcon(playing) {
@@ -1351,7 +1497,10 @@ function releaseWakeLock() {
 function wirePlayer() {
   const player = $("player");
   player.addEventListener("ended", () => playStep(stepIndex + 1));
-  player.addEventListener("play", () => setPlayIcon(true));
+  player.addEventListener("play", () => {
+    setPlayIcon(true);
+    if (!followFrame) followFrame = requestAnimationFrame(followWord);
+  });
   player.addEventListener("pause", () => setPlayIcon(false));
   player.addEventListener("timeupdate", () => {
     const seg = document.querySelector("#segments span.now i");
@@ -1374,6 +1523,7 @@ function wirePlayer() {
   $("stop-player").onclick = () => closePrayer();
   $("pray-close").onclick = () => closePrayer();
   $("dock-expand").onclick = () => setDockExpanded($("dock-more").hidden);
+  $("view-toggle").onclick = cyclePrayView;
   $("stage").onclick = (e) => e.target.id !== "pray-close" && setDockExpanded(false);
   $("after-save").onclick = saveAfter;
   $("after-done").onclick = () => closePrayer();
@@ -1829,12 +1979,15 @@ function renderCosts() {
     const w = c.llm;
     lines.push(`Day ${d.day}: ${money(c.total_usd)} (writing ${money(w.usd)}, ${Math.round(w.input_tokens / 1000)}k tokens in, ${Math.round(w.output_tokens / 1000)}k out${w.web_searches ? `, ${w.web_searches} searches` : ""}; ${c.voice_characters.premium ? `ElevenLabs ${c.voice_characters.premium.toLocaleString()} characters, ${money(c.voice_usd)}` : "free voices"}).`);
   }
-  // Costs belong to making a retreat: shown while it's being made (or a day is being
-  // rebuilt), never while praying; phones hide them entirely (CSS .cost-info).
+  // Costs belong to making a retreat: open while it's being made, and afterwards a
+  // collapsed "What it cost to make" at the foot of the page. Never while praying;
+  // phones hide them entirely (CSS .cost-info).
   const making = busy();
-  $("costs").hidden = !premium || !lines.length || !making;
+  $("costs").hidden = !premium || !lines.length || retreat.read_only;
+  $("costs-summary").textContent = making ? "Costs so far" : `What it cost to make: ${money(total)}`;
   $("costs-body").innerHTML = "";
   lines.forEach((t) => $("costs-body").append(el("p", { text: t })));
+  if (!making) $("costs-body").append(el("p", { class: "hint", text: "Voices are estimated at ElevenLabs' list price per character; your plan's real cost may be lower. Every model call is also logged in the llm_calls table." }));
   $("retreat-cost").hidden = !premium || !total || !making;
   $("retreat-cost").textContent = total ? `Spent so far on this retreat: ${money(total)}.` : "";
 }

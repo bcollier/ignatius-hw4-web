@@ -1,0 +1,125 @@
+{
+ "text": "Hello. I'm glad you're here. What stayed with you from today's prayer?",
+ "xai": {
+  "altair": {
+   "gender": "male",
+   "file": "samples/talk/xai-altair.mp3"
+  },
+  "ara": {
+   "gender": "female",
+   "file": "samples/talk/xai-ara.mp3"
+  },
+  "atlas": {
+   "gender": "male",
+   "file": "samples/talk/xai-atlas.mp3"
+  },
+  "aurora": {
+   "gender": "female",
+   "file": "samples/talk/xai-aurora.mp3"
+  },
+  "carina": {
+   "gender": "female",
+   "file": "samples/talk/xai-carina.mp3"
+  },
+  "castor": {
+   "gender": "male",
+   "file": "samples/talk/xai-castor.mp3"
+  },
+  "celeste": {
+   "gender": "female",
+   "file": "samples/talk/xai-celeste.mp3"
+  },
+  "cosmo": {
+   "gender": "male",
+   "file": "samples/talk/xai-cosmo.mp3"
+  },
+  "eve": {
+   "gender": "female",
+   "file": "samples/talk/xai-eve.mp3"
+  },
+  "helios": {
+   "gender": "male",
+   "file": "samples/talk/xai-helios.mp3"
+  },
+  "helix": {
+   "gender": "male",
+   "file": "samples/talk/xai-helix.mp3"
+  },
+  "iris": {
+   "gender": "female",
+   "file": "samples/talk/xai-iris.mp3"
+  },
+  "kepler": {
+   "gender": "male",
+   "file": "samples/talk/xai-kepler.mp3"
+  },
+  "leo": {
+   "gender": "male",
+   "file": "samples/talk/xai-leo.mp3"
+  },
+  "liora": {
+   "gender": "female",
+   "file": "samples/talk/xai-liora.mp3"
+  },
+  "lumen": {
+   "gender": "male",
+   "file": "samples/talk/xai-lumen.mp3"
+  },
+  "luna": {
+   "gender": "female",
+   "file": "samples/talk/xai-luna.mp3"
+  },
+  "lux": {
+   "gender": "male",
+   "file": "samples/talk/xai-lux.mp3"
+  },
+  "naksh": {
+   "gender": "male",
+   "file": "samples/talk/xai-naksh.mp3"
+  },
+  "orion": {
+   "gender": "male",
+   "file": "samples/talk/xai-orion.mp3"
+  },
+  "perseus": {
+   "gender": "male",
+   "file": "samples/talk/xai-perseus.mp3"
+  },
+  "rex": {
+   "gender": "male",
+   "file": "samples/talk/xai-rex.mp3"
+  },
+  "rigel": {
+   "gender": "male",
+   "file": "samples/talk/xai-rigel.mp3"
+  },
+  "sal": {
+   "gender": "male",
+   "file": "samples/talk/xai-sal.mp3"
+  },
+  "sirius": {
+   "gender": "male",
+   "file": "samples/talk/xai-sirius.mp3"
+  },
+  "ursa": {
+   "gender": "female",
+   "file": "samples/talk/xai-ursa.mp3"
+  },
+  "zagan": {
+   "gender": "male",
+   "file": "samples/talk/xai-zagan.mp3"
+  },
+  "zenith": {
+   "gender": "male",
+   "file": "samples/talk/xai-zenith.mp3"
+  }
+ },
+ "openai": {
+  "marin": {
+   "file": "samples/talk/openai-marin.mp3"
+  },
+  "cedar": {
+   "file": "samples/talk/openai-cedar.mp3"
+  }
+ }
+}

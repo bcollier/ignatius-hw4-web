@@ -301,6 +301,44 @@ A spoken conversation, in real time, about the retreat. The companion knows the 
 
 **Limits.** Free accounts get **60 seconds a day**, enough to try it; premium accounts up to 30 minutes a call. Transcripts are saved to the person's private storage so the companion remembers, and can be erased with one button.
 
+
+### What the conversation voices sound like
+
+Every voice below says the same line: *"Hello. I'm glad you're here. What stayed with you from today's prayer?"* The samples were recorded with each company's text-to-speech, so they're close to, but a little more formal than, the same voice in a live conversation. xAI's API lists each voice's gender, but gives no other description; listening is the honest way to choose. OpenAI's other ten live voices (Vesper, Willow, Quartz, Meridian, Stone, Gleam, Beacon, Delta, Cinder, Ripple) exist only in live conversation, so they have no sample; start a conversation to hear them. In the app, **Advanced → Conversation** has a "▶ Hear this voice" button next to the voice picker, and the [About page](https://bcollier.github.io/ignatius-hw4-web/?about#talk-voices) has a player for each.
+
+| Voice | Service | Gender | Sample |
+| --- | --- | --- | --- |
+| Marin | OpenAI | — | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/openai-marin.mp3) |
+| Cedar | OpenAI | — | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/openai-cedar.mp3) |
+| Altair | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-altair.mp3) |
+| Ara | xAI Grok | female | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-ara.mp3) |
+| Atlas | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-atlas.mp3) |
+| Aurora | xAI Grok | female | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-aurora.mp3) |
+| Carina | xAI Grok | female | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-carina.mp3) |
+| Castor | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-castor.mp3) |
+| Celeste | xAI Grok | female | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-celeste.mp3) |
+| Cosmo | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-cosmo.mp3) |
+| Eve | xAI Grok | female | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-eve.mp3) |
+| Helios | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-helios.mp3) |
+| Helix | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-helix.mp3) |
+| Iris | xAI Grok | female | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-iris.mp3) |
+| Kepler | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-kepler.mp3) |
+| Leo | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-leo.mp3) |
+| Liora | xAI Grok | female | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-liora.mp3) |
+| Lumen | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-lumen.mp3) |
+| Luna | xAI Grok | female | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-luna.mp3) |
+| Lux | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-lux.mp3) |
+| Naksh | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-naksh.mp3) |
+| Orion | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-orion.mp3) |
+| Perseus | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-perseus.mp3) |
+| Rex | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-rex.mp3) |
+| Rigel | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-rigel.mp3) |
+| Sal | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-sal.mp3) |
+| Sirius | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-sirius.mp3) |
+| Ursa | xAI Grok | female | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-ursa.mp3) |
+| Zagan | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-zagan.mp3) |
+| Zenith | xAI Grok | male | [▶ Listen](https://bcollier.github.io/ignatius-hw4-web/samples/talk/xai-zenith.mp3) |
+
 ---
 
 ## 9. Research services
