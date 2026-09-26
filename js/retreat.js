@@ -196,18 +196,16 @@ function dayArt(img) {
   const caption = (img.description || "The painting for this day").split(/(?<=\.)\s/)[0];
   return el("figure", { class: "page-art" },
     el("div", { class: "frame" }, el("img", { class: "drift", src: fileUrl(img.url), alt: img.description || "The painting for this day" })),
-    el("figcaption", {}, el("span", { text: caption }), el("span", { class: "swatch-slot" })));
+    el("figcaption", {}, el("span", { text: caption })));
 }
 
-// The day's colors, taken from its painting, on the retreat page and the day strip.
+// The day's colors, taken from its painting, quietly tint the retreat page and the day strip.
 async function colorDay(img) {
   const view = $("view-retreat");
   if (!img) return applyPalette(view, null);
   const pal = await paintingPalette(fileUrl(img.url));
   if (planDay(selectedDay) && dayImages(planDay(selectedDay))[0]?.url !== img.url) return; // another day was chosen meanwhile
   applyPalette(view, pal);
-  const slot = document.querySelector("#day-panel .swatch-slot");
-  if (slot && pal) slot.replaceWith(paletteDots(pal));
 }
 
 function dayHeading(d, s) {

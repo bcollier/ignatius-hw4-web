@@ -176,11 +176,3 @@ function readableOn(color) {
   const ivory = [246, 236, 216], ink = [28, 23, 18];
   return contrast(bg, ivory) >= contrast(bg, ink) ? "#f6ecd8" : "#1c1712";
 }
-
-// Four small dots of the painting's colors ("today's colors").
-function paletteDots(pal) {
-  const row = el("span", { class: "swatches", "aria-hidden": "true" });
-  if (!pal) return row;
-  for (const c of [pal.dominant, pal.deep, pal.accent, pal.light]) row.append(el("i", { style: `background:${c}` }));
-  return row;
-}

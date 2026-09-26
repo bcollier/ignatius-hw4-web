@@ -129,8 +129,7 @@ function todayCard(r, pick) {
       el("div", { class: "today-actions" },
         el("a", { class: "button gold big", id: "today-pray", href: `./?r=${r.id}&pray=${d.day}`, "data-nav": "", text: praying }),
         el("span", { class: "meta", id: "today-length" })),
-      el("a", { class: "quiet-link", href: `./?r=${r.id}`, "data-nav": "", text: "Open the retreat" }),
-      el("div", { class: "today-colors", id: "today-colors" })),
+      el("a", { class: "quiet-link", href: `./?r=${r.id}`, "data-nav": "", text: "Open the retreat" })),
   ];
 }
 
@@ -156,8 +155,7 @@ function exerciseTodayCard(r, { d }) {
       el("p", { class: "today-grace", id: "today-grace", hidden: true }),
       el("p", { class: "today-note", text: "Go and do this exercise today, then mark it complete." }),
       el("div", { class: "today-actions" }, done, el("span", { class: "meta", id: "today-length" })),
-      el("a", { class: "quiet-link", href: `./?r=${r.id}`, "data-nav": "", text: "Open the retreat" }),
-      el("div", { class: "today-colors", id: "today-colors" })),
+      el("a", { class: "quiet-link", href: `./?r=${r.id}`, "data-nav": "", text: "Open the retreat" })),
   ];
 }
 
@@ -184,7 +182,6 @@ async function fillTodayCard(r, dayNo) {
     $("today-art").querySelector(".frame").append(pic);
     const pal = await paintingPalette(fileUrl(img.url));
     applyPalette($("continue"), pal);
-    if (pal && $("today-colors")) $("today-colors").append(el("span", { class: "rubric small", text: "today's colors" }), paletteDots(pal));
   } else {
     $("today-art").hidden = true;
     $("continue").classList.add("no-art");
