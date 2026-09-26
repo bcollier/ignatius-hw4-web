@@ -147,11 +147,6 @@ audio { width: 100%; }
 .library-title { font-weight: 600; text-align: left; }
 button.link.danger { color: var(--bad); font-size: 0.85rem; }
 
-.account { display: flex; gap: 12px; align-items: center; justify-content: flex-end; font-size: 0.9rem; color: var(--muted); margin-top: 16px; }
-.library { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
-.library-title { font-weight: 600; text-align: left; }
-button.link.danger { color: var(--bad); font-size: 0.85rem; }
-
 footer.site { color: var(--muted); font-size: 0.85rem; padding-bottom: 40px; }
 
 
