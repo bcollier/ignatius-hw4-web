@@ -455,9 +455,9 @@ Most praying happens on a phone, often in the dark, often with the screen locked
 
 ## 16. Frontend architecture
 
-**No build step.** Three files do everything: `index.html` (every view, the prayer screen, the settings dialog), `style.css` (tokens, then layout by view), and `app.js` (about 1,900 lines, in labeled sections: helpers, api, settings, router, auth, library, new retreat, retreat, research, praying, about me, talk, pdf, costs, start-up). No framework, no bundler, no npm. It loads instantly and anyone can read it.
+**No build step.** `index.html` (every view, the prayer screen, the settings dialog), `style.css` (tokens, then layout by view), and the app in plain scripts under `js/`, one per view, sharing one global scope and loaded in order: `core.js` (constants, helpers, the API client), `settings.js` (the Advanced tab and the estimate), `router.js` (views and sign-in), `library.js`, `new-retreat.js`, `retreat.js`, `build-log.js`, `research.js`, `pray.js` (the prayer player), `about-me.js`, `talk.js`, `costs.js`, and `start.js` (wiring and start-up, last). No framework, no bundler, no npm. It loads instantly and anyone can read it. See [CODE_CLEANUP.md](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/CODE_CLEANUP.md) for how the code is organized and kept readable.
 
-**Cache busting.** Script and stylesheet links carry a version (`app.js?v=21`), bumped on every release, because GitHub Pages and phones cache aggressively; a stale `app.js` once made the play button unclickable.
+**Cache busting.** Script and stylesheet links carry a version (`js/core.js?v=33`), bumped on every release, because GitHub Pages and phones cache aggressively; a stale script once made the play button unclickable.
 
 **Configuration.** `config.js` sets `window.API_BASE`: `http://localhost:8000` when the page itself is on localhost, otherwise `https://ignatius-hw4-api.onrender.com`.
 
@@ -533,7 +533,7 @@ Checking the layout: open Chrome's device toolbar at **390 × 844** (iPhone) and
 
 ## 19. Deploying on GitHub Pages
 
-Settings → Pages → Deploy from branch → `main`, `/ (root)`. Every push to `main` publishes in a minute or so. Bump the `?v=` number in `index.html` whenever `app.js`, `style.css` or `config.js` change. Add the Pages URL to the API's `ALLOWED_ORIGINS` and to Supabase's Auth redirect URLs.
+Settings → Pages → Deploy from branch → `main`, `/ (root)`. Every push to `main` publishes in a minute or so. Bump the `?v=` number in `index.html` whenever a script in `js/`, `style.css` or `config.js` changes. Add the Pages URL to the API's `ALLOWED_ORIGINS` and to Supabase's Auth redirect URLs.
 
 ---
 
@@ -602,6 +602,6 @@ Throughout, Claude ran free builds on the Mac mini (Jetstream models, Microsoft 
 - Voices: [edge-tts](https://github.com/rany2/edge-tts) (Microsoft), [ElevenLabs](https://elevenlabs.io); conversation: [OpenAI](https://platform.openai.com), [xAI](https://x.ai)
 - Research: [Brave Search API](https://brave.com/search/api/), [Exa](https://exa.ai), [Tavily](https://tavily.com), [Firecrawl](https://firecrawl.dev), [Linkup](https://linkup.so)
 
-**Built with** [Claude Code](https://claude.com/claude-code). Every prompt: [PROMPT_LOG.md](PROMPT_LOG.md). Architecture: [ARCHITECTURE.md](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/ARCHITECTURE.md).
+**Built with** [Claude Code](https://claude.com/claude-code). Every prompt: [PROMPT_LOG.md](PROMPT_LOG.md). Architecture: [ARCHITECTURE.md](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/ARCHITECTURE.md). Code organization and readability: [CODE_CLEANUP.md](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/CODE_CLEANUP.md).
 
 *The reflections, deep dives and guidance are written by AI models from your material, and the voices are synthetic. Treat them as a companion to your own prayer and, if you have one, your spiritual director, not a replacement.*
