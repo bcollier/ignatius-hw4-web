@@ -5,23 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Ignatius at Home</title>
   <meta name="description" content="Make a guided audio retreat from your own prayer material, and pray it day by day.">
-  <meta name="theme-color" content="#f7f5f1" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0c0d1d" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f4eee2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#110f0c" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=40">
-  <link rel="icon" href="icons/icon-192.png?v=40" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=40">
+  <link rel="manifest" href="manifest.webmanifest?v=41">
+  <link rel="icon" href="icons/icon-192.png?v=41" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=41">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..700,0..100&family=Inter:wght@400..700&display=swap">
-  <link rel="stylesheet" href="style.css?v=40">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
+  <link rel="stylesheet" href="style.css?v=41">
 </head>
 <body>
   <header class="topbar">
-    <a href="./" class="brand" data-nav="library">Ignatius at Home</a>
+    <a href="./" class="brand" data-nav="library"><span class="brand-mark" data-icon="mark" data-size="22"></span>Ignatius at Home</a>
     <nav class="topnav">
       <a href="./?me" data-nav="me" id="me-link" hidden>About me</a>
       <a href="./?about" data-nav="about">About</a>
@@ -69,7 +69,7 @@
         <p id="upgrade-note" class="hint" hidden></p>
       </div>
 
-      <div id="continue" class="continue card" hidden></div>
+      <div id="continue" class="today-card" hidden></div>
 
       <div class="library-head">
         <h2>My retreats</h2>
@@ -80,12 +80,12 @@
         <p class="hint">Upload a handout or a few passages to make your first week.</p>
         <a href="./?new" data-nav="new" class="button">Make my first retreat</a>
       </div>
-      <div id="groups"></div>
+      <div id="groups" class="shelf"></div>
 
       <div id="examples" class="examples" hidden>
         <h2>Examples</h2>
         <p class="hint">Ready-made retreats to listen to and pray, each with a painting for every day. Each card says how it was made. Your progress in them is your own, and you can remove one from your home page after opening it.</p>
-        <div id="example-list" class="example-list"></div>
+        <div id="example-list" class="shelf"></div>
       </div>
       <p class="foot-links"><button type="button" id="show-examples" class="link" hidden></button></p>
     </section>
@@ -101,6 +101,7 @@
       <form id="new-form" class="card">
         <label class="drop" id="drop">
           <input id="file" type="file" accept=".pdf,.docx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown">
+          <span class="drop-icon" data-icon="upload" data-size="30"></span>
           <span class="drop-title" id="drop-title">Choose a PDF, Word or text file</span>
           <span class="hint" id="drop-hint">A retreat handout, some scripture passages, a reading. Images in it are used too. Use material you have the right to use.</span>
         </label>
@@ -237,7 +238,7 @@
           </div>
         </div>
 
-        <button type="submit" id="make-button" class="big">Make my retreat</button>
+        <button type="submit" id="make-button" class="big gold">Make my retreat</button>
         <p class="hint">Planning, writing and recording every day takes a while, often 15 to 30 minutes. You can close the page; it keeps going.</p>
       </form>
     </section>
@@ -248,6 +249,7 @@
       <div class="retreat-head" id="retreat-head">
         <div>
           <h1 id="retreat-title"></h1>
+          <p id="retreat-file" class="meta" hidden></p>
           <p id="retreat-series" class="meta" hidden></p>
         </div>
         <div class="head-actions">
@@ -261,13 +263,15 @@
               A conversation, in a natural voice, with a companion that knows this retreat. It listens, asks a gentle question or two, and helps you notice where God has been at work. It's an AI, and it remembers what you share.
             </span>
           </span>
-          <button type="button" id="playback-button" class="icon-button" aria-label="Prayer settings" title="Prayer settings">⚙︎</button>
+          <button type="button" id="playback-button" class="icon-button" aria-label="Prayer settings" title="Prayer settings"><span data-icon="settings"></span></button>
         </div>
       </div>
 
       <div id="progress" class="card progress" hidden>
         <h2 id="progress-title">Making your retreat</h2>
         <p id="progress-lede" class="hint"></p>
+        <div id="build-bar" class="build-bar" role="progressbar" aria-label="How far along the retreat is" aria-valuemin="0" aria-valuemax="100"></div>
+        <p id="build-step" class="build-step"></p>
         <ol id="progress-days" class="progress-days"></ol>
         <p class="hint">It's fine to close this page; your retreat keeps being made and will be here when you come back.</p>
         <button type="button" id="notify-button" class="link" hidden>Tell me when it's ready</button>
@@ -290,7 +294,7 @@
 
       <div id="days-area" hidden>
         <div id="day-strip" class="day-strip" role="tablist" aria-label="Days"></div>
-        <article id="day-panel" class="card day-panel"></article>
+        <article id="day-panel" class="day-panel"></article>
       </div>
 
       <p class="foot-links"><button type="button" id="retreat-pdf" class="link" hidden>The whole retreat as a printable PDF</button></p>
@@ -323,7 +327,7 @@
             <label>Voice <select id="talk-voice"></select></label>
           </div>
           <p class="row-buttons">
-            <button type="button" id="talk-hear" class="link">▶ Hear this voice</button>
+            <button type="button" id="talk-hear" class="link with-icon"><span data-icon="speaker" data-size="18"></span>Hear this voice</button>
             <span id="talk-no-sample" class="hint" hidden>No sample for this voice: OpenAI offers it only in live conversation. Marin and Cedar have samples.</span>
             <audio id="talk-sample-player" preload="none"></audio>
           </p>
@@ -362,6 +366,7 @@
     <section id="view-me" class="view" hidden>
       <a href="./" data-nav="library" class="back">← My retreats</a>
       <h1>About me</h1>
+      <p id="me-account" class="me-account meta" hidden></p>
       <p class="lede">Anything you'd like the app to know about you: your situation, what you're carrying, how you like to pray. It shapes how your retreats are written and how the conversation companion talks with you. It's saved to your account as <code>user info.md</code> and is private to you.</p>
       <form id="me-form" class="card">
         <label>About me
@@ -530,7 +535,19 @@
       </div>
       <div id="stage-text" class="stage-text" aria-live="off"></div>
       <p id="stage-caption" class="stage-caption" hidden></p>
-      <button type="button" id="pray-close" class="pray-close" aria-label="Stop and close">✕</button>
+      <div id="stage-candle" class="stage-candle" hidden aria-live="polite">
+        <div class="bell"><i class="ring"></i><i class="ring b"></i><span data-icon="bell" data-size="30"></span></div>
+        <p class="candle-label">Silence · until the bell</p>
+        <p class="candle-words">Stay with one word.<br>Let it pray in you.</p>
+        <div class="candle" aria-hidden="true">
+          <div class="halo"></div>
+          <div class="wick"><div class="flame"></div></div>
+          <div class="wax" id="candle-wax"></div>
+          <div class="holder"></div>
+        </div>
+        <p class="candle-time" id="candle-time"></p>
+      </div>
+      <button type="button" id="pray-close" class="pray-close" aria-label="Stop and close"><span data-icon="close" data-size="18"></span></button>
     </div>
 
     <div class="dock" id="dock">
@@ -539,14 +556,14 @@
           <p id="now-part" class="now-part"></p>
           <p id="now-meta" class="now-meta"></p>
         </div>
-        <button type="button" id="view-toggle" class="view-toggle" aria-label="Show image, text or both" title="Image, text or both">Aa</button>
-        <button type="button" id="dock-expand" class="dock-expand" aria-expanded="false" aria-label="More">⌃</button>
+        <button type="button" id="view-toggle" class="view-toggle" aria-label="Show image, text or both" title="Image, text or both"></button>
+        <button type="button" id="dock-expand" class="dock-expand" aria-expanded="false" aria-label="More"><span data-icon="up"></span></button>
       </div>
-      <div id="segments" class="segments" aria-hidden="true"></div>
+      <div id="segments" class="beads" role="group" aria-label="The parts of the prayer"></div>
       <div class="controls">
-        <button type="button" id="prev-step" class="ctl" aria-label="Back">⏮</button>
-        <button type="button" id="play-pause" class="ctl play" aria-label="Play">▶</button>
-        <button type="button" id="next-step" class="ctl" aria-label="Skip">⏭</button>
+        <button type="button" id="prev-step" class="ctl" aria-label="Back one part"><span data-icon="prev" data-size="24"></span></button>
+        <button type="button" id="play-pause" class="ctl play" aria-label="Play"></button>
+        <button type="button" id="next-step" class="ctl" aria-label="Skip to the next part"><span data-icon="next" data-size="24"></span></button>
       </div>
       <div id="dock-more" class="dock-more" hidden>
         <p id="pause-text" class="pause-text"></p>
@@ -557,7 +574,19 @@
 
     <div id="after" class="after" hidden>
       <div class="after-card">
-        <h2>After praying</h2>
+        <p class="rubric" id="after-label">After praying</p>
+        <div class="illumination" aria-hidden="true">
+          <svg class="illum-frame" viewBox="0 0 230 250" fill="none">
+            <rect x="6" y="6" width="218" height="238" rx="2" stroke="var(--day-deep, #2d4a7a)" stroke-width="2"/>
+            <rect x="14" y="14" width="202" height="222" rx="2" fill="var(--day-deep, #2d4a7a)"/>
+            <path class="vine" d="M24 230 C 40 180, 20 150, 40 120 S 30 60, 60 28 M206 24 C 190 70, 210 100, 190 130 S 200 190, 170 222" stroke="#e8c46e" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="40" cy="120" r="4" fill="var(--day-accent, #b0412b)"/><circle cx="190" cy="130" r="4" fill="var(--day-accent, #b0412b)"/>
+            <circle cx="60" cy="28" r="3" fill="#e8c46e"/><circle cx="170" cy="222" r="3" fill="#e8c46e"/>
+          </svg>
+          <span class="illum-letter" id="after-initial"></span>
+        </div>
+        <h2 id="after-title">After praying</h2>
+        <div class="week-initials" id="after-week" aria-label="The days of this retreat"></div>
         <label>What word or phrase stayed with you?
           <input id="after-word" type="text" maxlength="100" autocomplete="off">
         </label>
@@ -588,20 +617,21 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=40"></script>
+  <script src="config.js?v=41"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=40"></script>
-  <script src="js/settings.js?v=40"></script>
-  <script src="js/router.js?v=40"></script>
-  <script src="js/library.js?v=40"></script>
-  <script src="js/new-retreat.js?v=40"></script>
-  <script src="js/retreat.js?v=40"></script>
-  <script src="js/build-log.js?v=40"></script>
-  <script src="js/research.js?v=40"></script>
-  <script src="js/pray.js?v=40"></script>
-  <script src="js/about-me.js?v=40"></script>
-  <script src="js/talk.js?v=40"></script>
-  <script src="js/costs.js?v=40"></script>
-  <script src="js/start.js?v=40"></script>
+  <script src="js/core.js?v=41"></script>
+  <script src="js/look.js?v=41"></script>
+  <script src="js/settings.js?v=41"></script>
+  <script src="js/router.js?v=41"></script>
+  <script src="js/library.js?v=41"></script>
+  <script src="js/new-retreat.js?v=41"></script>
+  <script src="js/retreat.js?v=41"></script>
+  <script src="js/build-log.js?v=41"></script>
+  <script src="js/research.js?v=41"></script>
+  <script src="js/pray.js?v=41"></script>
+  <script src="js/about-me.js?v=41"></script>
+  <script src="js/talk.js?v=41"></script>
+  <script src="js/costs.js?v=41"></script>
+  <script src="js/start.js?v=41"></script>
 </body>
 </html>

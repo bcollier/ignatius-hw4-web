@@ -103,6 +103,8 @@ function wireAboutMeAndTalk() {
 }
 
 async function start() {
+  drawIcons();
+  setPlayIcon(false);
   readDebugFlag();
   document.documentElement.classList.toggle("debug", debugMode());
   if (!(await checkServer())) return;

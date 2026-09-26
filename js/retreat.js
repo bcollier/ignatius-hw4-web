@@ -54,11 +54,10 @@ const planDay = (n) => retreat.plan?.days.find((d) => d.day === n);
 
 function renderRetreat() {
   const plan = retreat.plan;
-  $("retreat-title").textContent = plan?.title || retreat.filename;
-  // The retreat's first painting, blurred, behind its title.
-  const banner = retreat.images?.find((img) => img.url);
-  $("retreat-head").classList.toggle("has-banner", !!banner);
-  $("retreat-head").style.setProperty("--banner", banner ? `url("${fileUrl(banner.url)}")` : "none");
+  // Until the plan has a title, a plain name, with the uploaded file under it.
+  $("retreat-title").textContent = plan?.title || "Your new retreat";
+  $("retreat-file").hidden = !!plan?.title;
+  $("retreat-file").textContent = plan?.title ? "" : retreat.filename || "";
   document.title = `${plan?.title || "Retreat"} · Ignatius at Home`;
   renderSeriesLine();
   renderHeaderButtons(plan);
@@ -106,6 +105,7 @@ function renderFootLinks(plan) {
 }
 
 function renderProgress() {
+  renderBuildBar();
   const planning = retreat.status === "planning";
   const p = retreat.progress;
   $("progress-title").textContent = planning ? "Planning your retreat" : "Writing and recording each day";
@@ -126,7 +126,7 @@ function renderProgress() {
     } else if (st.status === "failed") detail = st.error || "failed";
     else if (st.status === "queued") detail = "waiting its turn";
     list.append(el("li", { class: cls },
-      el("span", { class: "mark", text: st.status === "ready" ? "✓" : st.status === "failed" ? "!" : "" }),
+      el("span", { class: "mark" }, st.status === "ready" ? icon("check", 14) : st.status === "failed" ? "!" : ""),
       el("span", {}, `Day ${d.day} · ${dayTitle(d.title)}`, detail && el("span", { class: "detail", text: detail }))));
   }
   $("notify-button").hidden = !("Notification" in window) || Notification.permission !== "default";
@@ -146,7 +146,7 @@ function renderStrip() {
       type: "button", role: "tab", class: `chip ${s.kind}${s.today ? " today" : ""}`,
       "aria-selected": d.day === selectedDay ? "true" : "false",
       title: `${dayTitle(d.title)} · ${s.kind}${s.today ? " · today" : ""}`,
-    }, el("span", { text: String(d.day) }), el("small", { text: s.kind === "prayed" ? "✓" : s.date ? weekday(s.date) : "" }));
+    }, el("span", { text: String(d.day) }), el("small", { text: s.date ? weekday(s.date) : "" }));
     chip.onclick = () => {
       selectedDay = d.day;
       renderStrip();
@@ -161,38 +161,92 @@ function dayImages(d) {
   return idx.map((i) => retreat.images[i]).filter((img) => img?.url);
 }
 
-// The selected day: its passage and picture, where you are with it, and what you can do.
+// The selected day as a two-page spread: the painting on the left page, and on the
+// right the day's words, where you are with it, and what you can do.
 function renderDay() {
   const d = planDay(selectedDay);
   const st = retreat.days[String(d.day)];
   const s = dayState(retreat, { ...st, day: d.day });
   const panel = $("day-panel");
   panel.innerHTML = "";
-  panel.append(...dayHeading(d, s));
+  const img = dayImages(d)[0];
+  panel.classList.toggle("no-art", !img);
+  if (img) panel.append(dayArt(img));
+  if (isExercise(d, st) && st.status === "ready") {
+    panel.append(exercisePage(d, st, s));
+    return colorDay(img);
+  }
+  const page = el("div", { class: "page-text" }, ...dayHeading(d, s));
   const line = listeningLine(st, s);
-  if (line) panel.append(el("p", { class: `state-line ${s.kind === "missed" ? "missed" : ""}`, text: line }));
-  panel.append(...dayActions(d, st, s));
-  if (st.journal?.word || st.journal?.note) panel.append(journalBox(st.journal));
+  if (line) page.append(el("p", { class: `state-line ${s.kind === "missed" ? "missed" : ""}`, text: line }));
+  page.append(...dayActions(d, st, s));
+  if (st.journal?.word || st.journal?.note) page.append(journalBox(st.journal));
   const tracks = Object.keys(TRACK_LABELS).filter((k) => st.tracks?.[k]?.status === "ready");
   if (tracks.length) {
     const parts = el("details", { class: "parts" }, el("summary", { text: "Listen to a part" }));
     for (const k of tracks) parts.append(renderTrack(k, st.tracks[k]));
-    panel.append(parts);
+    page.append(parts);
   }
+  panel.append(page);
+  colorDay(img);
+}
+
+// The left page: the painting (drifting slowly), a museum caption, and its colors.
+function dayArt(img) {
+  const caption = (img.description || "The painting for this day").split(/(?<=\.)\s/)[0];
+  return el("figure", { class: "page-art" },
+    el("div", { class: "frame" }, el("img", { class: "drift", src: fileUrl(img.url), alt: img.description || "The painting for this day" })),
+    el("figcaption", {}, el("span", { text: caption }), el("span", { class: "swatch-slot" })));
+}
+
+// The day's colors, taken from its painting, on the retreat page and the day strip.
+async function colorDay(img) {
+  const view = $("view-retreat");
+  if (!img) return applyPalette(view, null);
+  const pal = await paintingPalette(fileUrl(img.url));
+  if (planDay(selectedDay) && dayImages(planDay(selectedDay))[0]?.url !== img.url) return; // another day was chosen meanwhile
+  applyPalette(view, pal);
+  const slot = document.querySelector("#day-panel .swatch-slot");
+  if (slot && pal) slot.replaceWith(paletteDots(pal));
 }
 
 function dayHeading(d, s) {
+  const head = [retreat.plan.title, dayWords(d.day), s.date ? longWeekday(s.date) : "", s.today ? "today" : ""].filter(Boolean).join(" · ");
   const out = [
-    el("p", { class: "meta", text: `Day ${d.day}${s.date ? ` · ${longDate(`${s.date}T12:00:00`)}` : ""}${s.today ? " · today" : ""}` }),
-    el("h2", { text: dayTitle(d.title) }),
+    el("p", { class: "running-head", text: head }),
+    el("h2", { class: "day-title", text: dayTitle(d.title) }),
   ];
   // The reference only when it says something the title doesn't.
-  if (d.source_ref && d.source_ref.trim() !== dayTitle(d.title).trim()) out.push(el("p", { class: "meta", text: d.source_ref }));
-  const img = dayImages(d)[0];
-  if (img) out.push(el("img", { class: "day-image", src: fileUrl(img.url), alt: img.description || "Image for this day" }));
-  if (d.grace) out.push(el("p", { class: "grace", text: `Grace: ${d.grace}` }));
+  if (d.source_ref && d.source_ref.trim() !== dayTitle(d.title).trim()) out.push(el("p", { class: "meta source-ref", text: d.source_ref }));
+  if (d.grace) {
+    const text = d.grace.replace(/^ask for the grace\s*/i, "").replace(/^the grace\s*/i, "");
+    out.push(el("p", { class: "grace" }, el("span", { class: "rubric-inline", text: "The grace " }), text));
+  }
+  out.push(el("p", { class: "fleuron", "aria-hidden": "true" }, icon("fleuron", 22)));
   out.push(el("p", { class: "passage", text: d.passage_text }));
   return out;
+}
+
+// An exercise day: the handout's instruction, to go and do, then mark complete.
+function exercisePage(d, st, s) {
+  const head = [retreat.plan.title, dayWords(d.day), s.date ? longWeekday(s.date) : "", s.today ? "today" : ""].filter(Boolean).join(" · ");
+  const page = el("div", { class: "page-text exercise" },
+    el("p", { class: "running-head", text: head }),
+    el("p", { class: "rubric", text: s.today || !s.date ? "Today's exercise" : "An exercise" }),
+    el("h2", { class: "day-title", text: dayTitle(d.title) }),
+    d.source_ref && d.source_ref.trim() !== dayTitle(d.title).trim() && el("p", { class: "meta source-ref", text: d.source_ref }),
+    el("p", { class: "exercise-text", text: d.passage_text }));
+  if (s.prayed) {
+    page.append(el("p", { class: "state-line done", text: `Completed · ${longDate(st.prayed_at)}` }),
+      el("div", { class: "quiet-row" },
+        el("button", { type: "button", class: "link", text: "Mark as not complete", onclick: () => markPrayed(d.day, { prayed: false }) })));
+  } else {
+    page.append(el("p", { class: "state-line", text: "Go and do this exercise today, then mark it complete." }),
+      el("div", { class: "pray-row" },
+        el("button", { type: "button", class: "big gold", text: "Mark as complete", onclick: (e) => { e.target.disabled = true; markPrayed(d.day, { prayed: true }); } })));
+  }
+  if (st.journal?.word || st.journal?.note) page.append(journalBox(st.journal));
+  return page;
 }
 
 function listeningLine(st, s) {
@@ -220,10 +274,10 @@ function readyDayActions(d, st, s) {
   const pray = (from) => () => go(`?r=${retreat.id}&pray=${d.day}${from ? `&from=${from}` : ""}`);
   const row = el("div", { class: "pray-row" });
   if (s.kind === "started" && l?.last_step > 0) {
-    row.append(el("button", { type: "button", class: "big", text: "Continue praying", onclick: pray(l.last_step) }));
+    row.append(el("button", { type: "button", class: "big gold", text: "Continue praying", onclick: pray(l.last_step) }));
     row.append(el("button", { type: "button", class: "secondary", text: "Start over", onclick: pray() }));
   } else {
-    row.append(el("button", { type: "button", class: "big", text: "Pray this day", onclick: pray() }));
+    row.append(el("button", { type: "button", class: "big gold", text: "Pray this day", onclick: pray() }));
   }
   row.append(el("span", { class: "meta", text: total == null ? "" : `About ${formatMinutes(total)}` }));
   if (total == null) probeDurations(seq); // the length appears once the clips' durations are known
@@ -428,4 +482,81 @@ async function hideThisExample() {
   } catch (err) {
     showMessage(err.message);
   }
+}
+
+
+// ---------------------------------------------------------------- the build, as a bar
+// One segment for planning, then one per day. Each day fills in eight steps as its parts
+// are written and recorded, so the bar moves on every poll.
+
+const PLANNING_SECONDS = 180; // planning usually takes a few minutes; the first segment fills toward 90% meanwhile
+const DAY_STEPS = 8;
+const WRITTEN = new Set(["speaking", "ready"]);
+
+// How many of a day's eight steps are done, and what it's doing now.
+function dayBuildSteps(st) {
+  if (!st || st.status === "queued" || st.status === "idle") return { done: 0, doing: "" };
+  if (st.status === "ready") return { done: DAY_STEPS, doing: "" };
+  const t = st.tracks || {};
+  const guide = Object.values(st.guide || {});
+  const guideWritten = guide.some((c) => c.script || (c.status && c.status !== "waiting"));
+  const guideReady = guide.length ? guide.filter((c) => c.status === "ready").length / guide.length : 0;
+  let done = 0;
+  if (t.reading?.status === "ready") done += 1;
+  if (WRITTEN.has(t.heart?.status)) done += 1;
+  if (t.heart?.status === "ready") done += 1;
+  if (WRITTEN.has(t.deep?.status)) done += 2;
+  if (t.deep?.status === "ready") done += 1;
+  if (guideWritten) done += 1;
+  done += guideReady;
+  let doing = "";
+  if (t.heart?.status === "writing") doing = "writing the reflection for the heart";
+  else if (t.deep?.status === "writing") doing = "researching and writing the deep dive";
+  else if (t.heart?.status === "speaking") doing = "recording the reflection";
+  else if (t.deep?.status === "speaking") doing = "recording the deep dive";
+  else if (WRITTEN.has(t.deep?.status) && !guideWritten) doing = "tailoring the spoken guidance";
+  else if (guideWritten && guideReady < 1) doing = "recording the guidance";
+  else if (t.reading?.status === "speaking") doing = "recording the reading";
+  return { done: Math.min(done, DAY_STEPS), doing, failed: st.status === "failed" };
+}
+
+// The segments (each 0..1 full), where the build is, and a line saying so.
+function buildProgressOf(r) {
+  const planned = !!r.plan;
+  const elapsed = Math.max(0, Date.now() / 1000 - (r.created_at || Date.now() / 1000));
+  const planFill = planned ? 1 : Math.min(0.9, elapsed / PLANNING_SECONDS);
+  const segments = [{ fill: planFill, state: planned ? "done" : "now", label: "Planning" }];
+  let stepsDone = planned ? 1 : 0;
+  let line = planned ? "" : "Planning the days";
+  for (const d of r.plan?.days || []) {
+    const st = r.days?.[String(d.day)];
+    const { done, doing, failed } = dayBuildSteps(st);
+    stepsDone += Math.floor(done);
+    const state = failed ? "failed" : done >= DAY_STEPS ? "done" : st?.status === "building" ? "now" : "waiting";
+    segments.push({ fill: done / DAY_STEPS, state, label: `Day ${d.day}` });
+    if (state === "now" && !line) line = `Day ${d.day} · ${doing || "starting"}`;
+  }
+  const totalSteps = 1 + (r.plan?.days.length || 0) * DAY_STEPS;
+  const percent = Math.round((segments.reduce((n, s) => n + s.fill, 0) / segments.length) * 100);
+  const step = Math.min(stepsDone + 1, totalSteps);
+  return { segments, percent, text: planned ? `Step ${step} of ${totalSteps}${line ? ` · ${line}` : ""}` : line };
+}
+
+function drawBuildBar(bar, segments) {
+  if (bar.children.length !== segments.length) {
+    bar.innerHTML = "";
+    for (const s of segments) bar.append(el("span", { class: "seg", title: s.label }, el("i")));
+  }
+  segments.forEach((s, i) => {
+    const seg = bar.children[i];
+    seg.className = `seg ${s.state}`;
+    seg.firstChild.style.width = `${Math.round(s.fill * 1000) / 10}%`;
+  });
+}
+
+function renderBuildBar() {
+  const p = buildProgressOf(retreat);
+  drawBuildBar($("build-bar"), p.segments);
+  $("build-bar").setAttribute("aria-valuenow", String(p.percent));
+  $("build-step").textContent = `${p.text} · ${p.percent}%`;
 }

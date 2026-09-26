@@ -4,6 +4,7 @@ async function openMe() {
   show("me");
   document.title = "About me · Ignatius at Home";
   $("me-status").textContent = "";
+  showAccount();
   try {
     renderMe(await api("/api/profile"));
   } catch (err) {
@@ -57,4 +58,16 @@ async function uploadMe() {
   } finally {
     $("me-file").value = "";
   }
+}
+
+
+// Who is signed in, and signing out (on a phone the header has no room for it).
+function showAccount() {
+  const box = $("me-account");
+  const who = $("account-email").textContent.trim();
+  box.hidden = $("account").hidden || !who;
+  box.innerHTML = "";
+  if (box.hidden) return;
+  box.append(el("span", { text: `Signed in as ${who}` }),
+    el("button", { type: "button", class: "link", text: "Sign out", onclick: () => $("signout").click() }));
 }

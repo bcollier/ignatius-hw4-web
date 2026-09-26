@@ -8,6 +8,7 @@
 // The code is split by view into plain scripts (no build step) that share one global
 // scope, loaded in this order by index.html:
 //   core.js      constants, helpers, the API client, shared state
+//   look.js      icons, colors taken from the paintings, words for days and hours
 //   settings.js  the Advanced tab: models, voices, research, prompts, the estimate
 //   router.js    the URL decides the view; sign-in
 //   library.js · new-retreat.js · retreat.js · build-log.js · research.js

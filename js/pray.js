@@ -120,6 +120,7 @@ function startPrayer(dayNo) {
   const d = planDay(dayNo);
   const st = retreat?.days[String(dayNo)];
   if (!d || st?.status !== "ready") return showMessage("This day isn't ready to pray yet.");
+  if (isExercise(d, st)) return showMessage("This day is an exercise to go and do; there's nothing to listen to.");
   prayerDay = d;
   steps = buildSequence(d, st);
   partsPlayed = new Set(st.listening?.parts_played || []);
@@ -129,6 +130,7 @@ function startPrayer(dayNo) {
   shownText = null;
   applyPrayView();
   resetStage(d);
+  colorPrayer(d);
   buildProgressBar();
   const from = Number(params().get("from") || 0);
   playStep(from > 0 && from < steps.length ? from : 0);
@@ -147,16 +149,23 @@ function resetStage(d) {
   if (dayImages(d).length) showImage(0);
 }
 
-// One segment per part of the prayer, sized by its length, and the matching list of parts.
+// The prayer's tint comes from the day's painting.
+async function colorPrayer(d) {
+  const img = dayImages(d)[0];
+  const pal = img ? await paintingPalette(fileUrl(img.url)) : null;
+  applyPalette($("view-pray"), pal);
+}
+
+// One bead per part of the prayer, on a gold thread, and the matching list of parts.
+// A bead can be tapped to go to that part.
 function buildProgressBar() {
   const blocks = [...new Set(steps.map((s) => s.block))];
   $("segments").innerHTML = "";
   $("part-list").innerHTML = "";
   for (const b of blocks) {
-    const secs = steps.filter((s) => s.block === b).reduce((n, s) => n + (stepSeconds(s) || UNKNOWN_STEP_SECONDS), 0);
-    const seg = el("span", { "data-block": b }, el("i"));
-    seg.style.flexGrow = String(Math.max(1, secs));
-    $("segments").append(seg);
+    const bead = el("button", { type: "button", class: "bead", "data-block": b, "aria-label": `Go to ${blockLabel(b)}`, title: blockLabel(b) });
+    bead.onclick = () => playStep(steps.findIndex((s) => s.block === b));
+    $("segments").append(bead);
     const li = el("li", { "data-block": b, text: blockLabel(b) });
     li.onclick = () => playStep(steps.findIndex((s) => s.block === b));
     $("part-list").append(li);
@@ -198,7 +207,8 @@ function playStep(index) {
   $("stage-caption").hidden = !step.pause;
   $("stage-caption").textContent = step.pause ? "Stay with one word or phrase that caught you. Let it rest in you until the bell." : "";
   $("pause-text").textContent = step.pause ? "Silence. Stay with one word or phrase until the bell." : "";
-  document.querySelectorAll("#segments span, #part-list li").forEach((n) => {
+  showCandle(step);
+  document.querySelectorAll("#segments .bead, #part-list li").forEach((n) => {
     const b = Number(n.dataset.block);
     n.classList.toggle("done", b < step.block);
     n.classList.toggle("now", b === step.block);
@@ -234,7 +244,7 @@ function applyPrayView() {
   const pray = $("view-pray");
   PRAY_VIEWS.forEach((v) => pray.classList.toggle(`view-${v}`, v === mode));
   $("stage-empty").hidden = hasImages || mode === "text";
-  $("view-toggle").textContent = { both: "Aa", image: "▣", text: "¶" }[view];
+  $("view-toggle").innerHTML = iconSvg(view, 20);
   $("view-toggle").setAttribute("aria-label", `On screen: ${$("pray-view").selectedOptions[0]?.text || view}. Change`);
 }
 
@@ -330,7 +340,7 @@ function highlightWord(i) {
 }
 
 function setPlayIcon(playing) {
-  $("play-pause").textContent = playing ? "❚❚" : "▶";
+  $("play-pause").innerHTML = iconSvg(playing ? "pause" : "play", 26);
   $("play-pause").setAttribute("aria-label", playing ? "Pause" : "Play");
 }
 
@@ -382,13 +392,37 @@ function showAfter(day, journal) {
     const images = dayImages(prayerDay);
     $("stage-empty").hidden = images.length > 0;
     $("stage-title").textContent = `Day ${prayerDay.day} · ${dayTitle(prayerDay.title)}`;
+    colorPrayer(prayerDay);
     shownImage = -1;
     if (images.length) showImage(0);
   }
+  illuminate(prayerDay);
   $("after-word").value = journal?.word || "";
   $("after-note").value = journal?.note || "";
   $("after").hidden = false;
   $("after-word").focus();
+}
+
+// The day prayed: its first letter illuminated in the painting's colors, and the week's
+// days as initials, the prayed ones in gold.
+function illuminate(d) {
+  const title = dayTitle(d.title) || `Day ${d.day}`;
+  const letter = (title.match(/[A-Za-z]/) || ["✦"])[0].toUpperCase();
+  $("after-label").textContent = `${dayWords(d.day)} · prayed`;
+  $("after-title").textContent = title;
+  $("after-initial").textContent = letter;
+  const node = document.querySelector("#after .illumination");
+  node.classList.remove("gilding");
+  void node.offsetWidth; // start the gilding and the vine again
+  node.classList.add("gilding");
+  const week = $("after-week");
+  week.innerHTML = "";
+  for (const x of retreat?.plan?.days || []) {
+    const st = retreat.days[String(x.day)] || {};
+    const first = ((dayTitle(x.title) || "").match(/[A-Za-z]/) || [String(x.day)])[0].toUpperCase();
+    const prayed = !!st.prayed_at || x.day === d.day;
+    week.append(el("span", { class: `initial${prayed ? " prayed" : ""}${x.day === d.day ? " now" : ""}`, title: `Day ${x.day}: ${dayTitle(x.title)}`, text: first }));
+  }
 }
 
 async function saveAfter() {
@@ -459,15 +493,54 @@ function wirePlayer() {
   wireLockScreenControls(player);
 }
 
-// How far through the current part (of several steps) playback is.
+// How far through the whole prayer playback is: the gold thread fills behind the beads.
 function fillCurrentSegment(currentTime) {
-  const seg = document.querySelector("#segments span.now i");
   const step = steps[stepIndex];
-  if (!seg || !step) return;
-  const blockSteps = steps.filter((s) => s.block === step.block);
-  const total = blockSteps.reduce((n, s) => n + (stepSeconds(s) || 0), 0) || 1;
-  const before = blockSteps.slice(0, blockSteps.indexOf(step)).reduce((n, s) => n + (stepSeconds(s) || 0), 0);
-  seg.style.setProperty("--p", Math.min(1, (before + currentTime) / total));
+  if (!step) return;
+  const total = steps.reduce((n, s) => n + (stepSeconds(s) || UNKNOWN_STEP_SECONDS), 0) || 1;
+  const before = steps.slice(0, stepIndex).reduce((n, s) => n + (stepSeconds(s) || UNKNOWN_STEP_SECONDS), 0);
+  $("segments").style.setProperty("--p", Math.min(1, (before + currentTime) / total).toFixed(4));
+  if (step.pause) updateCandleTime(currentTime);
+}
+
+// ---------------------------------------------------------------- the silence: a candle
+// During the silence the painting and words step back, and a candle burns down over
+// the length of the silence, from one bell to the next.
+
+let candleBlock = null;
+
+function silenceSteps(block) {
+  return steps.filter((s) => s.block === block && s.pause);
+}
+
+function showCandle(step) {
+  const inSilence = !!step.pause;
+  $("view-pray").classList.toggle("in-silence", inSilence);
+  $("stage-candle").hidden = !inSilence;
+  if (!inSilence) {
+    candleBlock = null;
+    return;
+  }
+  if (candleBlock === step.block) return;
+  candleBlock = step.block;
+  const total = silenceSteps(step.block).reduce((n, s) => n + (stepSeconds(s) || UNKNOWN_STEP_SECONDS), 0);
+  const wax = $("candle-wax");
+  wax.style.animation = "none";
+  void wax.offsetWidth; // restart the burn
+  wax.style.animation = `burn ${Math.max(10, Math.round(total))}s linear forwards`;
+  const bell = document.querySelector("#stage-candle .bell");
+  bell.classList.remove("ringing");
+  void bell.offsetWidth;
+  bell.classList.add("ringing");
+  updateCandleTime(0);
+}
+
+function updateCandleTime(currentTime) {
+  const step = steps[stepIndex];
+  const all = silenceSteps(step.block);
+  const i = all.indexOf(step);
+  const left = all.slice(i).reduce((n, s) => n + (stepSeconds(s) || UNKNOWN_STEP_SECONDS), 0) - currentTime;
+  $("candle-time").textContent = left > 0 ? formatClock(left) : "";
 }
 
 function wirePlayerButtons(player) {
