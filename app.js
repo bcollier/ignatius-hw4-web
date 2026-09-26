@@ -444,6 +444,12 @@ function stopPrayer() {
 
 function wirePlayer() {
   $("player").addEventListener("ended", () => playStep(stepIndex + 1));
+  $("player").addEventListener("error", () => {
+    if (!$("player").getAttribute("src")) return; // cleared on Stop
+    $("pause-text").hidden = false;
+    $("pause-text").textContent =
+      "This track couldn't be loaded. Reload the page (links refresh every day) and press Pray this day again.";
+  });
   $("next-step").onclick = () => nextBlock(1);
   $("prev-step").onclick = () => nextBlock(-1);
   $("stop-player").onclick = stopPrayer;
