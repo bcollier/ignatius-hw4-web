@@ -477,7 +477,7 @@ function renderLibrary() {
     cont.append(
       el("p", { class: "eyebrow", text: lead }),
       el("h3", { text: `Day ${d.day}${d.title ? ` · ${dayTitle(d.title)}` : ""}` }),
-      el("p", { class: "meta", text: r.title }),
+      el("p", { class: "meta", text: `${r.series?.length ? `Week ${r.series.length + 1} · ` : ""}${r.title}` }),
       el("div", { class: "row-buttons" },
         el("a", { class: "button big", href: `./?r=${r.id}&pray=${d.day}`, "data-nav": "", text: s.kind === "started" ? "Continue praying" : "Pray this day" }),
         el("a", { href: `./?r=${r.id}`, "data-nav": "", text: "Open the retreat" })),
