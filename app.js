@@ -200,6 +200,7 @@ async function buildDay(day, keepScripts = false) {
         guide: guideTexts(),
         keep_scripts: keepScripts,
         model: $("write-model").value,
+        search_provider: $("search-provider").value,
       }),
     });
     render();
@@ -348,7 +349,7 @@ function renderTrack(key, track) {
     const heading = document.createElement("p");
     heading.className = "meta";
     heading.textContent = track.web_search
-      ? "Sources the deep dive checked with web search:"
+      ? `Sources the deep dive checked with web search${track.research ? ` (${track.research})` : ""}:`
       : "Sources suggested by the model. Not checked by web search; links may be wrong.";
     details.append(heading);
     const sources = document.createElement("ul");
@@ -477,6 +478,28 @@ const isFree = () => me?.mode === "free";
 const allowedModels = () => options.models.filter((m) => (isFree() ? m.free : true));
 const allowedTiers = () => Object.entries(options.tiers).filter(([key]) => !isFree() || key === "free");
 
+// Claude searches the web itself; the Jetstream models use a search service the
+// server runs, chosen here.
+function fillResearch() {
+  const select = $("search-provider");
+  const providers = options.search_providers || {};
+  select.innerHTML = "";
+  for (const [id, label] of Object.entries(providers)) select.add(new Option(label, id));
+  select.add(new Option("None", "none"));
+  let saved = null;
+  try {
+    saved = localStorage.getItem("searchProvider");
+  } catch {}
+  select.value = saved && [...select.options].some((o) => o.value === saved) ? saved : options.default_search_provider || "none";
+  select.onchange = () => {
+    try {
+      localStorage.setItem("searchProvider", select.value);
+    } catch {}
+  };
+  const free = options.models.find((m) => m.id === $("write-model").value)?.free;
+  $("research-label").hidden = !free || !Object.keys(providers).length;
+}
+
 function fillModels() {
   let saved = null;
   try {
@@ -494,9 +517,11 @@ function fillModels() {
       try {
         localStorage.setItem("model", select.value);
       } catch {}
+      fillResearch();
       if (retreat?.plan) render();
     };
   }
+  fillResearch();
   const bal = isFree() ? null : options.elevenlabs?.balance;
   $("balance-note").hidden = !bal;
   if (bal) {
