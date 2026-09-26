@@ -2,220 +2,415 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Ignatius at Home</title>
-  <meta name="description" content="Turn a prayer handout or reading into a guided audio retreat.">
-  <link rel="stylesheet" href="style.css?v=18">
+  <meta name="description" content="Make a guided audio retreat from your own prayer material, and pray it day by day.">
+  <meta name="theme-color" content="#f7f4ee" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1b1916" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Ignatius">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest?v=20">
+  <link rel="icon" href="icons/icon-192.png?v=20" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=20">
+  <link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
-  <header class="site">
-    <h1>Ignatius at Home</h1>
-    <p class="tagline">Build a practice from your own material. Upload a prayer handout, a few scripture passages or a reading, and get a retreat with three audio tracks for each day: the reading, a reflection for the heart, and a deep dive into its theology and history.</p>
-    <p id="server-status" class="status" role="status">Checking the server…</p>
+  <header class="topbar">
+    <a href="./" class="brand" data-nav="library">Ignatius at Home</a>
+    <nav class="topnav">
+      <a href="./?me" data-nav="me" id="me-link" hidden>About me</a>
+      <a href="./?about" data-nav="about">About</a>
+      <span id="account" hidden>
+        <span id="account-email" class="meta"></span>
+        <button type="button" id="signout" class="link">Sign out</button>
+      </span>
+    </nav>
   </header>
+  <p id="server-status" class="banner bad" role="status" hidden></p>
+  <p id="message" class="banner bad" role="alert" hidden></p>
 
   <main>
-    <section id="signin-section" class="card" hidden>
-      <h2>Sign in</h2>
-      <p>Sign in with your email so your retreats are saved. Build them on your laptop, then open this page on your phone and sign in with the same email to pray with them.</p>
-      <form id="signin-form">
-        <label>Email
-          <input id="email" type="email" autocomplete="email" required>
-        </label>
-        <button type="submit" id="signin-button">Email me a sign-in link</button>
-      </form>
-      <p id="signin-note" class="hint" hidden></p>
-      <div id="guest-box" hidden>
-        <p class="hint">Just want to try it? A guest session uses free models on Jetstream and free voices. Guest retreats stay in this browser only.</p>
-        <button type="button" id="guest-button" class="secondary">Try it without an account</button>
+    <!-- ============================================================ sign in -->
+    <section id="view-signin" class="view" hidden>
+      <div class="hero">
+        <h1>Pray with your own material</h1>
+        <p class="lede">Upload a retreat handout, a few scripture passages or a reading. Ignatius at Home makes a guided audio retreat from it: each day's reading, a reflection for the heart, and a deep dive into the passage, woven into a prayer in the Ignatian tradition. <a href="./?about" data-nav="about">What is this?</a></p>
+      </div>
+      <div class="card">
+        <h2>Sign in</h2>
+        <p>Sign in with your email to keep your retreats. Make them on your laptop, pray on your phone.</p>
+        <form id="signin-form" class="inline-form">
+          <input id="email" type="email" autocomplete="email" placeholder="you@example.com" required aria-label="Email">
+          <button type="submit" id="signin-button">Email me a sign-in link</button>
+        </form>
+        <p id="signin-note" class="hint" hidden></p>
+        <div id="guest-box" class="guest-box" hidden>
+          <p class="hint">Just want to try it? A guest session uses free models and free voices, and stays in this browser.</p>
+          <button type="button" id="guest-button" class="secondary">Try it without an account</button>
+        </div>
       </div>
     </section>
 
-    <p id="free-banner" class="free-banner" hidden></p>
-    <section id="upgrade-box" class="card" hidden>
-      <h2>Keep your retreats</h2>
-      <p class="hint">You're in a guest session, which lives only in this browser. Add your email to turn it into an account with the same retreats, then sign in with that email on your phone or another computer.</p>
-      <form id="upgrade-form" class="inline-form">
-        <input id="upgrade-email" type="email" autocomplete="email" placeholder="you@example.com" required>
-        <button type="submit">Add my email</button>
-      </form>
-      <p id="upgrade-note" class="hint" hidden></p>
-    </section>
-    <section id="account-bar" class="account" hidden>
-      <span id="account-email"></span>
-      <button type="button" id="signout" class="link">Sign out</button>
+    <!-- ============================================================ library -->
+    <section id="view-library" class="view" hidden>
+      <p id="free-banner" class="quiet-note" hidden></p>
+      <div id="upgrade-box" class="card" hidden>
+        <h2>Keep your retreats</h2>
+        <p class="hint">This guest session lives only in this browser. Add your email to turn it into an account with the same retreats, then sign in with that email on your phone.</p>
+        <form id="upgrade-form" class="inline-form">
+          <input id="upgrade-email" type="email" autocomplete="email" placeholder="you@example.com" required aria-label="Email">
+          <button type="submit">Add my email</button>
+        </form>
+        <p id="upgrade-note" class="hint" hidden></p>
+      </div>
+
+      <div id="continue" class="continue card" hidden></div>
+
+      <div class="library-head">
+        <h2>My retreats</h2>
+        <a href="./?new" data-nav="new" class="button">New retreat</a>
+      </div>
+      <div id="library-empty" class="card empty" hidden>
+        <p>No retreats yet.</p>
+        <p class="hint">Upload a handout or a few passages to make your first week.</p>
+        <a href="./?new" data-nav="new" class="button">Make my first retreat</a>
+      </div>
+      <div id="groups"></div>
     </section>
 
-    <section id="library-section" class="card" hidden>
-      <h2>My retreats</h2>
-      <p id="library-empty" class="hint" hidden>No retreats yet. Upload your first document below.</p>
-      <ul id="library" class="library"></ul>
-    </section>
+    <!-- ============================================================ new retreat -->
+    <section id="view-new" class="view" hidden>
+      <a href="./" data-nav="library" class="back">← My retreats</a>
+      <h1>New retreat</h1>
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" id="tab-simple" aria-selected="true">Simple</button>
+        <button type="button" role="tab" id="tab-advanced" aria-selected="false" aria-controls="panel-advanced">Advanced</button>
+      </div>
+      <form id="new-form" class="card">
+        <label class="drop" id="drop">
+          <input id="file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
+          <span class="drop-title" id="drop-title">Choose a PDF or Word document</span>
+          <span class="hint">A retreat handout, some scripture passages, a reading. Images in it are used too.</span>
+        </label>
 
-    <section id="upload-section" class="card" hidden>
-      <h2>1. Upload your material</h2>
-      <form id="upload-form">
-        <label>PDF or Word document
-          <input id="file" name="file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
-        </label>
-        <label>Model for planning
-          <select id="plan-model" class="model-select"></select>
-        </label>
-        <details class="prompt-box">
-          <summary>Customize how the retreat is planned</summary>
-          <label>Planning prompt
-            <textarea id="plan-prompt" rows="10" spellcheck="true"></textarea>
-          </label>
-          <button type="button" class="link" data-reset="plan">Reset to default</button>
-        </details>
         <label class="check">
           <input id="series-toggle" type="checkbox">
-          This retreat is part of a series
+          This retreat continues a series
         </label>
         <div id="series-box" class="series-box" hidden>
-          <p class="hint">Choose the earlier retreats in the series. Everything from them (each day's reading, reflection and deep dive) is given to the model, oldest first, so this one continues the thread. For a very long series the oldest weeks are shortened to fit.</p>
+          <p class="hint">Choose the earlier weeks. Everything from them is given to the model, oldest first, so this week continues the thread.</p>
           <button type="button" class="link" id="series-all">Select all</button>
           <ul id="series-list" class="series-list"></ul>
         </div>
+
+        <!-- Advanced: every option. Moved into the settings dialog when a day is rebuilt. -->
+        <div id="panel-advanced" role="tabpanel" hidden>
+          <div id="advanced" class="advanced">
+            <fieldset>
+              <legend>Models</legend>
+              <label>Planning the retreat <select id="plan-model" class="model-select"></select></label>
+              <label>Writing the reflection and deep dive <select id="write-model" class="model-select"></select></label>
+              <label id="research-label" hidden>Web research for the deep dive
+                <select id="search-provider"></select>
+                <span class="hint">If this service is paused or out of credits, the next one is used.</span>
+              </label>
+              <p id="balance-note" class="hint cost-info" hidden></p>
+            </fieldset>
+            <fieldset>
+              <legend>Voices</legend>
+              <div class="row">
+                <label>Guide <select id="voice-guide"></select></label>
+                <label>The reading <select id="voice-reading"></select></label>
+                <label>For the heart <select id="voice-heart"></select></label>
+                <label>Deep dive <select id="voice-deep"></select></label>
+              </div>
+              <p id="tier-note" class="hint"></p>
+            </fieldset>
+            <div id="playback-fields">
+              <fieldset>
+                <legend>The prayer</legend>
+                <div class="row">
+                  <label>Order
+                    <select id="sequence" class="playback">
+                      <option value="lectio">Lectio: the reading four times, with the reflection and deep dive between</option>
+                      <option value="simple">Simple: reading, reflection, deep dive, silence</option>
+                    </select>
+                  </label>
+                  <label>Silence after asking for the grace
+                    <select id="grace-silence" class="playback">
+                      <option value="2">10 seconds</option>
+                      <option value="3">15 seconds</option>
+                      <option value="4">20 seconds</option>
+                    </select>
+                  </label>
+                  <label>Silence to reflect
+                    <select id="pause" class="playback">
+                      <option value="30">30 seconds</option>
+                      <option value="60">1 minute</option>
+                      <option value="120">2 minutes</option>
+                      <option value="300">5 minutes</option>
+                    </select>
+                  </label>
+                  <label>Start date <input id="start-date" type="date"></label>
+                </div>
+              </fieldset>
+            </div>
+            <label class="check"><input id="tailor-guide" type="checkbox" checked> Tailor the spoken guidance to each day's reflection and deep dive</label>
+            <fieldset id="talk-fields" hidden>
+              <legend>Conversation</legend>
+              <div class="row">
+                <label>Voice service <select id="talk-provider"></select></label>
+                <label>Voice <select id="talk-voice"></select></label>
+              </div>
+              <p class="hint">Used by "Talk it over." What you want from the companion is set under <a href="./?me" data-nav="me">About me</a>.</p>
+            </fieldset>
+            <details class="prompt-box">
+              <summary>How the retreat is planned</summary>
+              <textarea id="plan-prompt" rows="10" spellcheck="true" aria-label="Planning prompt"></textarea>
+              <button type="button" class="link" data-reset="plan">Reset to default</button>
+            </details>
+            <details class="prompt-box">
+              <summary>The reflection for the heart</summary>
+              <textarea id="heart-prompt" rows="10" spellcheck="true" aria-label="Reflection prompt"></textarea>
+              <p class="preset-row">Start from:
+                <button type="button" class="link" data-preset="companion">A spiritual companion</button>
+                <button type="button" class="link" data-preset="christ">In the voice of Jesus</button>
+              </p>
+            </details>
+            <details class="prompt-box">
+              <summary>The deep dive</summary>
+              <textarea id="deep-prompt" rows="10" spellcheck="true" aria-label="Deep dive prompt"></textarea>
+              <button type="button" class="link" data-reset="deep">Reset to default</button>
+            </details>
+            <details class="prompt-box">
+              <summary>The spoken guidance</summary>
+              <p class="hint">Read by the guide voice. <code>{grace}</code> becomes the day's grace, <code>{title}</code> its title, <code>{day}</code> its number. Leave a line empty to skip it.</p>
+              <div id="guide-fields" class="guide-fields"></div>
+              <button type="button" class="link" id="reset-guide">Reset the guidance</button>
+            </details>
+            <button type="button" class="link" id="reset-all">Reset every option to its default</button>
+          </div>
+        </div>
+
         <label class="check">
           <input id="rights" type="checkbox" required>
           I own this material or have permission to use it.
         </label>
-        <button id="upload-button" type="submit">Plan my retreat</button>
+        <p id="new-estimate" class="hint cost-info" hidden></p>
+        <button type="submit" id="make-button" class="big">Make my retreat</button>
+        <p class="hint">Planning, writing and recording every day takes a while, often 15 to 30 minutes. You can close the page; it keeps going.</p>
       </form>
-      <p class="hint">Only upload material you have rights to. Your retreats are private to your account.</p>
     </section>
 
-    <p id="message" class="message" role="alert" hidden></p>
-
-    <section id="retreat-section" hidden>
-      <div class="card">
-        <p id="retreat-status" class="status" role="status"></p>
-        <h2 id="retreat-title"></h2>
-        <p id="retreat-summary"></p>
-        <p id="retreat-meta" class="meta"></p>
-        <p id="retreat-series" class="meta" hidden></p>
-        <button type="button" id="retreat-pdf" class="secondary" hidden>Download the whole retreat (PDF)</button>
-        <div id="gallery" class="gallery"></div>
+    <!-- ============================================================ retreat -->
+    <section id="view-retreat" class="view" hidden>
+      <a href="./" data-nav="library" class="back">← My retreats</a>
+      <div class="retreat-head">
+        <div>
+          <h1 id="retreat-title"></h1>
+          <p id="retreat-series" class="meta" hidden></p>
+          <p id="retreat-cost" class="meta cost-info" hidden></p>
+        </div>
+        <div class="head-actions">
+          <button type="button" id="talk-button" class="secondary" hidden>Talk it over</button>
+          <button type="button" id="retreat-pdf" class="secondary" hidden>Whole retreat (PDF)</button>
+          <button type="button" id="playback-button" class="icon-button" aria-label="Prayer settings" title="Prayer settings">⚙︎</button>
+        </div>
       </div>
 
-      <div id="voice-controls" class="card" hidden>
-        <h2>2. Choose voices and a model, then build a day</h2>
-        <label>Model for the reflection and deep dive
-          <select id="write-model" class="model-select"></select>
-        </label>
-        <label id="research-label" hidden>Web research for the deep dive
-          <select id="search-provider"></select>
-          <span class="hint">If this service is paused or out of credits, the next one is used automatically.</span>
-        </label>
-        <p id="balance-note" class="hint" hidden></p>
-        <div class="row">
-          <label>Guide (grace, instructions)
-            <select id="voice-guide" data-section="guide"></select>
-          </label>
-          <label>The reading
-            <select id="voice-reading" data-section="reading"></select>
-          </label>
-          <label>For the heart
-            <select id="voice-heart" data-section="heart"></select>
-          </label>
-          <label>Deep dive
-            <select id="voice-deep" data-section="deep"></select>
-          </label>
-        </div>
-        <p id="tier-note" class="hint"></p>
-        <div class="row">
-          <label>Prayer order
-            <select id="sequence">
-              <option value="lectio">Lectio: grace, reading four times with the reflection, deep dive and a silence between</option>
-              <option value="simple">Simple: grace, reading, reflection, deep dive, silence</option>
-            </select>
-          </label>
-          <label>Silence after asking for the grace
-            <select id="grace-silence">
-              <option value="2">10 seconds</option>
-              <option value="3" selected>15 seconds</option>
-              <option value="4">20 seconds</option>
-            </select>
-          </label>
-          <label>Pause to reflect
-            <select id="pause">
-              <option value="30">30 seconds</option>
-              <option value="60">1 minute</option>
-              <option value="120">2 minutes</option>
-              <option value="300">5 minutes</option>
-            </select>
-          </label>
-        </div>
-        <details class="prompt-box">
-          <summary>Customize the reflections</summary>
-          <p class="hint">These prompts are sent to the model when you build a day. The server adds the length limit and output format.</p>
-          <label>Reflection for the heart
-            <textarea id="heart-prompt" rows="10" spellcheck="true"></textarea>
-          </label>
-          <p class="preset-row">Start from:
-            <button type="button" class="link" data-preset="companion">A spiritual companion</button>
-            <button type="button" class="link" data-preset="christ">In the voice of Jesus</button>
-          </p>
-          <label>Deep dive
-            <textarea id="deep-prompt" rows="10" spellcheck="true"></textarea>
-          </label>
-          <button type="button" class="link" data-reset="deep">Reset to default</button>
-        </details>
-        <details class="prompt-box">
-          <summary>Customize the spoken guidance</summary>
-          <p class="hint">Read aloud by the guide voice, word for word. <code>{grace}</code> becomes the day's grace, <code>{title}</code> the day's title and <code>{day}</code> its number. Leave a box empty to skip it.</p>
-          <div id="guide-fields" class="guide-fields"></div>
-          <button type="button" class="link" id="reset-guide">Reset all to default</button>
-        </details>
+      <div id="progress" class="card progress" hidden>
+        <h2 id="progress-title">Making your retreat</h2>
+        <p id="progress-lede" class="hint"></p>
+        <ol id="progress-days" class="progress-days"></ol>
+        <p class="hint">It's fine to close this page; your retreat keeps being made and will be here when you come back.</p>
+        <button type="button" id="notify-button" class="link" hidden>Tell me when it's ready</button>
+      </div>
+      <p id="retreat-error" class="banner bad" hidden></p>
+
+      <div id="days-area" hidden>
+        <div id="day-strip" class="day-strip" role="tablist" aria-label="Days"></div>
+        <article id="day-panel" class="card day-panel"></article>
       </div>
 
-      <ol id="days" class="days"></ol>
+      <details id="costs" class="card costs cost-info" hidden>
+        <summary>Costs</summary>
+        <div id="costs-body" class="hint"></div>
+      </details>
+    </section>
+
+    <!-- ============================================================ talk it over -->
+    <section id="view-talk" class="view talk" hidden>
+      <a href="./" data-nav="back" class="back" id="talk-back">← Back</a>
+      <h1>Talk it over</h1>
+      <p class="lede">A spoken conversation about your retreat with an AI prayer companion. It knows which days you've prayed, what they were about, what you've told it about yourself, and what you talked about before. It mostly asks questions and helps you notice where God has been at work; it gives little advice.</p>
+      <div class="card talk-card">
+        <p id="talk-context" class="hint"></p>
+        <p id="talk-limit" class="hint" hidden></p>
+        <p id="talk-voice-line" class="meta"></p>
+        <div class="talk-controls">
+          <button type="button" id="talk-start" class="big">Start talking</button>
+          <button type="button" id="talk-stop" class="secondary" hidden>End conversation</button>
+          <span id="talk-timer" class="meta" hidden></span>
+        </div>
+        <p id="talk-status" class="status" role="status"></p>
+        <div id="talk-orb" class="talk-orb" hidden aria-hidden="true"></div>
+        <ol id="talk-transcript" class="talk-transcript" aria-live="polite"></ol>
+        <p class="hint">This is an AI, not a priest, spiritual director or counselor. If you're in crisis or thinking about harming yourself, call or text 988 (in the US) or your local emergency number.</p>
+      </div>
+      <details class="card" id="talk-past">
+        <summary>Past conversations</summary>
+        <p class="hint">The companion remembers these: the most recent in full, older ones as a short summary. They're saved to your account.</p>
+        <ol id="talk-history" class="talk-history"></ol>
+        <p id="talk-memory" class="hint" hidden></p>
+        <button type="button" id="talk-forget" class="link danger">Forget all our conversations</button>
+      </details>
+    </section>
+
+    <!-- ============================================================ about me -->
+    <section id="view-me" class="view" hidden>
+      <a href="./" data-nav="library" class="back">← My retreats</a>
+      <h1>About me</h1>
+      <p class="lede">Anything you'd like the app to know about you: your situation, what you're carrying, how you like to pray. It shapes how your retreats are written and how the conversation companion talks with you. It's saved to your account as <code>user info.md</code> and is private to you.</p>
+      <form id="me-form" class="card">
+        <label>About me
+          <textarea id="me-about" rows="12" spellcheck="true" placeholder="For example: I'm a teacher and a parent of two teenagers. I pray best early in the morning. This year I'm discerning a change of work, and I'm drawn to the Psalms."></textarea>
+        </label>
+        <p id="me-summary-note" class="banner" hidden></p>
+        <label class="drop small-drop" id="me-drop">
+          <input id="me-file" type="file" accept=".txt,.md,.markdown,.docx,.pdf,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+          <span class="drop-title">Or upload a text, Word or PDF file about yourself</span>
+          <span class="hint">It replaces what's above. Long documents are condensed to about 6,000 characters.</span>
+        </label>
+        <label>What I'm looking for in the conversation companion
+          <textarea id="me-notes" rows="5" spellcheck="true" placeholder="For example: ask me about my family; help me notice consolation; don't give advice unless I ask; keep it short."></textarea>
+        </label>
+        <div class="row-buttons">
+          <button type="submit" id="me-save">Save</button>
+          <span id="me-status" class="meta" role="status"></span>
+        </div>
+      </form>
+    </section>
+
+    <!-- ============================================================ about -->
+    <section id="view-about" class="view about" hidden>
+      <a href="./" data-nav="library" class="back">← Back</a>
+      <h1>About Ignatius at Home</h1>
+      <p class="lede">Ignatius at Home turns prayer material you already have (a retreat handout, scripture passages, a reading, images) into a guided audio retreat you can pray at home, one day at a time.</p>
+
+      <h2>The Spiritual Exercises</h2>
+      <p>Ignatius of Loyola (1491–1556), the founder of the Jesuits, wrote the <em>Spiritual Exercises</em> as a guide for leading someone through a path of prayer; Pope Paul III approved them in 1548. They are arranged in four "weeks," stages rather than calendar weeks: God's love and mercy, the life of Christ, his passion, and his resurrection. Each time of prayer begins by asking for a particular grace, often enters a scene from the Gospels with the imagination, and ends in a colloquy, speaking to God "as one friend speaks to another." Along the way you learn to notice consolation and desolation, the movements of the heart toward and away from God, which is the root of Ignatian discernment.</p>
+      <ul class="links">
+        <li><a href="https://www.ignatianspirituality.com/ignatian-prayer/the-spiritual-exercises/what-are-the-spiritual-exercises/" target="_blank" rel="noopener">What are the Spiritual Exercises?</a> · IgnatianSpirituality.com (Loyola Press)</li>
+        <li><a href="https://www.ignatianspirituality.com/ignatian-prayer/ignatian-contemplation/" target="_blank" rel="noopener">Ignatian contemplation: praying with the imagination</a> · IgnatianSpirituality.com</li>
+        <li><a href="https://www.ignatianspirituality.com/making-good-decisions/discernment-of-spirits/rules-for-discernment/" target="_blank" rel="noopener">The rules for discernment</a> · IgnatianSpirituality.com</li>
+        <li><a href="https://www.ignatianspirituality.com/ignatian-prayer/the-examen/" target="_blank" rel="noopener">The Examen</a>, the daily review of the day · IgnatianSpirituality.com</li>
+        <li><a href="https://www.ccel.org/ccel/ignatius/exercises.html" target="_blank" rel="noopener">The text of the Spiritual Exercises</a> · Christian Classics Ethereal Library</li>
+        <li><a href="https://en.wikipedia.org/wiki/Spiritual_Exercises_of_Ignatius_of_Loyola" target="_blank" rel="noopener">Spiritual Exercises of Ignatius of Loyola</a> · Wikipedia</li>
+      </ul>
+
+      <h2>What a retreat is</h2>
+      <p>A retreat is time set apart for prayer. The full Exercises can be made in about thirty days of silence at a retreat house, but Ignatius also allowed them to be made in daily life: at home over several months, with a set time of prayer each day and regular conversations with a spiritual director. Many parishes and Jesuit ministries run retreats like this through the year, week by week, with a handout of scripture and readings for each week. Ignatius at Home is built for that rhythm, and a retreat can continue from week to week as a series.</p>
+      <ul class="links">
+        <li><a href="https://www.ignatianspirituality.com/ignatian-prayer/the-spiritual-exercises/an-ignatian-prayer-adventure/" target="_blank" rel="noopener">An Ignatian Prayer Adventure</a>, a free online retreat · IgnatianSpirituality.com</li>
+        <li><a href="https://onlineministries.creighton.edu/CollaborativeMinistry/cmo-retreat.html" target="_blank" rel="noopener">Praying Every Day: an online retreat</a> · Creighton University Online Ministries</li>
+        <li><a href="https://en.wikipedia.org/wiki/Retreat_(spiritual)" target="_blank" rel="noopener">Retreat (spiritual)</a> · Wikipedia</li>
+      </ul>
+
+      <h2>Lectio divina</h2>
+      <p>Lectio divina, "divine reading," is the old monastic way of praying slowly with scripture. In the twelfth century the Carthusian monk Guigo II described its steps as a ladder: <em>lectio</em>, reading the text; <em>meditatio</em>, pondering what it says to me; <em>oratio</em>, answering God in prayer; and <em>contemplatio</em>, resting in God. Pope Benedict XVI's <em>Verbum Domini</em> (2010) adds <em>actio</em>, carrying the word into life.</p>
+      <ul class="links">
+        <li><a href="https://www.vatican.va/content/benedict-xvi/en/apost_exhortations/documents/hf_ben-xvi_exh_20100930_verbum-domini.html" target="_blank" rel="noopener"><em>Verbum Domini</em>, paragraphs 86–87</a> · Holy See</li>
+        <li><a href="https://www.saintjohnsabbey.org/lectio-divina" target="_blank" rel="noopener">Lectio divina</a> · Saint John's Abbey, Collegeville</li>
+        <li><a href="https://en.wikipedia.org/wiki/Guigo_II" target="_blank" rel="noopener">Guigo II and <em>The Ladder of Monks</em></a> · Wikipedia</li>
+        <li><a href="https://en.wikipedia.org/wiki/Lectio_Divina" target="_blank" rel="noopener">Lectio Divina</a> · Wikipedia</li>
+      </ul>
+
+      <h2>How a day is prayed here</h2>
+      <ol class="day-shape">
+        <li><strong>Ask for the grace</strong> of the day, then a short silence.</li>
+        <li><strong>First reading:</strong> simply listen (lectio).</li>
+        <li><strong>For the heart:</strong> a reflection that stays with the passage and invites you to notice what stirs.</li>
+        <li><strong>Second reading:</strong> listen for what it says to you (meditatio).</li>
+        <li><strong>Deep dive:</strong> the passage's setting, words, and how the church has read it.</li>
+        <li><strong>Third reading:</strong> listen for what God may offer or ask.</li>
+        <li><strong>Silence</strong> between two bells, resting with a word (contemplatio).</li>
+        <li><strong>Last reading,</strong> then speak to God in your own words (oratio, the colloquy), and close.</li>
+      </ol>
+      <p class="hint">The spoken guidance, reflection and deep dive are written by AI models from your material, and the voices are synthetic. Treat them as a companion to your own prayer and, if you have one, your spiritual director, not a replacement. Upload only material you have the right to use; your retreats are private to your account.</p>
+      <p class="hint">Built for CMU HW4: a FastAPI backend on Render, this page on GitHub Pages. <a href="https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">How it works</a>.</p>
     </section>
   </main>
 
-  <div id="player-bar" class="player-bar" hidden>
-    <div class="player-inner">
-      <p class="now"><span id="now-step"></span> <span id="now-count" class="meta"></span></p>
-      <p id="pause-text" class="pause-text" hidden></p>
-      <audio id="player" controls></audio>
-      <div class="player-buttons">
-        <button type="button" id="prev-step" class="secondary">Back</button>
-        <button type="button" id="next-step" class="secondary">Skip</button>
+  <!-- ============================================================ praying (full screen) -->
+  <section id="view-pray" class="pray" hidden aria-label="Praying">
+    <div class="stage" id="stage">
+      <img id="stage-a" class="stage-img shown" alt="">
+      <img id="stage-b" class="stage-img" alt="">
+      <div id="stage-empty" class="stage-empty" hidden>
+        <p id="stage-title" class="stage-title"></p>
+        <p id="stage-grace" class="stage-grace"></p>
+      </div>
+      <p id="stage-caption" class="stage-caption" hidden></p>
+      <button type="button" id="pray-close" class="pray-close" aria-label="Stop and close">✕</button>
+    </div>
+
+    <div class="dock" id="dock">
+      <div class="dock-top">
+        <div class="dock-labels">
+          <p id="now-part" class="now-part"></p>
+          <p id="now-meta" class="now-meta"></p>
+        </div>
+        <button type="button" id="dock-expand" class="dock-expand" aria-expanded="false" aria-label="More">⌃</button>
+      </div>
+      <div id="segments" class="segments" aria-hidden="true"></div>
+      <div class="controls">
+        <button type="button" id="prev-step" class="ctl" aria-label="Back">⏮</button>
+        <button type="button" id="play-pause" class="ctl play" aria-label="Play">▶</button>
+        <button type="button" id="next-step" class="ctl" aria-label="Skip">⏭</button>
+      </div>
+      <div id="dock-more" class="dock-more" hidden>
+        <p id="pause-text" class="pause-text"></p>
+        <ol id="part-list" class="part-list"></ol>
         <button type="button" id="stop-player" class="secondary">Stop</button>
       </div>
     </div>
-  </div>
 
-  <footer class="site">
-    <p>Built for CMU HW4 (backend on Render, frontend on GitHub Pages). Sample material: World English Bible and public-domain paintings. Premium voices by ElevenLabs.</p>
-  </footer>
-
-  <template id="day-template">
-    <li class="card day">
-      <h3 class="day-title"></h3>
-      <p class="day-ref meta"></p>
-      <img class="day-image" alt="" hidden>
-      <p class="day-grace"></p>
-      <details class="passage">
-        <summary>Passage</summary>
-        <p class="passage-text"></p>
-      </details>
-      <div class="day-actions">
-        <button class="pray" type="button" hidden>Pray this day</button>
-        <button class="build" type="button">Build audio</button>
-        <button class="rerecord secondary" type="button" hidden>Re-record with these voices</button>
-        <button class="day-pdf secondary" type="button" hidden>Printable script (PDF)</button>
+    <div id="after" class="after" hidden>
+      <div class="after-card">
+        <h2>After praying</h2>
+        <label>What word or phrase stayed with you?
+          <input id="after-word" type="text" maxlength="100" autocomplete="off">
+        </label>
+        <label>A note, if you'd like
+          <textarea id="after-note" rows="4" maxlength="2000"></textarea>
+        </label>
+        <div class="row-buttons">
+          <button type="button" id="after-save">Save</button>
+          <button type="button" id="after-done" class="secondary">Done</button>
+        </div>
       </div>
-      <p class="day-length meta"></p>
-      <p class="day-cost meta"></p>
-      <p class="day-status status" role="status"></p>
-      <div class="tracks"></div>
-    </li>
-  </template>
+    </div>
+    <audio id="player" preload="auto"></audio>
+  </section>
+
+  <!-- Settings for playback and for rebuilding a day; the Advanced block is moved in here when needed. -->
+  <dialog id="settings-dialog" class="settings-dialog">
+    <form method="dialog" class="dialog-inner">
+      <h2 id="settings-title">Prayer settings</h2>
+      <p id="settings-lede" class="hint"></p>
+      <div id="settings-slot"></div>
+      <div class="row-buttons">
+        <button type="button" id="settings-primary" hidden></button>
+        <button type="button" id="settings-secondary" class="secondary" hidden></button>
+        <button value="close" class="secondary">Close</button>
+      </div>
+    </form>
+  </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=18"></script>
-  <script src="app.js?v=18"></script>
+  <script src="config.js?v=20"></script>
+  <script src="app.js?v=20"></script>
 </body>
 </html>
