@@ -127,3 +127,22 @@ async function start() {
 
 wireForms();
 start();
+
+
+// ---------------------------------------------------------------- staying up to date
+// Browsers may keep the page for a while (GitHub Pages allows ten minutes; phones
+// sometimes longer). When the page comes back into view, check whether a newer
+// version has been published, and if so reload, unless a prayer or a conversation
+// is under way.
+const RUNNING_VERSION = new URL(document.querySelector('script[src*="js/core.js"]').src).searchParams.get("v");
+
+async function reloadIfUpdated() {
+  if (document.body.classList.contains("praying") || (typeof talkState !== "undefined" && talkState)) return;
+  try {
+    const html = await (await fetch(`./?check=${Date.now()}`, { cache: "no-store" })).text();
+    const latest = html.match(/js\/core\.js\?v=(\d+)/)?.[1];
+    if (latest && RUNNING_VERSION && latest !== RUNNING_VERSION) location.reload();
+  } catch {}
+}
+document.addEventListener("visibilitychange", () => document.visibilityState === "visible" && reloadIfUpdated());
+reloadIfUpdated();
