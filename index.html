@@ -11,10 +11,10 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=29">
-  <link rel="icon" href="icons/icon-192.png?v=29" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=29">
-  <link rel="stylesheet" href="style.css?v=29">
+  <link rel="manifest" href="manifest.webmanifest?v=32">
+  <link rel="icon" href="icons/icon-192.png?v=32" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=32">
+  <link rel="stylesheet" href="style.css?v=32">
 </head>
 <body>
   <header class="topbar">
@@ -96,10 +96,34 @@
       </div>
       <form id="new-form" class="card">
         <label class="drop" id="drop">
-          <input id="file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
-          <span class="drop-title" id="drop-title">Choose a PDF or Word document</span>
-          <span class="hint">A retreat handout, some scripture passages, a reading. Images in it are used too.</span>
+          <input id="file" type="file" accept=".pdf,.docx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown">
+          <span class="drop-title" id="drop-title">Choose a PDF, Word or text file</span>
+          <span class="hint" id="drop-hint">A retreat handout, some scripture passages, a reading. Images in it are used too. Use material you have the right to use.</span>
         </label>
+
+        <details id="paste-box" class="paste-box">
+          <summary>or paste text instead</summary>
+          <textarea id="paste-text" rows="10" spellcheck="true" placeholder="Paste scripture passages, a reading, or a whole retreat handout. Mark days if you like (Day 1, Day 2…), or let the planner divide it."></textarea>
+        </details>
+
+        <div id="example-picker" class="example-picker" hidden>
+          <p class="or"><span>or use an example</span></p>
+          <p class="hint">Not sure what to upload? Start from one of these. Open the PDF to see what a good source looks like, then watch it become a retreat.</p>
+          <div id="example-docs" class="example-docs"></div>
+        </div>
+
+        <details id="what-happens" class="what-happens">
+          <summary>What happens when you press Make my retreat</summary>
+          <ol>
+            <li><strong>Reading your document</strong> (a few seconds). The text and any pictures are taken out of it.</li>
+            <li><strong>Planning</strong> (1 to 3 minutes). A model reads the whole thing and decides how many days there are, which passage belongs to each day (copied word for word), a grace to ask for, a focus, and which picture goes with which day. If your document already has days, it follows them.</li>
+            <li><strong>Making each day</strong> (2 to 5 minutes a day, in order). A reflection for the heart is written; then the passage is researched on the web and a deep dive is written that knows what the reflection said; then the spoken guidance is tailored to both. Every part is recorded as soon as its words are ready.</li>
+            <li><strong>Ready to pray.</strong> A week usually takes 15 to 30 minutes in all. You can close the page or lock your phone; it keeps going, and the retreat will be in your library.</li>
+          </ol>
+          <p class="hint">Each day you'll pray with the reading four times, lectio divina style, with the reflection and deep dive between the readings, a time of silence, and your own prayer at the end. Nothing is published; your retreats are private to your account.</p>
+        </details>
+
+        <label class="check"><input id="watch-build" type="checkbox"> Watch the technical details as it's made: every step, and every call to a model, search service and voice, live</label>
 
         <label class="check">
           <input id="series-toggle" type="checkbox">
@@ -131,7 +155,12 @@
                 <label>For the heart <select id="voice-heart"></select></label>
                 <label>Deep dive <select id="voice-deep"></select></label>
               </div>
+              <p id="voice-sets" class="row-buttons" hidden>
+                <button type="button" id="use-free-voices" class="link">Use the free voices (Ava, Andrew, Emma, Christopher)</button>
+                <button type="button" id="use-premium-voices" class="link">Use the ElevenLabs voices (Sarah, George, Brian, Alice)</button>
+              </p>
               <p id="tier-note" class="hint"></p>
+              <p id="advanced-estimate" class="estimate" hidden></p>
             </fieldset>
             <div id="playback-fields">
               <fieldset>
@@ -198,10 +227,6 @@
           </div>
         </div>
 
-        <label class="check">
-          <input id="rights" type="checkbox" required>
-          I own this material or have permission to use it.
-        </label>
         <button type="submit" id="make-button" class="big">Make my retreat</button>
         <p class="hint">Planning, writing and recording every day takes a while, often 15 to 30 minutes. You can close the page; it keeps going.</p>
       </form>
@@ -228,6 +253,19 @@
         <ol id="progress-days" class="progress-days"></ol>
         <p class="hint">It's fine to close this page; your retreat keeps being made and will be here when you come back.</p>
         <button type="button" id="notify-button" class="link" hidden>Tell me when it's ready</button>
+        <button type="button" id="log-toggle" class="link">Show the technical details</button>
+      </div>
+
+      <div id="log-card" class="log-card" hidden>
+        <div class="terminal-bar">
+          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="terminal-title">build log</span>
+          <span class="terminal-actions">
+            <button type="button" id="log-download" class="link">Download the full log (JSON)</button>
+            <button type="button" id="log-close" class="link">Hide</button>
+          </span>
+        </div>
+        <div id="terminal" class="terminal" role="log" aria-live="off"></div>
       </div>
       <p id="example-note" class="quiet-note" hidden></p>
       <p id="retreat-error" class="banner bad" hidden></p>
@@ -237,7 +275,8 @@
         <article id="day-panel" class="card day-panel"></article>
       </div>
 
-      <p class="foot-links desktop-only"><a id="research-link" data-nav="" hidden>Research notes for this retreat: every search, result and source behind each day</a></p>
+      <p class="foot-links desktop-only"><a id="research-link" data-nav="" hidden>Research notes for this retreat: every search, result and source behind each day</a>
+        <button type="button" id="log-link" class="link" hidden>Build log: every step and call that made this retreat</button></p>
     </section>
 
     <!-- ============================================================ research -->
@@ -521,7 +560,7 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=29"></script>
-  <script src="app.js?v=29"></script>
+  <script src="config.js?v=32"></script>
+  <script src="app.js?v=32"></script>
 </body>
 </html>

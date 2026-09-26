@@ -14,9 +14,36 @@ const SECTIONS = ["guide", "reading", "heart", "deep"];
 const DEFAULT_VOICES = {
   guide: "en-US-AvaMultilingualNeural",
   reading: "en-US-AndrewMultilingualNeural",
-  heart: "en-US-AndrewMultilingualNeural",
+  heart: "en-US-EmmaMultilingualNeural", // a different voice (and a woman's) from the reading
   deep: "en-US-ChristopherNeural",
 };
+
+// Four different ElevenLabs voices, for premium accounts (one click in Advanced).
+const PREMIUM_DEFAULT_VOICES = {
+  guide: "EXAVITQu4vr4xnSDxMaL", // Sarah
+  reading: "JBFqnCBsd6RMkjVDRZzb", // George
+  heart: "nPczCjzI2devNBz1zQrb", // Brian
+  deep: "Xb7hH8MSUJpSbSDYk0k2", // Alice
+};
+
+function useVoiceSet(set) {
+  for (const section of SECTIONS) {
+    const select = $(`voice-${section}`);
+    if (![...select.options].some((o) => o.value === set[section])) continue;
+    select.value = set[section];
+    store.set(`voice.${section}`, select.value);
+  }
+  updateEstimate();
+}
+
+// Saved choices that still equal an old default follow the new default instead.
+// (A choice someone made on purpose is kept.)
+const OLD_DEFAULTS = { model: "anthropic/claude-opus-5", "voice.heart": "en-US-AndrewMultilingualNeural" };
+function forgetOldDefaults() {
+  if (store.get("defaults.v2")) return;
+  for (const [key, old] of Object.entries(OLD_DEFAULTS)) if (store.get(key) === old) store.set(key, null);
+  store.set("defaults.v2", true);
+}
 
 // ================================================================ helpers
 
@@ -150,12 +177,14 @@ const allowedModels = () => options.models.filter((m) => (isFree() ? m.free : tr
 const allowedTiers = () => Object.entries(options.tiers).filter(([key]) => !isFree() || key === "free");
 
 function fillSettings() {
+  forgetOldDefaults();
   const allowed = allowedModels();
   const savedModel = store.get("model");
   for (const select of document.querySelectorAll(".model-select")) {
     select.innerHTML = "";
     for (const m of allowed) {
-      select.add(new Option(m.label, m.id)); // prices are on the Costs page
+      // Rates show only in Advanced (the Simple tab never shows prices).
+      select.add(new Option(m.free ? `${m.label} · free` : `${m.label} · $${m.input_per_m} in / $${m.output_per_m} out per million tokens`, m.id));
     }
     const fallback = allowed.some((m) => m.id === options.default_model) ? options.default_model : allowed[0]?.id;
     select.value = allowed.some((m) => m.id === savedModel) ? savedModel : fallback;
@@ -163,6 +192,7 @@ function fillSettings() {
       document.querySelectorAll(".model-select").forEach((other) => (other.value = select.value));
       store.set("model", select.value);
       fillResearch();
+      updateEstimate();
     };
   }
   fillResearch();
@@ -180,8 +210,14 @@ function fillSettings() {
     if (wanted) select.value = wanted;
     select.onchange = () => {
       store.set(`voice.${section}`, select.value);
+      updateEstimate();
     };
   }
+  const premium = allowedTiers().some(([key]) => key === "premium");
+  $("voice-sets").hidden = !premium;
+  $("use-free-voices").onclick = () => useVoiceSet(DEFAULT_VOICES);
+  $("use-premium-voices").onclick = () => useVoiceSet(PREMIUM_DEFAULT_VOICES);
+  updateEstimate();
   $("tier-note").textContent = allowedTiers().map(([, t]) => `${t.label}: up to ${t.max_chars.toLocaleString()} characters a section`).join(". ") + ".";
   const bal = isFree() ? null : options.elevenlabs?.balance;
 
@@ -635,6 +671,10 @@ function openNew() {
   if ($("advanced").parentElement !== $("panel-advanced")) $("panel-advanced").append($("advanced"));
   setTab(store.get("tab", "simple"));
   $("start-date").value = localToday();
+  $("watch-build").checked = !!store.get("watchBuild", false);
+  $("watch-build").onchange = () => store.set("watchBuild", $("watch-build").checked);
+  $("what-happens").open = !library.length || !!chosenExample; // open for a first retreat
+  loadExampleDocs();
   if (!library.length) api("/api/retreats").then((b) => { library = b.retreats; fillSeriesList(); }).catch(() => {});
   fillSeriesList();
 }
@@ -658,21 +698,66 @@ function fillSeriesList() {
   if (!ul.children.length) ul.append(el("li", { class: "hint", text: "No finished retreats yet." }));
 }
 
+let chosenExample = null; // slug of an example document ("be-still", or "be-still.txt")
+let exampleDocs = [];
+
 function chooseFile(file) {
-  $("drop").classList.toggle("chosen", !!file);
-  $("drop-title").textContent = file ? file.name : "Choose a PDF or Word document";
+  if (file) chosenExample = null;
+  $("drop").classList.toggle("chosen", !!file || !!chosenExample);
+  const ex = chosenExample && exampleDocs.find((e) => e.slug === chosenExample.replace(/\.txt$/, ""));
+  $("drop-title").textContent = file ? file.name
+    : ex ? `Using the example: ${ex.title}${chosenExample.endsWith(".txt") ? " (plain text)" : ""}`
+    : "Choose a PDF, Word or text file";
+  document.querySelectorAll(".example-doc").forEach((c) => c.classList.toggle("chosen", !!chosenExample && c.dataset.slug === chosenExample.replace(/\.txt$/, "")));
+}
+
+// Example documents to build from, with a look at the source first.
+async function loadExampleDocs() {
+  if (!exampleDocs.length) {
+    try {
+      exampleDocs = (await api("/api/examples")).examples || [];
+    } catch {
+      exampleDocs = [];
+    }
+  }
+  $("example-picker").hidden = !exampleDocs.length;
+  const box = $("example-docs");
+  box.innerHTML = "";
+  for (const e of exampleDocs) {
+    const use = (slug) => () => {
+      chosenExample = chosenExample === slug ? null : slug;
+      $("file").value = "";
+      $("paste-text").value = "";
+      chooseFile(null);
+      if (chosenExample) $("what-happens").open = true;
+    };
+    box.append(el("div", { class: "example-doc", "data-slug": e.slug },
+      e.cover_url ? el("img", { src: fileUrl(e.cover_url), alt: "", loading: "lazy" }) : el("span"),
+      el("div", { class: "example-doc-body" },
+        el("strong", { text: e.title }),
+        el("span", { class: "meta", text: `${e.days} days${e.subtitle ? ` · ${e.subtitle}` : ""}` }),
+        e.description && el("span", { class: "hint", text: e.description }),
+        el("span", { class: "row-buttons" },
+          el("button", { type: "button", class: "secondary", text: "Use this example", onclick: use(e.slug) }),
+          el("a", { href: fileUrl(e.pdf_url), target: "_blank", rel: "noopener", text: "Look at the PDF" }),
+          e.txt_url && el("button", { type: "button", class: "link", text: "or its plain-text version", onclick: use(`${e.slug}.txt`) })))));
+  }
+  chooseFile(null);
 }
 
 async function makeRetreat(event) {
   event.preventDefault();
   showMessage("");
-  const file = $("file").files[0];
-  if (!file) return showMessage("Choose a PDF or Word document first.");
-  if (!/\.(pdf|docx)$/i.test(file.name)) return showMessage("Only .pdf and .docx files are supported.");
+  let file = $("file").files[0];
+  const pasted = $("paste-text").value.trim();
+  if (!file && pasted) file = new File([pasted], "Pasted text.txt", { type: "text/plain" });
+  if (!file && !chosenExample) return showMessage("Choose a file, paste some text, or pick an example first.");
+  if (file && !/\.(pdf|docx|txt|md)$/i.test(file.name)) return showMessage("PDF, Word (.docx) and text (.txt) files are supported.");
   const maxMb = options?.limits?.max_upload_mb ?? 15;
-  if (file.size > maxMb * 1024 * 1024) return showMessage(`That file is larger than ${maxMb} MB.`);
+  if (file && file.size > maxMb * 1024 * 1024) return showMessage(`That file is larger than ${maxMb} MB.`);
   const form = new FormData();
-  form.append("file", file);
+  if (file) form.append("file", file);
+  else form.append("example", chosenExample);
   form.append("model", $("plan-model").value);
   form.append("start_date", $("start-date").value || localToday());
   form.append("options", JSON.stringify(buildOptions()));
@@ -688,7 +773,9 @@ async function makeRetreat(event) {
   button.textContent = "Uploading…";
   try {
     const made = await api("/api/retreats", { method: "POST", body: form });
+    if ($("watch-build").checked) store.set(`watch.${made.id}`, true);
     $("new-form").reset();
+    chosenExample = null;
     chooseFile(null);
     $("series-box").hidden = true;
     fillSettings();
@@ -771,6 +858,11 @@ function renderRetreat() {
   const ro = !!retreat.read_only;
   $("example-note").hidden = !ro;
   $("example-note").textContent = ro ? `${retreat.demo?.label || "An example retreat"}. It's ready to listen to and pray; your progress and notes are yours alone.` : "";
+  // The build log: open by itself while a retreat you chose to watch is being made.
+  const inProgress = busy();
+  if (inProgress && (store.get(`watch.${retreat.id}`) || store.get("watchBuild")) && !logState) openLog(retreat.id);
+  if (logState && logState.rid !== retreat.id) closeLog();
+  $("log-link").hidden = !plan || inProgress;
   // Research notes are always there on a computer, tucked away at the foot of the page.
   $("research-link").hidden = !plan || busy();
   $("research-link").href = `./?r=${retreat.id}&research`;
@@ -947,6 +1039,96 @@ function dayMenu(d, st) {
   if (st.journal || st.prayed_at) item("Edit what I noted…", () => showAfter(d.day, st.journal));
   wrap.append(btn, list);
   return wrap;
+}
+
+// ================================================================ build log (the terminal)
+
+let logState = null; // { rid, after, timer, busy }
+
+const logTime = (iso) => (iso ? new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "");
+const VENDOR_NAMES = { openrouter: "Anthropic via OpenRouter", jetstream: "Jetstream", microsoft: "Microsoft voice", elevenlabs: "ElevenLabs", openai: "OpenAI", xai: "xAI" };
+
+function logLine(row) {
+  const t = el("span", { class: "t-time", text: logTime(row.created_at) });
+  if (row.purpose === "step") {
+    return el("div", { class: `t-step${/fail|didn't finish/i.test(row.response) ? " t-bad" : ""}` }, t, " ", el("span", { text: `▸ ${row.response}` }));
+  }
+  const who = options?.search_providers?.[row.provider] || VENDOR_NAMES[row.provider] || row.provider;
+  const what = row.purpose === "voice" ? `recording (${row.model})` : `${row.purpose}${row.model && row.purpose !== "research" ? ` · ${row.model}` : ""}`;
+  const facts = [
+    row.day ? `day ${row.day}` : "",
+    row.duration_ms ? `${(row.duration_ms / 1000).toFixed(1)} s` : "",
+    row.input_tokens ? `${row.input_tokens.toLocaleString()} tokens in, ${(row.output_tokens || 0).toLocaleString()} out` : "",
+    row.web_searches && row.purpose !== "research" ? `${row.web_searches} web searches` : "",
+    row.system_chars ? `system prompt ${row.system_chars.toLocaleString()} chars` : "",
+  ].filter(Boolean).join(" · ");
+  const head = el("summary", {}, t, " ", el("span", { class: row.status === "error" ? "t-bad" : "t-call", text: `→ ${who}: ${what}` }), el("span", { class: "t-dim", text: facts ? `  ${facts}` : "" }));
+  return el("details", { class: "t-entry" }, head,
+    row.prompt && el("pre", { class: "t-sent", text: `sent:\n${row.prompt}` }),
+    row.error ? el("pre", { class: "t-bad", text: `error: ${row.error}` }) : row.response && el("pre", { class: "t-got", text: `received:\n${row.response}` }));
+}
+
+function openLog(rid) {
+  $("log-card").hidden = false;
+  $("log-toggle").textContent = "Hide the technical details";
+  if (logState?.rid === rid) return;
+  closeLog(false);
+  $("terminal").innerHTML = "";
+  $("terminal").append(el("div", { class: "t-dim", text: "Connecting to the build log…" }));
+  logState = { rid, after: 0, timer: null, first: true };
+  pollLog();
+}
+
+function closeLog(hide = true) {
+  if (logState) clearTimeout(logState.timer);
+  logState = null;
+  if (hide) {
+    $("log-card").hidden = true;
+    $("log-toggle").textContent = "Show the technical details";
+  }
+}
+
+async function pollLog() {
+  const s = logState;
+  if (!s) return;
+  let page;
+  try {
+    page = await api(`/api/retreats/${s.rid}/log?after=${s.after}`);
+  } catch (err) {
+    page = { rows: [], busy: true };
+  }
+  if (logState !== s) return;
+  const term = $("terminal");
+  const atBottom = term.scrollHeight - term.scrollTop - term.clientHeight < 40;
+  if (s.first) {
+    term.innerHTML = "";
+    if (!page.rows.length) term.append(el("div", { class: "t-dim", text: page.busy ? "Waiting for the first step…" : "Nothing was logged for this retreat." }));
+    s.first = false;
+  }
+  for (const row of page.rows) term.append(logLine(row));
+  if (page.rows.length) s.after = page.rows[page.rows.length - 1].id;
+  if (atBottom || page.rows.length > 50) term.scrollTop = term.scrollHeight;
+  if (page.busy || page.rows.length) s.timer = setTimeout(pollLog, page.busy ? 2000 : 200);
+  else term.append(el("div", { class: "t-dim", text: "— end of log —" }));
+}
+
+async function downloadLog() {
+  const rid = retreat?.id;
+  if (!rid) return;
+  const button = $("log-download");
+  button.textContent = "Preparing…";
+  try {
+    const full = await api(`/api/retreats/${rid}/log?full=true`);
+    const blob = new Blob([JSON.stringify({ retreat: retreat.plan?.title, id: rid, rows: full.rows }, null, 2)], { type: "application/json" });
+    const a = el("a", { href: URL.createObjectURL(blob), download: `build-log-${rid.slice(0, 8)}.json` });
+    document.body.append(a);
+    a.click();
+    a.remove();
+  } catch (err) {
+    showMessage(err.message);
+  } finally {
+    button.textContent = "Download the full log (JSON)";
+  }
 }
 
 // ================================================================ research
@@ -2004,29 +2186,41 @@ async function downloadScript(day, button) {
 const modelLabel = (id) => (options.models.find((m) => m.id === id)?.label || id || "").replace(/ \(.*\)$/, "");
 const tierOfVoice = (voice) => Object.entries(options.tiers).find(([, t]) => voice in t.voices)?.[0] || "free";
 
-// A rough estimate for a new seven-day retreat. Output tokens include the model's
-// thinking, so they're counted at about two and a half times the script.
+// An estimate for a new retreat with the choices on screen, calibrated on a real
+// seven-day build (Claude Fable with web search, ElevenLabs voices): tokens per day
+// for each part, and about 6,600 recorded characters a day.
+const PER_DAY_TOKENS = { heart: [2400, 950], deep: [61000, 2800], guide: [4500, 950] };
+const PLAN_TOKENS = [24000, 4500];
+const DEEP_SEARCHES_PER_DAY = 4;
+const CHARS_PER_DAY = { reading: 800, heart: 1900, deep: 2300, guide: 1600 };
+
 function estimateRetreat(days = 7) {
   const model = options.models.find((m) => m.id === $("write-model").value);
   const planModel = options.models.find((m) => m.id === $("plan-model").value);
-  if (!model || model.free) return null;
+  if (!model || !planModel) return null;
+  const cost = (m, [inTok, outTok]) => (m.free ? 0 : (inTok * m.input_per_m + outTok * m.output_per_m) / 1e6);
+  let writing = cost(planModel, PLAN_TOKENS);
+  for (const tokens of Object.values(PER_DAY_TOKENS)) writing += days * cost(model, tokens);
+  if (!model.free && options.web_search) writing += days * DEEP_SEARCHES_PER_DAY * (model.web_search_each || 0);
   const voices = chosenVoices();
-  const cap = (s) => options.tiers[tierOfVoice(voices[s])].max_chars;
-  const words = (s) => (cap(s) / 6) * 0.85;
-  const perIn = model.input_per_m / 1e6;
-  const perOut = model.output_per_m / 1e6;
-  const searches = options.web_search ? 5 : 0;
-  let llm = 3500 * perIn + words("heart") * 1.35 * 2.5 * perOut;
-  llm += (5000 + searches * 8000) * perIn + (words("deep") * 1.35 * 2.5 + 400) * perOut + searches * model.web_search_each;
-  llm += 7000 * perIn + 3000 * perOut;
-  const plan = planModel && !planModel.free ? 9000 * (planModel.input_per_m / 1e6) + 12000 * (planModel.output_per_m / 1e6) : 0;
-  const chars = { free: 0, premium: 0 };
-  chars[tierOfVoice(voices.reading)] += 1200;
-  chars[tierOfVoice(voices.heart)] += cap("heart") * 0.9;
-  chars[tierOfVoice(voices.deep)] += cap("deep") * 0.9;
-  chars[tierOfVoice(voices.guide)] += 1400;
-  const voice = (chars.premium / 1000) * (options.elevenlabs?.usd_per_1k_chars || 0);
-  return { total: plan + days * (llm + voice), voice: days * voice, model };
+  const premiumChars = days * Object.entries(CHARS_PER_DAY)
+    .reduce((n, [part, chars]) => n + (tierOfVoice(voices[part]) === "premium" ? chars : 0), 0);
+  const voice = (premiumChars / 1000) * (options.elevenlabs?.usd_per_1k_chars || 0);
+  return { total: writing + voice, writing, voice, premiumChars, model, days };
+}
+
+function updateEstimate() {
+  const note = $("advanced-estimate");
+  if (!note || !options) return;
+  const e = estimateRetreat();
+  note.hidden = !e;
+  if (!e) return;
+  const voicePart = e.premiumChars
+    ? `ElevenLabs voices about ${money(e.voice)} (${Math.round(e.premiumChars / 1000)}k characters)`
+    : "free Microsoft voices";
+  note.textContent = e.total > 0
+    ? `Estimated for a seven-day retreat with these choices: about ${money(e.total)}. Writing with ${modelLabel(e.model.id)} about ${money(e.writing)}, ${voicePart}.`
+    : "Estimated for a seven-day retreat with these choices: free (open models and Microsoft voices).";
 }
 
 // ================================================================ costs (tucked away: ?costs)
@@ -2106,6 +2300,18 @@ async function checkServer() {
 }
 
 function wireForms() {
+  $("log-toggle").onclick = () => (logState ? closeLog() : retreat && openLog(retreat.id));
+  $("log-link").onclick = () => retreat && openLog(retreat.id);
+  $("log-close").onclick = () => closeLog();
+  $("log-download").onclick = downloadLog;
+  $("paste-text").addEventListener("input", () => {
+    if ($("paste-text").value.trim()) {
+      chosenExample = null;
+      $("file").value = "";
+      chooseFile(null);
+      $("drop-title").textContent = "Using the pasted text";
+    }
+  });
   $("signin-form").addEventListener("submit", sendSignInLink);
   $("upgrade-form").addEventListener("submit", upgradeGuest);
   $("guest-button").onclick = async () => {
