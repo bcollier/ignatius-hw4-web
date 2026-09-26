@@ -12,6 +12,7 @@ let retreat = null;
 let pollTimer = null;
 let sb = null; // Supabase client, when the server uses sign-in
 let session = null;
+let me = null; // {mode: "full" | "free", anonymous, max_retreats} from /api/me
 
 // ------------------------------------------------------------------ API helper
 
@@ -100,7 +101,7 @@ function fillTierMenu() {
   for (const section of SECTIONS) {
     const select = $(`voice-${section}`);
     select.innerHTML = "";
-    for (const info of Object.values(options.tiers)) {
+    for (const [, info] of allowedTiers()) {
       const group = document.createElement("optgroup");
       group.label = info.label;
       for (const [id, label] of Object.entries(info.voices)) group.append(new Option(label, id));
@@ -119,7 +120,7 @@ function fillTierMenu() {
       if (retreat?.plan) render();
     };
   }
-  const caps = Object.values(options.tiers).map(
+  const caps = allowedTiers().map(([, t]) => t).map(
     (t) => `${t.label}: up to ${t.max_chars.toLocaleString()} characters a section (about ${Math.round(t.max_chars / 900)} min)`
   );
   $("tier-note").textContent = caps.join(". ") + ". Changing voices only needs a re-record, not a rewrite.";
@@ -416,6 +417,10 @@ function wirePrompts() {
 
 // ------------------------------------------------------------------ models and costs
 
+const isFree = () => me?.mode === "free";
+const allowedModels = () => options.models.filter((m) => (isFree() ? m.free : true));
+const allowedTiers = () => Object.entries(options.tiers).filter(([key]) => !isFree() || key === "free");
+
 function fillModels() {
   let saved = null;
   try {
@@ -423,10 +428,11 @@ function fillModels() {
   } catch {}
   for (const select of document.querySelectorAll(".model-select")) {
     select.innerHTML = "";
-    for (const m of options.models) {
-      select.add(new Option(`${m.label} · $${m.input_per_m} in / $${m.output_per_m} out per million tokens`, m.id));
+    for (const m of allowedModels()) {
+      select.add(new Option(m.free ? m.label : `${m.label} · $${m.input_per_m} in / $${m.output_per_m} out per million tokens`, m.id));
     }
-    select.value = options.models.some((m) => m.id === saved) ? saved : options.default_model;
+    const allowed = allowedModels();
+    select.value = allowed.some((m) => m.id === saved) ? saved : allowed.some((m) => m.id === options.default_model) ? options.default_model : allowed[0]?.id;
     select.onchange = () => {
       document.querySelectorAll(".model-select").forEach((other) => (other.value = select.value));
       try {
@@ -435,7 +441,7 @@ function fillModels() {
       if (retreat?.plan) render();
     };
   }
-  const bal = options.elevenlabs?.balance;
+  const bal = isFree() ? null : options.elevenlabs?.balance;
   $("balance-note").hidden = !bal;
   if (bal) {
     $("balance-note").textContent =
@@ -488,6 +494,7 @@ function voicePart(chars, usd) {
 }
 
 function dayCostText(day, state) {
+  if (isFree()) return "Free: Jetstream models and free voices.";
   const parts = [];
   if (state.cost) {
     const c = state.cost;
@@ -753,9 +760,20 @@ async function sendSignInLink(event) {
 
 async function showSignedIn(newSession) {
   session = newSession;
+  try {
+    me = await api("/api/me");
+  } catch (err) {
+    if (sb) return showMessage(err.message);
+  }
+  fillModels();
+  fillTierMenu();
   $("signin-section").hidden = true;
   $("account-bar").hidden = !session;
-  $("account-email").textContent = session ? `Signed in as ${session.user.email}` : "";
+  $("account-email").textContent = !session ? "" : me?.anonymous ? "Guest session (this browser only)" : `Signed in as ${session.user.email}`;
+  $("free-banner").hidden = !isFree();
+  $("free-banner").textContent = isFree()
+    ? `Free mode: retreats are planned and written by open models on Jetstream (no web search) and read by free voices. You can keep up to ${me.max_retreats} retreats.`
+    : "";
   $("library-section").hidden = false;
   $("upload-section").hidden = false;
   await loadLibrary();
@@ -765,6 +783,9 @@ async function showSignedIn(newSession) {
 
 function showSignedOut() {
   session = null;
+  me = null;
+  $("free-banner").hidden = true;
+  $("guest-box").hidden = !options?.free_mode?.enabled;
   clearTimeout(pollTimer);
   retreat = null;
   $("signin-section").hidden = false;
@@ -858,6 +879,12 @@ $("reset-guide").onclick = () => {
 // Lengths shown on each day follow the prayer settings.
 for (const id of ["sequence", "pause", "grace-silence"]) $(id).addEventListener("change", () => retreat?.plan && render());
 $("signin-form").addEventListener("submit", sendSignInLink);
+$("guest-button").onclick = async () => {
+  $("guest-button").disabled = true;
+  const { error } = await sb.auth.signInAnonymously();
+  $("guest-button").disabled = false;
+  if (error) showMessage(`Couldn't start a guest session: ${error.message}`);
+};
 $("signout").onclick = async () => {
   await sb.auth.signOut();
   showSignedOut();
