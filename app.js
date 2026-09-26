@@ -268,8 +268,9 @@ function renderDay(day, state) {
   pray.onclick = () => startPrayer(day, state);
 
   const tracks = node.querySelector(".tracks");
-  for (const [key, track] of Object.entries(state.tracks || {})) {
-    if (track.status !== "ready") continue;
+  for (const key of Object.keys(TRACK_LABELS)) { // reading, heart, deep, in listening order
+    const track = state.tracks?.[key];
+    if (track?.status !== "ready") continue;
     tracks.append(renderTrack(key, track));
   }
   return node;
