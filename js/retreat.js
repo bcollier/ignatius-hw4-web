@@ -98,11 +98,10 @@ function renderHeaderButtons(plan) {
 function renderFootLinks(plan) {
   const inProgress = busy();
   // The build log opens by itself while a retreat you chose to watch is being made.
-  if (inProgress && (store.get(`watch.${retreat.id}`) || store.get("watchBuild")) && !logState) openLog(retreat.id);
+  if (debugMode() && inProgress && (store.get(`watch.${retreat.id}`) || store.get("watchBuild")) && !logState) openLog(retreat.id);
   if (logState && logState.rid !== retreat.id) closeLog();
-  $("log-link").hidden = !plan || inProgress;
-  $("research-link").hidden = !plan || inProgress;
-  $("research-link").href = `./?r=${retreat.id}&research`;
+  $("log-link").hidden = !debugMode() || !plan || inProgress;
+  $("log-toggle").hidden = !debugMode();
 }
 
 function renderProgress() {

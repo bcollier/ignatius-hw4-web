@@ -6,7 +6,8 @@ function openNew() {
   if ($("advanced").parentElement !== $("panel-advanced")) $("panel-advanced").append($("advanced"));
   setTab(store.get("tab", "simple"));
   $("start-date").value = localToday();
-  $("watch-build").checked = !!store.get("watchBuild", false);
+  $("watch-build-label").hidden = !debugMode();
+  $("watch-build").checked = debugMode() && !!store.get("watchBuild", false);
   $("watch-build").onchange = () => store.set("watchBuild", $("watch-build").checked);
   $("what-happens").open = !library.length || !!chosenExample; // open for a first retreat
   loadExampleDocs();

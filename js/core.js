@@ -147,6 +147,19 @@ const postJson = (path, body, method = "POST") =>
   api(path, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 
 // Files are signed Storage URLs (Supabase) or paths on the API server (local).
+// Debug mode shows the technical extras (build log, costs). Turn it on or off by opening
+// the site with ?debug=true or ?debug=false; the choice is remembered in this browser.
+const debugMode = () => !!store.get("debug");
+function readDebugFlag() {
+  const flag = new URLSearchParams(location.search).get("debug");
+  if (flag == null) return;
+  store.set("debug", /^(1|true|yes|on)$/i.test(flag) ? true : null);
+  const url = new URL(location.href);
+  url.searchParams.delete("debug");
+  history.replaceState(null, "", url);
+  document.documentElement.classList.toggle("debug", debugMode());
+}
+
 const fileUrl = (url) => (url && /^https?:\/\//.test(url) ? url : url ? API + url : "");
 
 // ================================================================ state

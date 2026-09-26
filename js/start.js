@@ -103,6 +103,8 @@ function wireAboutMeAndTalk() {
 }
 
 async function start() {
+  readDebugFlag();
+  document.documentElement.classList.toggle("debug", debugMode());
   if (!(await checkServer())) return;
   if (options.auth) {
     sb = window.supabase.createClient(options.auth.url, options.auth.publishable_key);

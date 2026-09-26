@@ -38,7 +38,7 @@ async function route() {
   const p = params();
   if (!p.has("pray")) closePrayer(false);
   if (!p.has("talk") && talkState) endTalk("You left the conversation.");
-  $("site-foot").hidden = !signedIn();
+  $("site-foot").hidden = !signedIn() || !debugMode();
   if (p.has("about")) return show("about");
   if (!signedIn()) return show("signin");
   if (p.has("new")) return openNew();
