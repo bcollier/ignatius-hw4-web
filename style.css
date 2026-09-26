@@ -298,4 +298,35 @@ body.praying { overflow: hidden; }
 #me-summary-note { color: var(--work); border-color: var(--work); }
 
 /* Costs are for making a retreat on a larger screen, never on a phone. */
-@media (max-width: 700px) { .cost-info { display: none !important; } }
+@media (max-width: 700px) { .cost-info, .desktop-only { display: none !important; } }
+
+/* ---------------------------------------------------------------- examples */
+.examples { margin-top: 2rem; }
+.example-list { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.example { display: flex; flex-direction: column; overflow: hidden; padding: 0; text-decoration: none; color: inherit; }
+.example img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; background: var(--line); }
+.example .example-body { padding: .9rem 1rem 1rem; display: grid; gap: .35rem; }
+.example h3 { margin: 0; font-size: 1.15rem; }
+.example .tag { font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); }
+
+/* ---------------------------------------------------------------- research */
+.research-toc { display: flex; flex-wrap: wrap; gap: .4rem; margin: 1rem 0 1.5rem; }
+.research-toc a { padding: .25rem .6rem; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; font-size: .9rem; }
+.research-day { margin-bottom: 1.5rem; }
+.research-day h2 { margin-top: 0; }
+.research-day h3 { font-size: 1rem; margin: 1.2rem 0 .4rem; }
+.research-day .passage { max-height: 14rem; overflow: auto; }
+.research-results { list-style: none; padding: 0; display: grid; gap: .6rem; }
+.research-results li { border-left: 3px solid var(--line); padding: .2rem 0 .2rem .75rem; }
+.research-results li.cited { border-left-color: var(--accent); }
+.research-results .snippet { font-size: .88rem; color: var(--muted); margin: .2rem 0 0; white-space: pre-wrap; }
+.research-results .service { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-left: .4rem; }
+.research-queries { padding-left: 1.2rem; }
+
+/* ---------------------------------------------------------------- about: voices and services */
+.voice-grid { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); margin: .8rem 0 1.4rem; }
+.voice-sample { margin: 0; padding: .7rem .8rem; border: 1px solid var(--line); border-radius: 10px; background: var(--card, transparent); }
+.voice-sample figcaption { margin-bottom: .4rem; }
+.voice-sample audio { width: 100%; height: 36px; }
+.services dt { font-weight: 600; margin-top: .8rem; }
+.services dd { margin: .2rem 0 0; }

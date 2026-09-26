@@ -133,6 +133,7 @@ const fileUrl = (url) => (url && /^https?:\/\//.test(url) ? url : url ? API + ur
 let options = null; // GET /api/options
 let me = null; // GET /api/me
 let library = []; // GET /api/retreats
+let examples = []; // ready-made example retreats, read only
 let retreat = null; // the open retreat
 let pollTimer = null;
 let selectedDay = null;
@@ -198,6 +199,11 @@ function fillSettings() {
   $("start-date").value = localToday();
   $("tailor-guide").checked = store.get("tailor", true);
   $("tailor-guide").onchange = () => store.set("tailor", $("tailor-guide").checked);
+  $("show-research").checked = !!store.get("showResearch", false);
+  $("show-research").onchange = () => {
+    store.set("showResearch", $("show-research").checked);
+    if (retreat && params().get("r")) renderRetreat();
+  };
 
   for (const [key, id] of Object.entries(PROMPT_FIELDS)) {
     $(id).value = store.get(`prompt.${key}`) || defaultPrompt(key);
@@ -328,7 +334,7 @@ document.addEventListener("click", (event) => {
 });
 window.addEventListener("popstate", () => route());
 
-const VIEWS = ["signin", "library", "new", "retreat", "talk", "me", "about"];
+const VIEWS = ["signin", "library", "new", "retreat", "research", "talk", "me", "about"];
 function show(view) {
   for (const v of VIEWS) $(`view-${v}`).hidden = v !== view;
   window.scrollTo(0, 0);
@@ -345,6 +351,7 @@ async function route() {
   if (p.has("new")) return openNew();
   if (p.has("me")) return openMe();
   if (p.has("talk")) return openTalk(p.get("r"));
+  if (p.has("research") && p.get("r")) return openResearch(p.get("r"));
   if (p.get("r")) return openRetreat(p.get("r"), p.get("pray"));
   return openLibrary();
 }
@@ -398,7 +405,9 @@ async function openLibrary() {
   $("free-banner").textContent = "Free mode: retreats are written by open models, researched on the web, and read by free voices.";
   $("upgrade-box").hidden = !me?.anonymous;
   try {
-    library = (await api("/api/retreats")).retreats;
+    const body = await api("/api/retreats");
+    library = body.retreats;
+    examples = body.examples || [];
   } catch (err) {
     return showMessage(err.message);
   }
@@ -460,11 +469,15 @@ function seriesGroups() {
 
 function renderLibrary() {
   $("library-empty").hidden = library.length > 0;
+  renderExamples();
   const groups = $("groups");
   groups.innerHTML = "";
 
   const lastUsed = (r) => Math.max(Date.parse(r.last_prayed_at || 0) || 0, r.created_at * 1000);
-  const recent = [...library].sort((a, b) => lastUsed(b) - lastUsed(a));
+  const touched = (r) => (r.day_states || []).some((d) => d.started || d.prayed_at);
+  // Your own retreats first, then an example you've begun, then (with nothing of your own) the first example.
+  const recent = [...library].sort((a, b) => lastUsed(b) - lastUsed(a))
+    .concat(examples.filter(touched), library.length ? [] : examples.filter((r) => !touched(r)));
   const making = library.find((r) => r.status === "planning" || r.status === "building");
   const cont = $("continue");
   cont.innerHTML = "";
@@ -473,11 +486,12 @@ function renderLibrary() {
     const pick = nextDay(r, r.day_states || []);
     if (!pick) continue;
     const { d, s } = pick;
-    const lead = s.kind === "started" ? "Continue where you left off" : s.kind === "missed" ? `You missed Day ${d.day}` : s.today ? "Today" : "Next";
+    const fresh = r.read_only && !touched(r);
+    const lead = fresh ? "Start here · an example retreat" : s.kind === "started" ? "Continue where you left off" : s.kind === "missed" ? `You missed Day ${d.day}` : s.today ? "Today" : "Next";
     cont.append(
       el("p", { class: "eyebrow", text: lead }),
       el("h3", { text: `Day ${d.day}${d.title ? ` · ${dayTitle(d.title)}` : ""}` }),
-      el("p", { class: "meta", text: `${r.series?.length ? `Week ${r.series.length + 1} · ` : ""}${r.title}` }),
+      el("p", { class: "meta", text: `${r.series?.length ? `Week ${r.series.length + 1} · ` : ""}${r.title}${r.demo ? ` · ${r.demo.label}` : ""}` }),
       el("div", { class: "row-buttons" },
         el("a", { class: "button big", href: `./?r=${r.id}&pray=${d.day}`, "data-nav": "", text: s.kind === "started" ? "Continue praying" : "Pray this day" }),
         el("a", { href: `./?r=${r.id}`, "data-nav": "", text: "Open the retreat" })),
@@ -507,6 +521,26 @@ function renderLibrary() {
     groups.append(card);
   }
   fillSeriesList();
+}
+
+function renderExamples() {
+  $("examples").hidden = !examples.length;
+  // With nothing of your own yet, the examples come first.
+  const head = document.querySelector("#view-library .library-head");
+  if (!library.length) head.before($("examples"));
+  else $("groups").after($("examples"));
+  const list = $("example-list");
+  list.innerHTML = "";
+  for (const r of examples) {
+    const prayed = r.days_prayed || 0;
+    list.append(el("a", { class: "card example", href: `./?r=${r.id}`, "data-nav": "" },
+      r.cover ? el("img", { src: fileUrl(r.cover), alt: "", loading: "lazy" }) : el("span"),
+      el("div", { class: "example-body" },
+        el("span", { class: "tag", text: r.demo?.kind === "premium" ? "Premium example" : "Free example" }),
+        el("h3", { text: r.title }),
+        el("span", { class: "meta", text: r.demo?.label || "" }),
+        el("span", { class: "meta", text: prayed ? `${prayed} of ${r.days} days prayed` : `${r.days} days` }))));
+  }
 }
 
 function renderWeek(r, weekNo) {
@@ -685,6 +719,12 @@ function renderRetreat() {
   const written = Object.values(retreat.days).some((d) => d.tracks?.heart?.script && d.tracks?.deep?.script);
   $("retreat-pdf").hidden = !written;
   $("talk-button").hidden = !options.talk?.enabled || !plan;
+  const ro = !!retreat.read_only;
+  $("example-note").hidden = !ro;
+  $("example-note").textContent = ro ? `${retreat.demo?.label || "An example retreat"}. It's ready to listen to and pray; your progress and notes are yours alone.` : "";
+  const researchOn = !!store.get("showResearch") && !!plan;
+  $("research-link").hidden = !researchOn;
+  $("research-link").href = `./?r=${retreat.id}&research`;
 
   $("retreat-error").hidden = retreat.status !== "failed";
   $("retreat-error").textContent = retreat.status === "failed" ? `Making this retreat failed: ${retreat.error}` : "";
@@ -795,7 +835,12 @@ function renderDay() {
       dayMenu(d, st)));
   } else if (st.status === "failed") {
     panel.append(el("p", { class: "state-line missed", text: `Making this day didn't finish: ${st.error || "unknown error"}` }));
-    panel.append(el("div", { class: "pray-row" }, el("button", { type: "button", text: "Try again", onclick: () => rebuildDay(d.day, false) }), dayMenu(d, st)));
+    const clips = [...Object.values(st.tracks || {}), ...Object.values(st.guide || {})];
+    const fromScripts = !retreat.read_only && st.params && clips.every((c) => c.status === "ready" || c.script);
+    panel.append(el("div", { class: "pray-row" },
+      !retreat.read_only && el("button", { type: "button", text: "Try again", onclick: () => (fromScripts ? retryDay(d.day) : rebuildDay(d.day, false)) }),
+      fromScripts && el("span", { class: "hint", text: "Only the parts that failed are recorded again." }),
+      dayMenu(d, st)));
   } else if (st.status === "idle") {
     panel.append(el("div", { class: "pray-row" }, el("button", { type: "button", text: "Make this day", onclick: () => rebuildDay(d.day, false) })));
   } else {
@@ -845,11 +890,79 @@ function dayMenu(d, st) {
     if (!list.hidden) document.addEventListener("click", close, { once: true });
   };
   const item = (text, fn) => list.append(el("button", { type: "button", text, onclick: () => { close(); fn(); } }));
-  if (st.tracks?.heart?.script) item("Re-record with other voices…", () => openRebuild(d.day, true));
-  item("Rewrite and record this day…", () => openRebuild(d.day, false));
+  if (!retreat.read_only) {
+    if (st.tracks?.heart?.script) item("Re-record with other voices…", () => openRebuild(d.day, true));
+    item("Rewrite and record this day…", () => openRebuild(d.day, false));
+  }
+  if (store.get("showResearch")) item("Research for this day", () => go(`?r=${retreat.id}&research#research-day-${d.day}`));
+  if (!list.children.length) return el("span");
   if (st.journal || st.prayed_at) item("Edit what I noted…", () => showAfter(d.day, st.journal));
   wrap.append(btn, list);
   return wrap;
+}
+
+// ================================================================ research
+
+async function openResearch(id) {
+  show("research");
+  $("research-days").innerHTML = "";
+  $("research-toc").innerHTML = "";
+  $("research-meta").textContent = "Loading…";
+  let r;
+  try {
+    r = await api(`/api/retreats/${id}/research`);
+  } catch (err) {
+    $("research-meta").textContent = "";
+    return showMessage(err.message);
+  }
+  document.title = `Research · ${r.title || "Retreat"} · Ignatius at Home`;
+  $("research-title").textContent = `Research done for ${r.title || "this retreat"}`;
+  $("research-meta").textContent = [r.source_filename && `Made from ${r.source_filename}`, r.model && `written by ${modelLabel(r.model)}`].filter(Boolean).join(", ");
+  for (const d of r.days) {
+    $("research-toc").append(el("a", { href: `#research-day-${d.day}`, text: `Day ${d.day}` }));
+    $("research-days").append(renderResearchDay(d));
+  }
+  const target = location.hash && document.querySelector(location.hash);
+  if (target) target.scrollIntoView();
+}
+
+function renderResearchDay(d) {
+  const card = el("article", { class: "card research-day", id: `research-day-${d.day}` },
+    el("p", { class: "meta", text: `Day ${d.day}${d.source_ref ? ` · ${d.source_ref}` : ""}` }),
+    el("h2", { text: dayTitle(d.title) }));
+  card.append(el("h3", { text: "From your document" }));
+  for (const [k, v] of Object.entries(d.notes || {})) card.append(el("p", {}, el("strong", { text: `${k.replace("_", " ")}: ` }), v));
+  card.append(el("p", { class: "passage", text: d.passage_text || "" }));
+
+  const f = d.research;
+  const urlOf = (line) => line.match(/https?:\/\/[^\s)]+/)?.[0];
+  const cited = new Set((d.cited || []).map(urlOf).filter(Boolean));
+  card.append(el("h3", { text: "Research for the deep dive" }));
+  if (!f) {
+    card.append(el("p", { class: "hint", text: d.web_search
+      ? "This day was made before research was saved, so only the cited sources are known."
+      : d.status === "ready" ? "No web research was done for this day." : "This day hasn't been made yet." }));
+  } else {
+    const who = f.how === "model web search" ? "The model searched the web itself" : `Searched with ${d.research_service || f.service}`;
+    const extra = f.contributors?.length ? ` (results from ${f.contributors.map((c) => options.search_providers?.[c] || c).join(", ")})` : "";
+    card.append(el("p", { class: "meta", text: `${who}${extra} · ${f.results.length} results · ${cited.size} cited` }));
+    if (f.skipped?.length) card.append(el("p", { class: "hint", text: `Skipped: ${f.skipped.join("; ")}` }));
+    if (f.queries?.length) card.append(el("p", { class: "meta", text: "Searches" }), el("ol", { class: "research-queries" }, f.queries.map((q) => el("li", { text: q }))));
+    card.append(el("ul", { class: "research-results" }, f.results.map((x) =>
+      el("li", { class: cited.has(x.url) ? "cited" : "" },
+        el("a", { href: x.url, target: "_blank", rel: "noopener", text: x.title || x.url }),
+        x.service && el("span", { class: "service", text: options.search_providers?.[x.service] || x.service }),
+        cited.has(x.url) && el("span", { class: "service", text: "· cited" }),
+        x.content && el("p", { class: "snippet", text: x.content })))));
+  }
+  if (d.cited?.length) {
+    card.append(el("h3", { text: "Sources the deep dive cites" }));
+    card.append(el("ul", { class: "sources" }, d.cited.map((line) => {
+      const url = urlOf(line);
+      return el("li", {}, url ? el("a", { href: url, target: "_blank", rel: "noopener", text: line }) : line);
+    })));
+  }
+  return card;
 }
 
 async function markPrayed(day, body) {
@@ -881,6 +994,16 @@ function openRebuild(day, keep) {
 async function rebuildDay(day, keep) {
   try {
     retreat = await postJson(`/api/retreats/${retreat.id}/days/${day}/build`, buildOptions(keep));
+    renderRetreat();
+    schedulePoll();
+  } catch (err) {
+    showMessage(err.message);
+  }
+}
+
+async function retryDay(day) {
+  try {
+    retreat = await postJson(`/api/retreats/${retreat.id}/days/${day}/retry`, {});
     renderRetreat();
     schedulePoll();
   } catch (err) {
