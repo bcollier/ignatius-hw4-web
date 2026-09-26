@@ -11,10 +11,10 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=26">
-  <link rel="icon" href="icons/icon-192.png?v=26" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=26">
-  <link rel="stylesheet" href="style.css?v=26">
+  <link rel="manifest" href="manifest.webmanifest?v=28">
+  <link rel="icon" href="icons/icon-192.png?v=28" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=28">
+  <link rel="stylesheet" href="style.css?v=28">
 </head>
 <body>
   <header class="topbar">
@@ -171,19 +171,6 @@
               </fieldset>
             </div>
             <label class="check"><input id="tailor-guide" type="checkbox" checked> Tailor the spoken guidance to each day's reflection and deep dive</label>
-            <fieldset id="talk-fields" hidden>
-              <legend>Conversation</legend>
-              <div class="row">
-                <label>Voice service <select id="talk-provider"></select></label>
-                <label>Voice <select id="talk-voice"></select></label>
-              </div>
-              <p class="row-buttons">
-                <button type="button" id="talk-hear" class="link">▶ Hear this voice</button>
-                <span id="talk-no-sample" class="hint" hidden>No sample for this voice: OpenAI offers it only in live conversation. Marin and Cedar have samples.</span>
-                <audio id="talk-sample-player" preload="none"></audio>
-              </p>
-              <p class="hint">Used by "Talk it over." What you want from the companion is set under <a href="./?me" data-nav="me">About me</a>.</p>
-            </fieldset>
             <details class="prompt-box">
               <summary>How the retreat is planned</summary>
               <textarea id="plan-prompt" rows="10" spellcheck="true" aria-label="Planning prompt"></textarea>
@@ -274,11 +261,24 @@
     <section id="view-talk" class="view talk" hidden>
       <a href="./" data-nav="back" class="back" id="talk-back">← Back</a>
       <h1>Talk it over</h1>
-      <p class="lede">A spoken conversation about your retreat with an AI prayer companion. It knows which days you've prayed, what they were about, what you've told it about yourself, and what you talked about before. It mostly asks questions and helps you notice where God has been at work; it gives little advice.</p>
+      <p class="lede">A spoken conversation about your retreat with an AI prayer companion. It knows which days you've prayed, what they were about, <a href="./?me" data-nav="me">what you've told it about yourself</a>, and what you talked about before. It mostly asks questions and helps you notice where God has been at work; it gives little advice.</p>
       <div class="card talk-card">
         <p id="talk-context" class="hint"></p>
         <p id="talk-limit" class="hint" hidden></p>
-        <p id="talk-voice-line" class="meta"></p>
+        <p class="talk-voice-row"><span id="talk-voice-line" class="meta"></span>
+          <button type="button" id="talk-voice-change" class="link">Change voice</button></p>
+        <div id="talk-fields" class="talk-fields" hidden>
+          <div class="row">
+            <label>Voice service <select id="talk-provider"></select></label>
+            <label>Voice <select id="talk-voice"></select></label>
+          </div>
+          <p class="row-buttons">
+            <button type="button" id="talk-hear" class="link">▶ Hear this voice</button>
+            <span id="talk-no-sample" class="hint" hidden>No sample for this voice: OpenAI offers it only in live conversation. Marin and Cedar have samples.</span>
+            <audio id="talk-sample-player" preload="none"></audio>
+          </p>
+          <p class="hint">Your choice is remembered on this device. What you want from the companion is set under <a href="./?me" data-nav="me">About me</a>.</p>
+        </div>
         <div class="talk-controls">
           <button type="button" id="talk-start" class="big">Start talking</button>
           <button type="button" id="talk-stop" class="secondary" hidden>End conversation</button>
@@ -520,7 +520,7 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=26"></script>
-  <script src="app.js?v=26"></script>
+  <script src="config.js?v=28"></script>
+  <script src="app.js?v=28"></script>
 </body>
 </html>

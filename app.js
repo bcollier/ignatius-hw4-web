@@ -283,9 +283,17 @@ async function loadTalkSamples() {
 }
 const talkSample = (provider, voice) => talkSamples?.[provider]?.[voice];
 
+function talkVoiceLine() {
+  const providers = talkProviders();
+  const info = providers[$("talk-provider").value];
+  if (!info) return;
+  const v = $("talk-voice").value;
+  $("talk-voice-line").textContent = `Voice: ${info.voices[v] || v}, ${info.label}.`;
+}
+
 function fillTalkSettings() {
   const providers = talkProviders();
-  $("talk-fields").hidden = !Object.keys(providers).length;
+  $("talk-voice-change").hidden = !Object.keys(providers).length;
   if (!Object.keys(providers).length) return;
   const psel = $("talk-provider");
   psel.innerHTML = "";
@@ -310,8 +318,10 @@ function fillTalkSettings() {
     vsel.onchange = () => {
       store.set(`talk.voice.${psel.value}`, vsel.value);
       hear();
+      talkVoiceLine();
     };
     hear();
+    talkVoiceLine();
   };
   $("talk-hear").onclick = () => {
     const sample = talkSample(psel.value, $("talk-voice").value);
@@ -1633,16 +1643,24 @@ async function openTalk(retreatId) {
   $("talk-context").textContent = r
     ? `About “${r.plan?.title}”: the companion knows its ${r.plan?.days.length} days and that you've listened to ${listened} of them.`
     : "Not tied to a retreat. Open a retreat and choose “Talk it over” to talk about it.";
-  const provider = providers[$("talk-provider").value] ? $("talk-provider").value : t.default_provider;
-  const voice = $("talk-voice").value;
-  $("talk-voice-line").textContent = `${providers[provider].label}, voice ${providers[provider].voices[voice] || voice}. Change these in New retreat → Advanced → Conversation.`;
+  talkVoiceLine();
+  $("talk-fields").hidden = true;
+  $("talk-voice-change").onclick = () => {
+    $("talk-fields").hidden = !$("talk-fields").hidden;
+    $("talk-voice-change").textContent = $("talk-fields").hidden ? "Change voice" : "Done";
+  };
+  $("talk-voice-change").textContent = "Change voice";
   $("talk-limit").hidden = !isFree();
   $("talk-limit").textContent = `Free accounts can talk for ${t.free_seconds} seconds a day. Premium accounts can talk for up to ${Math.round(t.max_seconds / 60)} minutes at a time.`;
   $("talk-start").textContent = "Start talking";
   $("talk-start").hidden = false;
   $("talk-stop").hidden = true;
   $("talk-timer").hidden = true;
-  $("talk-start").onclick = () => startTalk(provider, voice, r?.id || null);
+  // Read the choice when talking starts, so a change just made is used.
+  $("talk-start").onclick = () => {
+    const provider = providers[$("talk-provider").value] ? $("talk-provider").value : t.default_provider;
+    startTalk(provider, $("talk-voice").value, r?.id || null);
+  };
   $("talk-stop").onclick = () => endTalk("You ended the conversation.");
   loadTalkHistory();
 }
@@ -1684,6 +1702,7 @@ function talkConnected(max) {
   $("talk-stop").hidden = false;
   $("talk-timer").hidden = false;
   $("talk-orb").hidden = false;
+  startOrb();
   talkState.timer = setInterval(() => {
     const secs = (Date.now() - talkState.started) / 1000;
     $("talk-timer").textContent = `${formatClock(secs)}${talkState.max ? ` of ${formatClock(talkState.max)}` : ""}`;
@@ -1697,8 +1716,10 @@ async function startTalk(provider, voice, retreatId) {
   status.textContent = "Asking for your microphone…";
   $("talk-start").disabled = true;
   try {
+    // Made during the tap, so the browser lets it run: it drives the orb (and plays Grok's voice).
+    const audioCtx = new AudioContext(provider === "xai" ? { sampleRate: 24000 } : {});
     const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
-    talkState = { provider, stream, transcriptParts: [] };
+    talkState = { provider, stream, transcriptParts: [], audioCtx };
     status.textContent = "Connecting…";
     if (provider === "xai") await startGrok(stream, voice, retreatId);
     else await startOpenAI(stream, voice, retreatId);
@@ -1715,7 +1736,11 @@ async function startOpenAI(stream, voice, retreatId) {
   const pc = new RTCPeerConnection();
   const audio = new Audio();
   audio.autoplay = true;
-  pc.ontrack = (e) => (audio.srcObject = e.streams[0]);
+  pc.ontrack = (e) => {
+    audio.srcObject = e.streams[0];
+    talkState.remoteStream = e.streams[0];
+    if (talkState.meters) talkState.meters.ai = makeMeter(talkState.audioCtx, talkState.audioCtx.createMediaStreamSource(e.streams[0]));
+  };
   stream.getTracks().forEach((track) => pc.addTrack(track, stream));
   const dc = pc.createDataChannel("oai-events");
   Object.assign(talkState, { pc, dc, audio });
@@ -1763,7 +1788,11 @@ const toBase64 = (buffer) => {
 
 async function startGrok(stream, voice, retreatId) {
   const res = await postJson("/api/talk/session", { provider: "xai", voice, retreat_id: retreatId, local_time: localTimeWithOffset() });
-  const ctx = new AudioContext({ sampleRate: 24000 });
+  const ctx = talkState.audioCtx || new AudioContext({ sampleRate: 24000 });
+  // The companion's voice goes through one node, so the orb can follow it.
+  const aiOut = ctx.createGain();
+  aiOut.connect(ctx.destination);
+  talkState.aiOut = aiOut;
   await ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([CAPTURE_WORKLET], { type: "text/javascript" })));
   const source = ctx.createMediaStreamSource(stream);
   const capture = new AudioWorkletNode(ctx, "capture");
@@ -1837,14 +1866,56 @@ function playPcm(b64) {
   for (let i = 0; i < pcm.length; i++) ch[i] = pcm[i] / 32768;
   const src = t.ctx.createBufferSource();
   src.buffer = buffer;
-  src.connect(t.ctx.destination);
+  src.connect(t.aiOut || t.ctx.destination);
   const at = Math.max(t.ctx.currentTime + 0.02, t.playAt);
   src.start(at);
   t.playAt = at + buffer.duration;
   t.sources.add(src);
   src.onended = () => t.sources.delete(src);
-  $("talk-orb").style.transform = "scale(1.08)";
-  setTimeout(() => ($("talk-orb").style.transform = ""), 150);
+}
+
+// ---------------------------------------------------------------- the orb
+// It follows the sound: your microphone while you speak, the companion's voice while
+// it speaks, and breathes slowly in between.
+
+function makeMeter(ctx, node) {
+  const analyser = ctx.createAnalyser();
+  analyser.fftSize = 512;
+  node.connect(analyser);
+  return { analyser, buf: new Float32Array(analyser.fftSize) };
+}
+
+function meterLevel(m) {
+  if (!m) return 0;
+  m.analyser.getFloatTimeDomainData(m.buf);
+  let sum = 0;
+  for (const v of m.buf) sum += v * v;
+  return Math.sqrt(sum / m.buf.length);
+}
+
+function startOrb() {
+  const t = talkState;
+  const ctx = t.audioCtx;
+  const orb = $("talk-orb");
+  if (!ctx) return;
+  ctx.resume?.().catch(() => {});
+  t.meters = {
+    mic: makeMeter(ctx, ctx.createMediaStreamSource(t.stream)),
+    ai: t.aiOut ? makeMeter(ctx, t.aiOut) : t.remoteStream ? makeMeter(ctx, ctx.createMediaStreamSource(t.remoteStream)) : null,
+  };
+  let mic = 0, ai = 0;
+  const tick = () => {
+    if (talkState !== t) return;
+    mic = Math.max(meterLevel(t.meters.mic), mic * 0.88);
+    ai = Math.max(meterLevel(t.meters.ai), ai * 0.88);
+    const speaking = ai > 0.015;
+    const listening = !speaking && mic > 0.03;
+    orb.classList.toggle("speaking", speaking);
+    orb.classList.toggle("listening", listening);
+    orb.style.setProperty("--level", Math.min(1, (speaking ? ai : listening ? mic : 0) * 5).toFixed(3));
+    t.orbFrame = requestAnimationFrame(tick);
+  };
+  tick();
 }
 
 function addTranscript(who, text) {
@@ -1887,6 +1958,11 @@ async function endTalk(message) {
 function cleanupTalk(t = talkState) {
   if (!t) return;
   clearInterval(t.timer);
+  cancelAnimationFrame(t.orbFrame);
+  const orb = $("talk-orb");
+  orb.classList.remove("speaking", "listening");
+  orb.style.removeProperty("--level");
+  try { if (t.audioCtx && t.audioCtx !== t.ctx) t.audioCtx.close(); } catch {}
   try { t.pc?.close(); } catch {}
   try { t.ws?.close(); } catch {}
   try { t.capture?.disconnect(); } catch {}
