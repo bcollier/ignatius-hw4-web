@@ -368,7 +368,10 @@ async function sendSignInLink(event) {
   const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } });
   $("signin-button").disabled = false;
   $("signin-note").hidden = false;
-  $("signin-note").textContent = error ? `Couldn't send the link: ${error.message}` : `Check ${email} for a sign-in link, and open it on the device you want to use.`;
+  const limited = error && /rate limit|too many/i.test(error.message);
+  $("signin-note").textContent = limited
+    ? "Too many sign-in emails have gone out in the last hour, so no more can be sent just now. Try again in a little while, or try it without an account below."
+    : error ? `Couldn't send the link: ${error.message}` : `Check ${email} for a sign-in link, and open it on the device you want to use.`;
 }
 
 async function signedInAs(newSession) {
@@ -513,9 +516,10 @@ function renderLibrary() {
   for (const group of seriesGroups()) {
     const prayed = group.reduce((n, r) => n + (r.days_prayed || 0), 0);
     const total = group.reduce((n, r) => n + (r.days || 0), 0);
+    // A single retreat is one card; a series gets a heading with its total.
     const card = el("div", { class: "group" },
-      el("div", { class: "group-head" },
-        group.length > 1 ? el("h3", { text: `A series of ${group.length} weeks` }) : el("span"),
+      group.length > 1 && el("div", { class: "group-head" },
+        el("h3", { text: `A series of ${group.length} weeks` }),
         el("span", { class: "meta", text: total ? `${prayed} of ${total} days prayed` : "" })));
     group.forEach((r, i) => card.append(renderWeek(r, group.length > 1 ? i + 1 : null)));
     groups.append(card);
@@ -563,10 +567,15 @@ function renderWeek(r, weekNo) {
     }
   };
   const status = r.status === "planning" ? "planning…" : r.status === "building" ? "being made…" : r.status === "failed" ? "failed" : "";
-  return el("div", { class: "week" },
-    el("a", { href: `./?r=${r.id}`, "data-nav": "", text: `${weekNo ? `Week ${weekNo} · ` : ""}${r.title}` }),
-    el("span", { class: "meta" }, status || new Date(r.created_at * 1000).toLocaleDateString(), " ", del),
-    chips);
+  const prayedLine = r.days ? `${r.days_prayed || 0} of ${r.days} days prayed` : "";
+  return el("div", { class: `week${r.cover ? " with-cover" : ""}` },
+    r.cover && el("a", { class: "week-cover", href: `./?r=${r.id}`, "data-nav": "", "aria-hidden": "true", tabindex: "-1" },
+      el("img", { src: fileUrl(r.cover), alt: "", loading: "lazy" })),
+    el("div", { class: "week-body" },
+      el("a", { href: `./?r=${r.id}`, "data-nav": "", text: `${weekNo ? `Week ${weekNo} · ` : ""}${r.title}` }),
+      chips,
+      el("span", { class: "meta" }, [status, prayedLine, new Date(r.created_at * 1000).toLocaleDateString()].filter(Boolean).join(" · "))),
+    el("span", { class: "week-actions" }, del));
 }
 
 async function upgradeGuest(event) {
