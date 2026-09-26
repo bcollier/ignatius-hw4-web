@@ -274,7 +274,9 @@ function render() {
   }
 
   $("voice-controls").hidden = !plan;
-  $("retreat-pdf").hidden = !plan;
+  // The whole-retreat PDF is offered once at least one day has been written.
+  const anyWritten = Object.values(retreat.days || {}).some((d) => d.tracks?.heart?.script && d.tracks?.deep?.script);
+  $("retreat-pdf").hidden = !plan || !anyWritten;
   const list = $("days");
   list.innerHTML = "";
   for (const day of plan?.days || []) list.append(renderDay(day, retreat.days[day.day]));
