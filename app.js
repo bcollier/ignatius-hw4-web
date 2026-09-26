@@ -341,6 +341,12 @@ function renderTrack(key, track) {
   text.textContent = track.script;
   details.append(summary, text);
   if (track.sources?.length) {
+    const heading = document.createElement("p");
+    heading.className = "meta";
+    heading.textContent = track.web_search
+      ? "Sources the deep dive checked with web search:"
+      : "Sources suggested by the model. Not checked by web search; links may be wrong.";
+    details.append(heading);
     const sources = document.createElement("ul");
     sources.className = "sources";
     for (const line of track.sources) {
@@ -769,7 +775,12 @@ async function showSignedIn(newSession) {
   fillTierMenu();
   $("signin-section").hidden = true;
   $("account-bar").hidden = !session;
-  $("account-email").textContent = !session ? "" : me?.anonymous ? "Guest session (this browser only)" : `Signed in as ${session.user.email}`;
+  $("account-email").textContent = !session
+    ? ""
+    : me?.anonymous
+      ? "Guest session (this browser only)"
+      : `Signed in as ${session.user.email}${me?.mode === "full" ? " · premium" : ""}`;
+  $("upgrade-box").hidden = !me?.anonymous;
   $("free-banner").hidden = !isFree();
   $("free-banner").textContent = isFree()
     ? `Free mode: retreats are planned and written by open models on Jetstream (no web search) and read by free voices. You can keep up to ${me.max_retreats} retreats.`
@@ -785,6 +796,7 @@ function showSignedOut() {
   session = null;
   me = null;
   $("free-banner").hidden = true;
+  $("upgrade-box").hidden = true;
   $("guest-box").hidden = !options?.free_mode?.enabled;
   clearTimeout(pollTimer);
   retreat = null;
@@ -879,6 +891,19 @@ $("reset-guide").onclick = () => {
 // Lengths shown on each day follow the prayer settings.
 for (const id of ["sequence", "pause", "grace-silence"]) $(id).addEventListener("change", () => retreat?.plan && render());
 $("signin-form").addEventListener("submit", sendSignInLink);
+// A guest adds an email: Supabase keeps the same user id (and so the same
+// retreats) and sends a confirmation link. After confirming, the email signs in anywhere.
+$("upgrade-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const email = $("upgrade-email").value.trim();
+  const { error } = await sb.auth.updateUser({ email }, { emailRedirectTo: location.origin + location.pathname });
+  const note = $("upgrade-note");
+  note.hidden = false;
+  note.textContent = error
+    ? `Couldn't add that email: ${error.message}`
+    : `Check ${email} and click the confirmation link. Your retreats stay with you, and you can then sign in with this email on any device.`;
+});
+
 $("guest-button").onclick = async () => {
   $("guest-button").disabled = true;
   const { error } = await sb.auth.signInAnonymously();

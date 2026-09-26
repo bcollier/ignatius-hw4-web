@@ -157,3 +157,4 @@ code { font-size: 0.85em; }
 .day-cost { margin: 4px 0 10px; }
 .free-banner { border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 10px 14px; font-size: 0.9rem; margin-top: 16px; }
 #guest-box { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 4px; }
+.inline-form { display: flex; gap: 8px; flex-wrap: wrap; } .inline-form input { flex: 1 1 220px; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); }

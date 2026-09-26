@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ignatius at Home</title>
   <meta name="description" content="Turn a prayer handout or reading into a guided audio retreat.">
-  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
   <header class="site">
@@ -32,6 +32,15 @@
     </section>
 
     <p id="free-banner" class="free-banner" hidden></p>
+    <section id="upgrade-box" class="card" hidden>
+      <h2>Keep your retreats</h2>
+      <p class="hint">You're in a guest session, which lives only in this browser. Add your email to turn it into an account with the same retreats, then sign in with that email on your phone or another computer.</p>
+      <form id="upgrade-form" class="inline-form">
+        <input id="upgrade-email" type="email" autocomplete="email" placeholder="you@example.com" required>
+        <button type="submit">Add my email</button>
+      </form>
+      <p id="upgrade-note" class="hint" hidden></p>
+    </section>
     <section id="account-bar" class="account" hidden>
       <span id="account-email"></span>
       <button type="button" id="signout" class="link">Sign out</button>
@@ -190,7 +199,7 @@
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=10"></script>
-  <script src="app.js?v=10"></script>
+  <script src="config.js?v=11"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>
