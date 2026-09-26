@@ -12,7 +12,7 @@ let retreat = null;
 let pollTimer = null;
 let sb = null; // Supabase client, when the server uses sign-in
 let session = null;
-let me = null; // {mode: "full" | "free", anonymous, max_retreats} from /api/me
+let me = null; // {mode: "full" | "free", anonymous} from /api/me
 let library = []; // the user's retreats, newest first
 
 // ------------------------------------------------------------------ API helper
@@ -899,7 +899,7 @@ async function showSignedIn(newSession) {
   $("upgrade-box").hidden = !me?.anonymous;
   $("free-banner").hidden = !isFree();
   $("free-banner").textContent = isFree()
-    ? `Free mode: retreats are planned and written by open models on Jetstream (no web search) and read by free voices. You can keep up to ${me.max_retreats} retreats.`
+    ? "Free mode: retreats are planned and written by open models on Jetstream, researched with web search, and read by free voices."
     : "";
   $("library-section").hidden = false;
   $("upload-section").hidden = false;
