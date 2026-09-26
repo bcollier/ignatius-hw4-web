@@ -258,6 +258,7 @@ function render() {
   }
 
   $("voice-controls").hidden = !plan;
+  $("retreat-pdf").hidden = !plan;
   const list = $("days");
   list.innerHTML = "";
   for (const day of plan?.days || []) list.append(renderDay(day, retreat.days[day.day]));
@@ -306,6 +307,9 @@ function renderDay(day, state) {
   const allReady = state.status === "ready" && Object.values(state.tracks).every((t) => t.status === "ready");
   pray.hidden = !allReady;
   pray.onclick = () => startPrayer(day, state);
+  const pdf = node.querySelector(".day-pdf");
+  pdf.hidden = !allReady;
+  pdf.onclick = () => downloadScript(day.day, pdf);
   if (allReady) {
     const seq = buildSequence(day, state);
     const total = totalSeconds(seq);
@@ -419,6 +423,52 @@ function wirePrompts() {
       savePrompt("heart");
     };
   });
+}
+
+// ------------------------------------------------------------------ printable script
+
+// The PDF follows the same order and silences as the player, so it uses the
+// current prayer settings. It needs the sign-in token, so it's fetched and then
+// opened from a local blob URL.
+async function downloadScript(day, button) {
+  const params = new URLSearchParams({
+    order: $("sequence").value,
+    pause: $("pause").value,
+    grace_silence: String(Number($("grace-silence").value) * 5),
+  });
+  if (day != null) params.set("day", day);
+  const label = button.textContent;
+  button.disabled = true;
+  button.textContent = "Making the PDF…";
+  try {
+    const headers = {};
+    if (sb) {
+      const { data } = await sb.auth.getSession();
+      if (data.session) headers.Authorization = `Bearer ${data.session.access_token}`;
+    }
+    const response = await fetch(`${API}/api/retreats/${retreat.id}/script.pdf?${params}`, { headers });
+    if (!response.ok) {
+      let message = `The server returned an error (${response.status}).`;
+      try {
+        message = (await response.json()).error.message;
+      } catch {}
+      throw new Error(message);
+    }
+    const url = URL.createObjectURL(await response.blob());
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = (response.headers.get("Content-Disposition") || "").match(/filename="(.+)"/)?.[1] || "retreat.pdf";
+    link.target = "_blank";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  } catch (err) {
+    showMessage(err.message.startsWith("Failed to fetch") ? "Can't reach the server. Try again shortly." : err.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = label;
+  }
 }
 
 // ------------------------------------------------------------------ models and costs
@@ -891,6 +941,7 @@ $("reset-guide").onclick = () => {
 // Lengths shown on each day follow the prayer settings.
 for (const id of ["sequence", "pause", "grace-silence"]) $(id).addEventListener("change", () => retreat?.plan && render());
 $("signin-form").addEventListener("submit", sendSignInLink);
+$("retreat-pdf").onclick = () => downloadScript(null, $("retreat-pdf"));
 // A guest adds an email: Supabase keeps the same user id (and so the same
 // retreats) and sends a confirmation link. After confirming, the email signs in anywhere.
 $("upgrade-form").addEventListener("submit", async (event) => {

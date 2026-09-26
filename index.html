@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ignatius at Home</title>
   <meta name="description" content="Turn a prayer handout or reading into a guided audio retreat.">
-  <link rel="stylesheet" href="style.css?v=11">
+  <link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
   <header class="site">
@@ -85,6 +85,7 @@
         <h2 id="retreat-title"></h2>
         <p id="retreat-summary"></p>
         <p id="retreat-meta" class="meta"></p>
+        <button type="button" id="retreat-pdf" class="secondary" hidden>Download the whole retreat (PDF)</button>
         <div id="gallery" class="gallery"></div>
       </div>
 
@@ -190,6 +191,7 @@
         <button class="pray" type="button" hidden>Pray this day</button>
         <button class="build" type="button">Build audio</button>
         <button class="rerecord secondary" type="button" hidden>Re-record with these voices</button>
+        <button class="day-pdf secondary" type="button" hidden>Printable script (PDF)</button>
       </div>
       <p class="day-length meta"></p>
       <p class="day-cost meta"></p>
@@ -199,7 +201,7 @@
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=11"></script>
-  <script src="app.js?v=11"></script>
+  <script src="config.js?v=12"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>

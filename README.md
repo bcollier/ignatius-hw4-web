@@ -33,6 +33,10 @@ Plain HTML, CSS and JavaScript with no build step, hosted on GitHub Pages. The b
 
 A simpler order is also offered. The pause is real audio, so it keeps going when a phone screen locks. The lock screen shows the current step through the Media Session API. `sounds/` holds a bell and 30 seconds of quiet, synthesized by `tools/make_sounds.py`, so there's no licensing question.
 
+## Printable script
+
+**Printable script (PDF)** on a built day, and **Download the whole retreat (PDF)** in the retreat header, fetch `GET /api/retreats/{id}/script.pdf` with the sign-in token, using the current prayer order and silence lengths, and open the result in a new tab to print or save to an iPad.
+
 ## Run locally
 
 ```bash
