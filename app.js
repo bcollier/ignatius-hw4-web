@@ -70,6 +70,7 @@ async function checkServer() {
     status.classList.add("ok");
     fillTierMenu();
     fillPrompts();
+    fillGuide();
     return true;
   } catch (err) {
     status.innerHTML = "";
@@ -85,22 +86,45 @@ async function checkServer() {
   }
 }
 
+const SECTIONS = ["guide", "reading", "heart", "deep"];
+const DEFAULT_VOICES = {
+  guide: "en-US-AvaMultilingualNeural",
+  reading: "en-US-AndrewMultilingualNeural",
+  heart: "en-US-AndrewMultilingualNeural",
+  deep: "en-US-ChristopherNeural",
+};
+
 function fillTierMenu() {
-  const tier = $("tier");
-  tier.innerHTML = "";
-  for (const [key, info] of Object.entries(options.tiers)) {
-    tier.add(new Option(info.label, key));
+  // One menu per section, listing every voice grouped by tier.
+  for (const section of SECTIONS) {
+    const select = $(`voice-${section}`);
+    select.innerHTML = "";
+    for (const info of Object.values(options.tiers)) {
+      const group = document.createElement("optgroup");
+      group.label = info.label;
+      for (const [id, label] of Object.entries(info.voices)) group.append(new Option(label, id));
+      select.append(group);
+    }
+    let saved = null;
+    try {
+      saved = localStorage.getItem(`voice.${section}`);
+    } catch {}
+    const wanted = [saved, DEFAULT_VOICES[section]].find((v) => v && [...select.options].some((o) => o.value === v));
+    if (wanted) select.value = wanted;
+    select.onchange = () => {
+      try {
+        localStorage.setItem(`voice.${section}`, select.value);
+      } catch {}
+    };
   }
-  fillVoiceMenu();
+  const caps = Object.values(options.tiers).map(
+    (t) => `${t.label}: up to ${t.max_chars.toLocaleString()} characters a section (about ${Math.round(t.max_chars / 900)} min)`
+  );
+  $("tier-note").textContent = caps.join(". ") + ". Changing voices only needs a re-record, not a rewrite.";
 }
 
-function fillVoiceMenu() {
-  const info = options.tiers[$("tier").value];
-  const voice = $("voice");
-  voice.innerHTML = "";
-  for (const [id, label] of Object.entries(info.voices)) voice.add(new Option(label, id));
-  const minutes = Math.round(info.max_chars / 900);
-  $("tier-note").textContent = `Each track is capped at ${info.max_chars.toLocaleString()} characters, about ${minutes} minutes of audio.`;
+function chosenVoices() {
+  return Object.fromEntries(SECTIONS.map((section) => [section, $(`voice-${section}`).value]));
 }
 
 // ------------------------------------------------------------------ upload and plan
@@ -159,17 +183,18 @@ function poll(startedAt) {
   }, POLL_MS);
 }
 
-async function buildDay(day) {
+async function buildDay(day, keepScripts = false) {
   showMessage("");
   try {
     retreat = await api(`/api/retreats/${retreat.id}/days/${day}/build`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        tier: $("tier").value,
-        voice: $("voice").value,
+        voices: chosenVoices(),
         heart_prompt: $("heart-prompt").value,
         deep_prompt: $("deep-prompt").value,
+        guide: guideTexts(),
+        keep_scripts: keepScripts,
       }),
     });
     render();
@@ -247,14 +272,20 @@ function renderDay(day, state) {
   }
 
   const button = node.querySelector(".build");
+  const rerecord = node.querySelector(".rerecord");
   const status = node.querySelector(".day-status");
   const building = state.status === "building";
+  const written = state.tracks?.heart?.script && state.tracks?.deep?.script;
   button.disabled = building;
-  button.textContent = building ? "Building…" : state.status === "idle" ? "Build audio" : "Rebuild audio";
+  button.textContent = building ? "Building…" : state.status === "idle" ? "Build audio" : "Rewrite and record";
   button.onclick = () => buildDay(day.day);
+  rerecord.hidden = building || !written;
+  rerecord.onclick = () => buildDay(day.day, true);
 
   if (building) {
     const steps = Object.entries(state.tracks).map(([k, t]) => `${TRACK_LABELS[k]}: ${STEP_LABELS[t.status] || t.status}`);
+    const guide = Object.values(state.guide || {});
+    if (guide.length) steps.push(`guidance: ${guide.filter((c) => c.status === "ready").length} of ${guide.length}`);
     status.textContent = steps.join(" · ");
     status.className = "day-status status working";
   } else if (state.status === "failed") {
@@ -266,6 +297,14 @@ function renderDay(day, state) {
   const allReady = state.status === "ready" && Object.values(state.tracks).every((t) => t.status === "ready");
   pray.hidden = !allReady;
   pray.onclick = () => startPrayer(day, state);
+  if (allReady) {
+    const seq = buildSequence(day, state);
+    const total = totalSeconds(seq);
+    const order = $("sequence").value === "lectio" ? "lectio order" : "simple order";
+    node.querySelector(".day-length").textContent =
+      total == null ? "Working out the length…" : `About ${formatMinutes(total)} in the ${order}, including silences.`;
+    if (total == null) probeDurations(seq);
+  }
 
   const tracks = node.querySelector(".tracks");
   for (const key of Object.keys(TRACK_LABELS)) { // reading, heart, deep, in listening order
@@ -280,7 +319,7 @@ function renderTrack(key, track) {
   const box = document.createElement("div");
   box.className = "track";
   const title = document.createElement("h4");
-  title.textContent = TRACK_LABELS[key];
+  title.textContent = TRACK_LABELS[key] + (track.seconds ? ` · ${formatClock(track.seconds)}` : "");
   const audio = document.createElement("audio");
   audio.controls = true;
   audio.preload = "none";
@@ -367,6 +406,37 @@ function wirePrompts() {
   });
 }
 
+// ------------------------------------------------------------------ spoken guidance
+
+function fillGuide() {
+  const box = $("guide-fields");
+  box.innerHTML = "";
+  for (const [name, text] of Object.entries(options.prompts.guide)) {
+    const label = document.createElement("label");
+    label.textContent = options.prompts.guide_labels?.[name] || name;
+    const area = document.createElement("textarea");
+    area.rows = 3;
+    area.dataset.guide = name;
+    let saved = null;
+    try {
+      saved = localStorage.getItem(`guide.${name}`);
+    } catch {}
+    area.value = saved ?? text;
+    area.oninput = () => {
+      try {
+        if (area.value === text) localStorage.removeItem(`guide.${name}`);
+        else localStorage.setItem(`guide.${name}`, area.value);
+      } catch {}
+    };
+    label.append(area);
+    box.append(label);
+  }
+}
+
+function guideTexts() {
+  return Object.fromEntries([...document.querySelectorAll("[data-guide]")].map((a) => [a.dataset.guide, a.value]));
+}
+
 // ------------------------------------------------------------------ prayer player
 // One <audio> element plays the whole sequence. The pause is real audio (a bell,
 // quiet, a bell), so it keeps going when a phone screen locks.
@@ -375,21 +445,111 @@ let steps = [];
 let stepIndex = 0;
 let prayerDay = null;
 
-function buildSequence(day, state) {
-  const track = (key) => ({ label: TRACK_LABELS[key], src: fileUrl(state.tracks[key].url) });
-  const pauseSeconds = Number($("pause").value);
-  const pause = [{ label: "Pause and reflect", src: "sounds/bell.mp3", pause: true }];
-  for (let s = 0; s < pauseSeconds; s += 30) pause.push({ label: "Pause and reflect", src: "sounds/quiet30.mp3", pause: true });
-  pause.push({ label: "Pause and reflect", src: "sounds/bell.mp3", pause: true });
+const SOUND_SECONDS = { "sounds/bell.mp3": 7.05, "sounds/quiet5.mp3": 5.07, "sounds/quiet30.mp3": 30.07 };
+const durationCache = {}; // url -> seconds, for tracks built before lengths were recorded
 
-  if ($("sequence").value === "simple") {
-    return [track("reading"), track("heart"), track("deep"), ...pause];
+// The whole prayer as a list of audio steps. Steps share a `block` number, and
+// Back and Skip move a block at a time. Each spoken section is followed by five
+// seconds of quiet so sections don't run together.
+function buildSequence(day, state) {
+  const seq = [];
+  let block = 0;
+  const gap = () => seq.push({ label: "…", src: "sounds/quiet5.mp3", block, quiet: true });
+  const speak = (clip, label) => {
+    if (clip?.status !== "ready" || !clip.url) return false;
+    seq.push({ label, src: fileUrl(clip.url), seconds: clip.seconds, block });
+    return true;
+  };
+  const guide = (name) => speak(state.guide?.[name], (options.prompts.guide_labels || {})[name] || "Guidance");
+  const reading = (label) => speak(state.tracks.reading, label) && gap();
+  const next = () => (block += 1);
+
+  // Ask for the grace, then silence.
+  if (guide("opening")) for (let i = 0; i < Number($("grace-silence").value); i++) gap();
+  next();
+
+  const lectio = $("sequence").value === "lectio";
+  if (lectio) {
+    if (guide("first")) gap();
+    reading("First reading");
+    next();
+    speak(state.tracks.heart, TRACK_LABELS.heart) && gap();
+    next();
+    if (guide("second")) gap();
+    reading("Second reading");
+    next();
+    speak(state.tracks.deep, TRACK_LABELS.deep) && gap();
+    next();
+    if (guide("third")) gap();
+    reading("Third reading");
+    next();
+  } else {
+    reading(TRACK_LABELS.reading);
+    next();
+    speak(state.tracks.heart, TRACK_LABELS.heart) && gap();
+    next();
+    speak(state.tracks.deep, TRACK_LABELS.deep) && gap();
+    next();
   }
-  return [
-    track("reading"), track("heart"), track("reading"), track("deep"), track("reading"),
-    ...pause,
-    { ...track("reading"), label: "The reading, one last time" },
-  ];
+
+  // The silence, framed by a bell.
+  if (guide("silence")) gap();
+  seq.push({ label: "Silence", src: "sounds/bell.mp3", block, pause: true });
+  for (let s = 0; s < Number($("pause").value); s += 30) seq.push({ label: "Silence", src: "sounds/quiet30.mp3", block, pause: true });
+  seq.push({ label: "Silence", src: "sounds/bell.mp3", block, pause: true });
+  gap();
+  next();
+
+  if (lectio) {
+    if (guide("last")) gap();
+    reading("Last reading");
+    next();
+  }
+  guide("closing");
+  return seq;
+}
+
+function stepSeconds(step) {
+  return step.seconds ?? SOUND_SECONDS[step.src] ?? durationCache[step.src];
+}
+
+function totalSeconds(seq) {
+  let total = 0;
+  for (const step of seq) {
+    const s = stepSeconds(step);
+    if (s == null) return null;
+    total += s;
+  }
+  return total;
+}
+
+function formatClock(seconds) {
+  const s = Math.round(seconds);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+
+function formatMinutes(seconds) {
+  const m = Math.round(seconds / 60);
+  return m < 1 ? "under a minute" : `${m} minute${m === 1 ? "" : "s"}`;
+}
+
+// Older tracks have no recorded length; read it from the file's metadata once.
+function probeDurations(seq) {
+  const missing = [...new Set(seq.filter((st) => stepSeconds(st) == null).map((st) => st.src))];
+  let pending = missing.length;
+  for (const src of missing) {
+    const audio = new Audio();
+    audio.preload = "metadata";
+    const done = () => {
+      if (--pending === 0) render();
+    };
+    audio.onloadedmetadata = () => {
+      durationCache[src] = audio.duration;
+      done();
+    };
+    audio.onerror = done;
+    audio.src = src;
+  }
 }
 
 function startPrayer(day, state) {
@@ -407,15 +567,20 @@ function playStep(index) {
   const player = $("player");
   player.src = step.src;
   player.play().catch(() => {}); // blocked autoplay leaves the controls ready to tap
-  $("now-step").textContent = `Day ${prayerDay.day}: ${step.label}`;
-  $("now-count").textContent = `step ${index + 1} of ${steps.length}`;
+  // Show the section being prayed, not the short quiet between sections.
+  let shown = step;
+  for (let i = index; shown.quiet && i >= 0; i--) shown = steps[i];
+  $("now-step").textContent = `Day ${prayerDay.day}: ${shown.label}`;
+  const left = totalSeconds(steps.slice(index));
+  const blocks = steps[steps.length - 1].block + 1;
+  $("now-count").textContent = `part ${step.block + 1} of ${blocks}` + (left != null ? ` · ${formatClock(left)} left` : "");
   $("pause-text").hidden = !step.pause;
   $("pause-text").textContent = step.pause
     ? "Stay with one word or phrase from the reading that caught you. Let it rest in you until the bell."
     : "";
   if ("mediaSession" in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: step.label,
+      title: shown.label,
       artist: `Day ${prayerDay.day}: ${prayerDay.title}`,
       album: retreat.plan.title,
     });
@@ -423,16 +588,15 @@ function playStep(index) {
 }
 
 function nextBlock(direction) {
-  // Treat the pause (bell, quiet, bell) as one step for Back and Skip.
-  let i = stepIndex;
+  const current = steps[stepIndex].block;
+  const firstOf = (block) => steps.findIndex((st) => st.block === block);
   if (direction > 0) {
-    if (steps[i].pause) while (i < steps.length && steps[i].pause) i++;
-    else i++;
-  } else {
-    i = Math.max(0, i - 1);
-    while (i > 0 && steps[i].pause && steps[i - 1].pause) i--;
+    const i = steps.findIndex((st) => st.block > current);
+    return i < 0 ? stopPrayer() : playStep(i);
   }
-  playStep(i);
+  // Back: to the start of this part, or the previous part if already at its start.
+  const start = firstOf(current);
+  playStep(stepIndex > start ? start : Math.max(0, firstOf(current - 1)));
 }
 
 function stopPrayer() {
@@ -577,7 +741,14 @@ function setRetreatInUrl(id) {
 $("upload-form").addEventListener("submit", upload);
 wirePrompts();
 wirePlayer();
-$("tier").addEventListener("change", fillVoiceMenu);
+$("reset-guide").onclick = () => {
+  try {
+    Object.keys(options.prompts.guide).forEach((name) => localStorage.removeItem(`guide.${name}`));
+  } catch {}
+  fillGuide();
+};
+// Lengths shown on each day follow the prayer settings.
+for (const id of ["sequence", "pause", "grace-silence"]) $(id).addEventListener("change", () => retreat?.plan && render());
 $("signin-form").addEventListener("submit", sendSignInLink);
 $("signout").onclick = async () => {
   await sb.auth.signOut();

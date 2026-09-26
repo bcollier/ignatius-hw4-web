@@ -1,4 +1,4 @@
-"""Generate the player's sounds: a singing-bowl bell and 30 seconds of quiet.
+"""Generate the player's sounds: a singing-bowl bell, and 30 and 5 seconds of quiet.
 
 Synthesized here rather than downloaded, so there is no licensing question.
 Needs ffmpeg to encode MP3. Run: python3 tools/make_sounds.py
@@ -46,4 +46,5 @@ if __name__ == "__main__":
     OUT.mkdir(exist_ok=True)
     write_mp3("bell.mp3", bell())
     write_mp3("quiet30.mp3", quiet())
+    write_mp3("quiet5.mp3", quiet(5.0))
     print(sorted(p.name for p in OUT.iterdir()))

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ignatius at Home</title>
   <meta name="description" content="Turn a prayer handout or reading into a guided audio retreat.">
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
   <header class="site">
@@ -74,19 +74,32 @@
       <div id="voice-controls" class="card" hidden>
         <h2>2. Choose a voice, then build a day</h2>
         <div class="row">
-          <label>Voice quality
-            <select id="tier"></select>
+          <label>Guide (grace, instructions)
+            <select id="voice-guide" data-section="guide"></select>
           </label>
-          <label>Voice
-            <select id="voice"></select>
+          <label>The reading
+            <select id="voice-reading" data-section="reading"></select>
+          </label>
+          <label>For the heart
+            <select id="voice-heart" data-section="heart"></select>
+          </label>
+          <label>Deep dive
+            <select id="voice-deep" data-section="deep"></select>
           </label>
         </div>
         <p id="tier-note" class="hint"></p>
         <div class="row">
           <label>Prayer order
             <select id="sequence">
-              <option value="lectio">Lectio: reading, reflection, reading, deep dive, reading, pause, reading</option>
-              <option value="simple">Simple: reading, reflection, deep dive, pause</option>
+              <option value="lectio">Lectio: grace, reading four times with the reflection, deep dive and a silence between</option>
+              <option value="simple">Simple: grace, reading, reflection, deep dive, silence</option>
+            </select>
+          </label>
+          <label>Silence after asking for the grace
+            <select id="grace-silence">
+              <option value="2">10 seconds</option>
+              <option value="3" selected>15 seconds</option>
+              <option value="4">20 seconds</option>
             </select>
           </label>
           <label>Pause to reflect
@@ -112,6 +125,12 @@
             <textarea id="deep-prompt" rows="10" spellcheck="true"></textarea>
           </label>
           <button type="button" class="link" data-reset="deep">Reset to default</button>
+        </details>
+        <details class="prompt-box">
+          <summary>Customize the spoken guidance</summary>
+          <p class="hint">Read aloud by the guide voice, word for word. <code>{grace}</code> becomes the day's grace, <code>{title}</code> the day's title and <code>{day}</code> its number. Leave a box empty to skip it.</p>
+          <div id="guide-fields" class="guide-fields"></div>
+          <button type="button" class="link" id="reset-guide">Reset all to default</button>
         </details>
       </div>
 
@@ -149,14 +168,16 @@
       <div class="day-actions">
         <button class="pray" type="button" hidden>Pray this day</button>
         <button class="build" type="button">Build audio</button>
+        <button class="rerecord secondary" type="button" hidden>Re-record with these voices</button>
       </div>
+      <p class="day-length meta"></p>
       <p class="day-status status" role="status"></p>
       <div class="tracks"></div>
     </li>
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=7"></script>
-  <script src="app.js?v=7"></script>
+  <script src="config.js?v=8"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>
