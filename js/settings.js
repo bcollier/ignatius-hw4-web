@@ -71,7 +71,7 @@ function fillVoiceSelects() {
 
 // The prayer's order, silences and on-screen view; they cost nothing to change, so
 // they also apply to retreats already made.
-const PLAYBACK_DEFAULTS = { sequence: "lectio", "grace-silence": "3", pause: "30", "pray-view": "both" };
+const PLAYBACK_DEFAULTS = { sequence: "lectio", "grace-silence": "3", pause: "30", "gap-length": "short", "pray-view": "both" };
 
 function fillPlaybackFields() {
   for (const [id, fallback] of Object.entries(PLAYBACK_DEFAULTS)) {
@@ -174,7 +174,7 @@ function buildOptions(keepScripts = false) {
   };
 }
 
-const playback = () => ({ order: $("sequence").value, graceGaps: Number($("grace-silence").value), pause: Number($("pause").value) });
+const playback = () => ({ order: $("sequence").value, graceGaps: Number($("grace-silence").value), pause: Number($("pause").value), gaps: $("gap-length").value });
 
 
 // Four different ElevenLabs voices, for premium accounts (one click in Advanced).

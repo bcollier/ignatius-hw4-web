@@ -8,7 +8,17 @@ let lastReport = 0;
 let wakeLock = null;
 let imageTimer = null;
 let shownImage = -1;
-const SOUND_SECONDS = { "sounds/bell.mp3": 7.05, "sounds/quiet5.mp3": 5.07, "sounds/quiet30.mp3": 30.07 };
+const SOUND_SECONDS = {
+  "sounds/bell.mp3": 7.05, "sounds/quiet5.mp3": 5.07, "sounds/quiet30.mp3": 30.07,
+  "sounds/quiet1_5.mp3": 1.5, "sounds/quiet2_5.mp3": 2.5, "sounds/quiet3.mp3": 3, "sounds/quiet4.mp3": 4,
+};
+// The pause between parts: a short breath after a guidance line (it leads straight
+// into what follows) and a longer one to settle after a reading, reflection or deep dive.
+const PAUSES = {
+  short: { breath: "sounds/quiet1_5.mp3", settle: "sounds/quiet3.mp3" },
+  medium: { breath: "sounds/quiet2_5.mp3", settle: "sounds/quiet4.mp3" },
+  long: { breath: "sounds/quiet5.mp3", settle: "sounds/quiet5.mp3" },
+};
 const durationCache = {};
 
 // The prayer as audio steps. Steps share a `block` (a part of the prayer); Back and
@@ -21,10 +31,13 @@ const durationCache = {};
 //   deep dive · third reading · silence between two bells · last reading · closing.
 // Parts that weren't made (or were left empty) are simply skipped.
 function buildSequence(day, state) {
-  const { order, graceGaps, pause } = playback();
+  const { order, graceGaps, pause, gaps } = playback();
+  const lengths = PAUSES[gaps] || PAUSES.short;
   const seq = [];
   let block = 0;
-  const gap = () => seq.push({ label: "…", src: "sounds/quiet5.mp3", block, quiet: true });
+  const quiet = (src) => seq.push({ label: "…", src, block, quiet: true });
+  const gap = () => quiet(lengths.settle); // after a reading, the reflection or the deep dive
+  const breath = () => quiet(lengths.breath); // after a guidance line, into what it introduces
   const speak = (clip, label, part) => {
     if (clip?.status !== "ready" || !clip.url) return false;
     seq.push({ label, part, src: fileUrl(clip.url), seconds: clip.seconds, block, text: clip.script, words: clip.words });
@@ -35,20 +48,20 @@ function buildSequence(day, state) {
   const reading = (label, part) => speak(state.tracks.reading, label, part) && gap();
   const next = () => (block += 1);
 
-  if (guide("opening")) for (let i = 0; i < graceGaps; i++) gap();
+  if (guide("opening")) for (let i = 0; i < graceGaps; i++) quiet("sounds/quiet5.mp3"); // the silence after asking for the grace
   next();
   if (order === "lectio") {
-    if (guide("first")) gap();
+    if (guide("first")) breath();
     reading("First reading", "reading1");
     next();
     speak(state.tracks.heart, TRACK_LABELS.heart, "heart") && gap();
     next();
-    if (guide("second")) gap();
+    if (guide("second")) breath();
     reading("Second reading", "reading2");
     next();
     speak(state.tracks.deep, TRACK_LABELS.deep, "deep") && gap();
     next();
-    if (guide("third")) gap();
+    if (guide("third")) breath();
     reading("Third reading", "reading3");
     next();
   } else {
@@ -59,14 +72,14 @@ function buildSequence(day, state) {
     speak(state.tracks.deep, TRACK_LABELS.deep, "deep") && gap();
     next();
   }
-  if (guide("silence")) gap();
+  if (guide("silence")) breath();
   seq.push({ label: "Silence", part: "silence", src: "sounds/bell.mp3", block, pause: true });
   for (let s = 0; s < pause; s += 30) seq.push({ label: "Silence", src: "sounds/quiet30.mp3", block, pause: true });
   seq.push({ label: "Silence", src: "sounds/bell.mp3", block, pause: true });
   gap();
   next();
   if (order === "lectio") {
-    if (guide("last")) gap();
+    if (guide("last")) breath();
     reading("Last reading", "reading4");
     next();
   }
