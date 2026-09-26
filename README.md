@@ -6,9 +6,21 @@
 >
 > **Live app:** https://bcollier.github.io/ignatius-hw4-web/ · **Backend repo:** [ignatius-hw4-api](https://github.com/bcollier/ignatius-hw4-api)
 
-The frontend for **Ignatius at Home**: sign in, upload a PDF or Word document you have rights to, get a retreat planned from it, build each day's three audio tracks, and pray them on any device.
+The frontend for **Ignatius at Home**: upload a retreat handout or passages you have rights to, press **Make my retreat**, and pray it day by day on any device.
 
-Plain HTML, CSS and JavaScript with no build step, hosted on GitHub Pages. The backend is [ignatius-hw4-api](https://github.com/bcollier/ignatius-hw4-api) on Render.
+Plain HTML, CSS and JavaScript with no build step, hosted on GitHub Pages and installable on a phone's home screen. The backend is [ignatius-hw4-api](https://github.com/bcollier/ignatius-hw4-api) on Render.
+
+## Views
+
+| URL | View |
+| --- | --- |
+| `./` | Library: a Continue card (a started, missed or today's day) and retreats grouped by series |
+| `./?new` | New retreat: **Simple** (file, series, go) or **Advanced** (models, research service, voices for each part, prayer order and silences, start date, every prompt and the spoken guidance, conversation voice) |
+| `./?r=ID` | A retreat: progress while it's being made; then a day strip (prayed, started, missed, today) and each day's grace and passage in full |
+| `./?r=ID&pray=N` | Praying: the day's images fill the screen; a small player is docked at the bottom on phones |
+| `./?talk&r=ID` | Talk it over: a live spoken conversation with an AI prayer companion (OpenAI GPT-Live over WebRTC, or xAI Grok voice over WebSocket with PCM16 audio) |
+| `./?me` | About me: `user info.md` and what you want from the companion |
+| `./?about` | What the Spiritual Exercises, a retreat and lectio divina are, with links |
 
 ## How it talks to the backend
 
