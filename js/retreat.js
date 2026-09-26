@@ -91,7 +91,8 @@ function renderHeaderButtons(plan) {
   showTalkButton(!!options.talk?.enabled && !!plan);
   const ro = !!retreat.read_only;
   $("example-note").hidden = !ro;
-  $("example-note").textContent = ro ? `${retreat.demo?.label || "An example retreat"}. It's ready to listen to and pray; your progress and notes are yours alone.` : "";
+  $("example-note").textContent = ro ? `${retreat.demo?.label || "An example retreat"}. It's ready to listen to and pray; your progress and notes are yours alone. ` : "";
+  if (ro) $("example-note").append(el("button", { type: "button", class: "link", text: "Remove it from my home page", onclick: hideThisExample }));
 }
 
 // The build log and research notes, tucked away at the foot of the page (on a computer).
@@ -414,5 +415,17 @@ function showTalkButton(show) {
     store.set("talkIntroSeen", true);
     setTimeout(() => cta.classList.add("intro"), 900);
     setTimeout(() => cta.classList.remove("intro"), 9000);
+  }
+}
+
+
+// An example can be taken off the home page (it stays available from "Show … again").
+async function hideThisExample() {
+  try {
+    await postJson(`/api/retreats/${retreat.id}/hidden`, { hidden: true });
+    toast("Removed from your home page.");
+    go("");
+  } catch (err) {
+    showMessage(err.message);
   }
 }

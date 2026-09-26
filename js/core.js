@@ -168,6 +168,7 @@ let options = null; // GET /api/options
 let me = null; // GET /api/me
 let library = []; // GET /api/retreats
 let examples = []; // ready-made example retreats, read only
+let hiddenExamples = []; // examples this person took off their home page
 let retreat = null; // the open retreat
 let pollTimer = null;
 let selectedDay = null;

@@ -10,6 +10,7 @@ async function openLibrary() {
     const body = await api("/api/retreats");
     library = body.retreats;
     examples = body.examples || [];
+    hiddenExamples = body.hidden_examples || [];
   } catch (err) {
     return showMessage(err.message);
   }
@@ -145,6 +146,7 @@ function renderGroups() {
 
 function renderExamples() {
   $("examples").hidden = !examples.length;
+  renderHiddenExamplesLink();
   // With nothing of your own yet, the examples come first.
   const head = document.querySelector("#view-library .library-head");
   if (!library.length) head.before($("examples"));
@@ -195,4 +197,16 @@ async function upgradeGuest(event) {
   const { error } = await sb.auth.updateUser({ email }, { emailRedirectTo: location.origin + location.pathname });
   $("upgrade-note").hidden = false;
   $("upgrade-note").textContent = error ? `Couldn't add that email: ${error.message}` : `Check ${email} and click the confirmation link. Your retreats stay with you.`;
+}
+
+
+// Examples someone dismissed can come back with one click.
+function renderHiddenExamplesLink() {
+  const link = $("show-examples");
+  link.hidden = !hiddenExamples.length;
+  link.textContent = hiddenExamples.length === 1 ? `Show the example "${hiddenExamples[0].title}" again` : `Show the ${hiddenExamples.length} hidden examples again`;
+  link.onclick = async () => {
+    await Promise.all(hiddenExamples.map((x) => postJson(`/api/retreats/${x.id}/hidden`, { hidden: false })));
+    openLibrary();
+  };
 }
