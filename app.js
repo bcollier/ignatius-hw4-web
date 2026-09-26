@@ -155,7 +155,7 @@ function fillSettings() {
   for (const select of document.querySelectorAll(".model-select")) {
     select.innerHTML = "";
     for (const m of allowed) {
-      select.add(new Option(m.free ? m.label : `${m.label} · $${m.input_per_m} in / $${m.output_per_m} out per million tokens`, m.id));
+      select.add(new Option(m.label, m.id)); // prices are on the Costs page
     }
     const fallback = allowed.some((m) => m.id === options.default_model) ? options.default_model : allowed[0]?.id;
     select.value = allowed.some((m) => m.id === savedModel) ? savedModel : fallback;
@@ -163,7 +163,6 @@ function fillSettings() {
       document.querySelectorAll(".model-select").forEach((other) => (other.value = select.value));
       store.set("model", select.value);
       fillResearch();
-      updateEstimate();
     };
   }
   fillResearch();
@@ -181,13 +180,10 @@ function fillSettings() {
     if (wanted) select.value = wanted;
     select.onchange = () => {
       store.set(`voice.${section}`, select.value);
-      updateEstimate();
     };
   }
   $("tier-note").textContent = allowedTiers().map(([, t]) => `${t.label}: up to ${t.max_chars.toLocaleString()} characters a section`).join(". ") + ".";
   const bal = isFree() ? null : options.elevenlabs?.balance;
-  $("balance-note").hidden = !bal;
-  if (bal) $("balance-note").textContent = `ElevenLabs: ${bal.remaining.toLocaleString()} of ${bal.limit.toLocaleString()} characters left this period.`;
 
   for (const [id, fallback] of [["sequence", "lectio"], ["grace-silence", "3"], ["pause", "30"], ["pray-view", "both"]]) {
     $(id).value = store.get(`play.${id}`, fallback);
@@ -377,7 +373,7 @@ document.addEventListener("click", (event) => {
 });
 window.addEventListener("popstate", () => route());
 
-const VIEWS = ["signin", "library", "new", "retreat", "research", "talk", "me", "about"];
+const VIEWS = ["signin", "library", "new", "retreat", "research", "talk", "me", "about", "costs"];
 function show(view) {
   for (const v of VIEWS) $(`view-${v}`).hidden = v !== view;
   window.scrollTo(0, 0);
@@ -389,10 +385,12 @@ async function route() {
   const p = params();
   if (!p.has("pray")) closePrayer(false);
   if (!p.has("talk") && talkState) endTalk("You left the conversation.");
+  $("site-foot").hidden = !signedIn();
   if (p.has("about")) return show("about");
   if (!signedIn()) return show("signin");
   if (p.has("new")) return openNew();
   if (p.has("me")) return openMe();
+  if (p.has("costs")) return openCosts();
   if (p.has("talk")) return openTalk(p.get("r"));
   if (p.has("research") && p.get("r")) return openResearch(p.get("r"));
   if (p.get("r")) return openRetreat(p.get("r"), p.get("pray"));
@@ -639,7 +637,6 @@ function openNew() {
   $("start-date").value = localToday();
   if (!library.length) api("/api/retreats").then((b) => { library = b.retreats; fillSeriesList(); }).catch(() => {});
   fillSeriesList();
-  updateEstimate();
 }
 
 function setTab(tab) {
@@ -788,7 +785,6 @@ function renderRetreat() {
     renderStrip();
     renderDay();
   }
-  renderCosts();
 }
 
 function renderProgress() {
@@ -2033,38 +2029,63 @@ function estimateRetreat(days = 7) {
   return { total: plan + days * (llm + voice), voice: days * voice, model };
 }
 
-function updateEstimate() {
-  const note = $("new-estimate");
-  if (!options || isFree()) return (note.hidden = true);
-  const e = estimateRetreat();
-  note.hidden = !e;
-  if (e) note.textContent = `About ${money(e.total)} for a seven-day retreat with ${modelLabel(e.model.id)}${e.voice ? " and ElevenLabs voices" : ""}.`;
-}
+// ================================================================ costs (tucked away: ?costs)
 
-function renderCosts() {
-  const premium = !isFree();
-  const plan = retreat.costs?.plan;
-  let total = plan?.usd || 0;
-  const lines = [];
-  if (plan) lines.push(`Planning: ${money(plan.usd)} with ${modelLabel(plan.model)}.`);
-  for (const d of retreat.plan?.days || []) {
-    const c = retreat.days[String(d.day)]?.cost;
-    if (!c) continue;
-    total += c.total_usd;
-    const w = c.llm;
-    lines.push(`Day ${d.day}: ${money(c.total_usd)} (writing ${money(w.usd)}, ${Math.round(w.input_tokens / 1000)}k tokens in, ${Math.round(w.output_tokens / 1000)}k out${w.web_searches ? `, ${w.web_searches} searches` : ""}; ${c.voice_characters.premium ? `ElevenLabs ${c.voice_characters.premium.toLocaleString()} characters, ${money(c.voice_usd)}` : "free voices"}).`);
+async function openCosts() {
+  show("costs");
+  document.title = "Costs · Ignatius at Home";
+  const body = $("costs-page");
+  body.innerHTML = "";
+  body.append(el("p", { class: "meta", text: "Loading…" }));
+  let r;
+  try {
+    r = await api("/api/costs");
+  } catch (err) {
+    body.innerHTML = "";
+    return showMessage(err.message);
   }
-  // Costs belong to making a retreat: open while it's being made, and afterwards a
-  // collapsed "What it cost to make" at the foot of the page. Never while praying;
-  // phones hide them entirely (CSS .cost-info).
-  const making = busy();
-  $("costs").hidden = !premium || !lines.length || retreat.read_only;
-  $("costs-summary").textContent = making ? "Costs so far" : `What it cost to make: ${money(total)}`;
-  $("costs-body").innerHTML = "";
-  lines.forEach((t) => $("costs-body").append(el("p", { text: t })));
-  if (!making) $("costs-body").append(el("p", { class: "hint", text: "Voices are estimated at ElevenLabs' list price per character; your plan's real cost may be lower. Every model call is also logged in the llm_calls table." }));
-  $("retreat-cost").hidden = !premium || !total || !making;
-  $("retreat-cost").textContent = total ? `Spent so far on this retreat: ${money(total)}.` : "";
+  body.innerHTML = "";
+  const table = (rows, cols) => el("table", { class: "cost-table" },
+    el("thead", {}, el("tr", {}, cols.map((c) => el("th", { text: c[0] })))),
+    el("tbody", {}, rows.map((row) => el("tr", {}, cols.map((c) => el("td", { text: c[1](row) }))))));
+  const detail = (x) => [
+    x.input_tokens ? `${Math.round(x.input_tokens / 1000)}k tokens in, ${Math.round((x.output_tokens || 0) / 1000)}k out` : "",
+    x.searches ? `${x.searches} searches` : "",
+    x.characters ? `${x.characters.toLocaleString()} characters` : "",
+    x.free_characters ? `${x.free_characters.toLocaleString()} free-voice characters` : "",
+    x.seconds ? `${formatMinutes(x.seconds)} of conversation` : "",
+  ].filter(Boolean).join(", ");
+  const usd = (n) => (n > 0 ? money(n) : "free");
+
+  body.append(el("div", { class: "card" },
+    el("h2", { text: `All together: ${money(r.total_usd)}` }),
+    table(r.by_vendor, [["Company", (v) => v.name], ["Cost", (v) => usd(v.usd)]])));
+
+  if (!r.retreats.length) body.append(el("p", { class: "hint", text: "No retreats yet." }));
+  for (const t of r.retreats) {
+    body.append(el("details", { class: "card cost-retreat" },
+      el("summary", {}, el("strong", { text: t.example ? `${t.title} (example)` : t.title }), el("span", { class: "meta", text: ` · ${new Date(t.created_at * 1000).toLocaleDateString()} · ${modelLabel(t.model)} · ${money(t.total_usd)}` })),
+      el("h3", { text: "By part" }),
+      table(t.sections, [["Part", (x) => x.name], ["Cost", (x) => usd(x.usd)], ["Details", detail]]),
+      el("h3", { text: "By company" }),
+      table(t.vendors, [["Company", (x) => x.name], ["Cost", (x) => usd(x.usd)], ["Details", detail]])));
+  }
+  if (r.other.usd > 0) {
+    body.append(el("div", { class: "card" }, el("h3", { text: `Not tied to a retreat: ${money(r.other.usd)}` }),
+      el("p", { class: "hint", text: "Summarizing About me, the conversation companion's memory, and retreats since deleted." }),
+      table(r.other.vendors, [["Company", (x) => x.name], ["Cost", (x) => usd(x.usd)]])));
+  }
+
+  const p = r.prices;
+  const bal = p.elevenlabs_balance;
+  const e = options && !isFree() ? estimateRetreat() : null;
+  body.append(el("div", { class: "card" },
+    el("h3", { text: "Prices" }),
+    p.models.length ? table(p.models, [["Model", (m) => m.label], ["Per million tokens", (m) => `$${m.input_per_m} in, $${m.output_per_m} out`]]) : "",
+    el("p", { text: `ElevenLabs voices are counted at $${p.elevenlabs_usd_per_1k_chars.toFixed(2)} per 1,000 characters (list price; your plan may cost less).${bal ? ` This period: ${bal.remaining.toLocaleString()} of ${bal.limit.toLocaleString()} characters left.` : ""}` }),
+    el("p", { text: `Talk it over: OpenAI about $${p.talk_usd_per_minute.openai.toFixed(2)} a minute, Grok about $${p.talk_usd_per_minute.xai.toFixed(2)} a minute. Microsoft voices, Jetstream models and most search services' free tiers cost nothing.` }),
+    e ? el("p", { text: `A new seven-day retreat with your current Advanced settings (${modelLabel(e.model.id)}${e.voice ? ", ElevenLabs voices" : ""}) would cost about ${money(e.total)}.` }) : "",
+    el("p", { class: "hint", text: "Model, search and conversation costs come from the log of every call (the llm_calls table). Voice costs count the recordings each retreat has now." })));
 }
 
 // ================================================================ start-up
