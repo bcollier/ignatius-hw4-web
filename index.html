@@ -11,10 +11,10 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=25">
-  <link rel="icon" href="icons/icon-192.png?v=25" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=25">
-  <link rel="stylesheet" href="style.css?v=25">
+  <link rel="manifest" href="manifest.webmanifest?v=26">
+  <link rel="icon" href="icons/icon-192.png?v=26" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=26">
+  <link rel="stylesheet" href="style.css?v=26">
 </head>
 <body>
   <header class="topbar">
@@ -120,9 +120,8 @@
               <label>Writing the reflection and deep dive <select id="write-model" class="model-select"></select></label>
               <label id="research-label" hidden>Web research for the deep dive
                 <select id="search-provider"></select>
-                <span class="hint">"All services, combined" asks every search service at once and gives the model the mix. A paused or out-of-credit service is skipped.</span>
+                <span id="research-hint" class="hint"></span>
               </label>
-              <label class="check desktop-only"><input id="show-research" type="checkbox"> Show a "Research" page for each retreat: every search, result and source behind each day</label>
               <p id="balance-note" class="hint cost-info" hidden></p>
             </fieldset>
             <fieldset>
@@ -235,7 +234,6 @@
         <div class="head-actions">
           <button type="button" id="talk-button" class="secondary" hidden>Talk it over</button>
           <button type="button" id="retreat-pdf" class="secondary" hidden>Whole retreat (PDF)</button>
-          <a id="research-link" class="button secondary desktop-only" data-nav="" hidden>Research</a>
           <button type="button" id="playback-button" class="icon-button" aria-label="Prayer settings" title="Prayer settings">⚙︎</button>
         </div>
       </div>
@@ -255,6 +253,7 @@
         <article id="day-panel" class="card day-panel"></article>
       </div>
 
+      <p class="foot-links desktop-only"><a id="research-link" data-nav="" hidden>Research notes for this retreat: every search, result and source behind each day</a></p>
       <details id="costs" class="card costs cost-info" hidden>
         <summary id="costs-summary">Costs</summary>
         <div id="costs-body" class="hint"></div>
@@ -431,7 +430,7 @@
       </div>
 
       <h2 id="research">The research services</h2>
-      <p>With the free open models, the deep dive is written from web research the server does first: the model proposes three searches, the services run them, and the model writes from what comes back, citing only pages that were actually returned. (Claude models search the web themselves.) By default <strong>all services, combined</strong> are asked at once and their results are interleaved, one from each in turn, so no single index decides what the model reads. If a service runs out of monthly credits it's paused until next month and the others carry on; every query and result is logged. The research behind each day can be read on its "Research" page (turn it on under Advanced, on a computer).</p>
+      <p>With the free open models, the deep dive is written from web research the server does first: the model proposes three searches, the services run them, and the model writes from what comes back, citing only pages that were actually returned. Claude models get the same results as a head start and then search the web themselves as much as they need. By default <strong>all services, combined</strong> are asked at once and their results are interleaved, one from each in turn, so no single index decides what the model reads. If a service runs out of monthly credits it's paused until next month and the others carry on; every query and result is logged. On a computer, the research behind each day is under "Research notes" on the retreat page.</p>
       <dl class="services">
         <dt>Brave Search</dt>
         <dd>Brave's own independent web index (not a reseller of Google or Bing). Fast, broad, and good for mainstream reference pages. The snippets are short, so the model sees less of each page.</dd>
@@ -521,7 +520,7 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=25"></script>
-  <script src="app.js?v=25"></script>
+  <script src="config.js?v=26"></script>
+  <script src="app.js?v=26"></script>
 </body>
 </html>

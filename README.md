@@ -382,7 +382,7 @@ Every call to every model starts with the same **background**: the Exercises and
 
 ## 11. The research page
 
-*"How did it come up with that?"* The research page answers it. It's meant for a computer, not a phone, and is off by default: turn on **Show a "Research" page for each retreat** under Advanced. A **Research** button then appears on each retreat, and "Research for this day" in each day's More menu.
+*"How did it come up with that?"* The research notes answer it. They're always there on a computer and hidden on phones, tucked away so they don't get in the way of praying: a **Research notes** link in each day's row of small links (next to the printable script) opens that day, and **Research notes for this retreat** at the foot of the retreat page opens them all.
 
 For every day it shows:
 
@@ -463,7 +463,7 @@ Most praying happens on a phone, often in the dark, often with the screen locked
 
 **Routing.** State lives in the query string (`?new`, `?r=ID`, `?r=ID&pray=3`, `?r=ID&research`, `?talk&r=ID`, `?me`, `?about`). Links carry `data-nav` and are intercepted to `history.pushState`, so the back button, reloads and shared links all work.
 
-**Settings.** Advanced options are remembered per browser in `localStorage` (models, voices, prompts, guidance, prayer order and silences, research service, the Research page switch, conversation voice), each read and written through a small try/catch wrapper so private browsing doesn't break anything. "Reset every option" clears them.
+**Settings.** Advanced options are remembered per browser in `localStorage` (models, voices, prompts, guidance, prayer order and silences, research service, conversation voice), each read and written through a small try/catch wrapper so private browsing doesn't break anything. "Reset every option" clears them.
 
 **Polling.** Making a retreat is a background job on the server; the page polls `GET /api/retreats/{id}` every three seconds while anything is being made, re-rendering the progress list, and stops when it's done (with a toast and, if allowed, a system notification).
 

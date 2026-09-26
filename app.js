@@ -200,11 +200,6 @@ function fillSettings() {
   $("start-date").value = localToday();
   $("tailor-guide").checked = store.get("tailor", true);
   $("tailor-guide").onchange = () => store.set("tailor", $("tailor-guide").checked);
-  $("show-research").checked = !!store.get("showResearch", false);
-  $("show-research").onchange = () => {
-    store.set("showResearch", $("show-research").checked);
-    if (retreat && params().get("r")) renderRetreat();
-  };
 
   for (const [key, id] of Object.entries(PROMPT_FIELDS)) {
     $(id).value = store.get(`prompt.${key}`) || defaultPrompt(key);
@@ -259,7 +254,11 @@ function fillResearch() {
   select.value = saved && [...select.options].some((o) => o.value === saved) ? saved : options.default_search_provider || "none";
   select.onchange = () => store.set("searchProvider", select.value);
   const free = options.models.find((m) => m.id === $("write-model").value)?.free;
-  $("research-label").hidden = !free || !Object.keys(providers).length;
+  // Every model gets the free research first (Claude then also searches on its own).
+  $("research-label").hidden = !Object.keys(providers).length;
+  $("research-hint").textContent = free
+    ? '"All services, combined" asks every search service at once and gives the model the mix. A paused or out-of-credit service is skipped.'
+    : "Claude gets these results first as a head start, then searches the web itself as much as it needs.";
 }
 
 function talkProviders() {
@@ -765,8 +764,8 @@ function renderRetreat() {
   const ro = !!retreat.read_only;
   $("example-note").hidden = !ro;
   $("example-note").textContent = ro ? `${retreat.demo?.label || "An example retreat"}. It's ready to listen to and pray; your progress and notes are yours alone.` : "";
-  const researchOn = !!store.get("showResearch") && !!plan;
-  $("research-link").hidden = !researchOn;
+  // Research notes are always there on a computer, tucked away at the foot of the page.
+  $("research-link").hidden = !plan || busy();
   $("research-link").href = `./?r=${retreat.id}&research`;
 
   $("retreat-error").hidden = retreat.status !== "failed";
@@ -875,6 +874,7 @@ function renderDay() {
     panel.append(el("div", { class: "quiet-row" },
       el("button", { type: "button", class: "link", text: s.prayed ? "Mark as not prayed" : "Mark as prayed", onclick: () => markPrayed(d.day, { prayed: !s.prayed }) }),
       el("button", { type: "button", class: "link", text: "Printable script (PDF)", onclick: (e) => downloadScript(d.day, e.target) }),
+      el("a", { class: "link desktop-only", href: `./?r=${retreat.id}&research#research-day-${d.day}`, "data-nav": "", text: "Research notes" }),
       dayMenu(d, st)));
   } else if (st.status === "failed") {
     panel.append(el("p", { class: "state-line missed", text: `Making this day didn't finish: ${st.error || "unknown error"}` }));
@@ -937,7 +937,6 @@ function dayMenu(d, st) {
     if (st.tracks?.heart?.script) item("Re-record with other voices…", () => openRebuild(d.day, true));
     item("Rewrite and record this day…", () => openRebuild(d.day, false));
   }
-  if (store.get("showResearch")) item("Research for this day", () => go(`?r=${retreat.id}&research#research-day-${d.day}`));
   if (!list.children.length) return el("span");
   if (st.journal || st.prayed_at) item("Edit what I noted…", () => showAfter(d.day, st.journal));
   wrap.append(btn, list);
