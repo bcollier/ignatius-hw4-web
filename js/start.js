@@ -32,6 +32,9 @@ function wireSignIn() {
   $("signin-form").addEventListener("submit", sendSignInLink);
   $("paste-link-form").addEventListener("submit", signInWithPastedLink);
   $("have-link").onclick = showPasteStep;
+  $("code-form").addEventListener("submit", signInWithCode);
+  $("handoff-new").onclick = () => offerHandoff(true);
+  $("handoff-close").onclick = () => ($("handoff-box").hidden = true);
   $("upgrade-signin-button").onclick = () => guestToSignIn($("upgrade-email").value.trim());
   $("guest-signin").onclick = () => guestToSignIn("");
   $("upgrade-form").addEventListener("submit", upgradeGuest);
@@ -108,6 +111,9 @@ function wireAboutMeAndTalk() {
     toast("The companion has forgotten your past conversations.");
   });
 }
+
+// Did this page open from an email's sign-in link? (Read before Supabase clears the address.)
+const cameFromSignInLink = /access_token=|token_hash=|[?&]code=/.test(location.hash + location.search);
 
 let wakingTimer = null;
 let wakingClock = null;

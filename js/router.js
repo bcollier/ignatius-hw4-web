@@ -83,10 +83,47 @@ async function sendLinkTo(email) {
   if (!error) showPasteStep();
 }
 
+// Step two: in a Home Screen app, the code from Safari (the link opens there); in a
+// browser, just click the link. Pasting the link stays as a fallback either way.
 function showPasteStep() {
+  const homeScreen = inHomeScreenApp();
   $("paste-step").hidden = false;
   $("have-link").hidden = true;
-  $("paste-link").focus({ preventScroll: true });
+  $("code-step").hidden = !homeScreen && !isIPhone();
+  $("link-step-note").hidden = homeScreen || isIPhone();
+  if (!$("code-step").hidden) $("signin-code").focus({ preventScroll: true });
+}
+
+const isIPhone = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const inHomeScreenApp = () => navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+
+// A code from a device that's signed in (see /api/handoff): exchanged for a one-time
+// sign-in token, which Supabase then turns into a session here.
+async function signInWithCode(event) {
+  event.preventDefault();
+  const note = $("code-note");
+  note.textContent = "Signing in…";
+  try {
+    const { token_hash, type } = await postJson("/api/handoff/redeem", { code: $("signin-code").value });
+    const { error } = await sb.auth.verifyOtp({ token_hash, type });
+    note.textContent = error ? `Couldn't sign in: ${error.message}` : "Signed in.";
+  } catch (err) {
+    note.textContent = err.message;
+  }
+}
+
+// In the browser on an iPhone, straight from the email's link: offer the code for the Home
+// Screen app. (Anyone signed in can also get one from About me.)
+async function offerHandoff(always = false) {
+  if (!always && (!cameFromSignInLink || !isIPhone() || inHomeScreenApp())) return;
+  if (!session || me?.anonymous) return;
+  try {
+    const { code } = await postJson("/api/handoff", {});
+    $("handoff-code").textContent = `${code.slice(0, 4)} ${code.slice(4)}`;
+    $("handoff-box").hidden = false;
+  } catch (err) {
+    showMessage(err.message);
+  }
 }
 
 // Sign-in links open in Safari, but an app added to the Home Screen keeps its own
@@ -129,6 +166,7 @@ async function signedInAs(newSession) {
   $("me-link").hidden = false;
   $("account-email").textContent = !session ? "" : me.anonymous ? "Guest" : `${session.user.email}${me.mode === "full" ? " · premium" : ""}`;
   route();
+  offerHandoff(); // on an iPhone, straight from the email: the code for the Home Screen app
 }
 
 function showSignedOut() {

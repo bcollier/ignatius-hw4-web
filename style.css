@@ -780,3 +780,6 @@ body.praying { overflow: hidden; }
 .quote blockquote::before { content: "“"; } .quote blockquote::after { content: "”"; }
 .quote figcaption { margin-top: 6px; font-variant-caps: all-small-caps; letter-spacing: .08em; color: var(--muted); font-size: .95rem; }
 .build-quote-wrap, #build-quote { border-top: 1px solid var(--line); padding-top: 14px; }
+/* The code for signing in on the Home Screen app */
+.handoff-code { font-family: var(--display, var(--serif)); font-size: 2.6rem; letter-spacing: .12em; margin: 6px 0; font-variant-numeric: tabular-nums; user-select: all; }
+#signin-code { font-size: 1.4rem; letter-spacing: .1em; width: 11em; max-width: 100%; }

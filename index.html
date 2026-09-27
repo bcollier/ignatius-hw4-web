@@ -63,13 +63,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=62">
-  <link rel="icon" href="icons/icon-192.png?v=62" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=62">
+  <link rel="manifest" href="manifest.webmanifest?v=63">
+  <link rel="icon" href="icons/icon-192.png?v=63" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=63">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=62">
+  <link rel="stylesheet" href="style.css?v=63">
 </head>
 <body>
   <header class="topbar">
@@ -112,15 +112,27 @@
         </form>
         <p id="signin-note" class="hint" hidden></p>
         <div id="paste-step" class="paste-step" hidden>
-          <h3>Then paste the link here</h3>
-          <p class="hint">Open the email on this phone, <strong>press and hold</strong> the sign-in link, choose <strong>Copy Link</strong>, and paste it below. (On a computer you can simply click the link instead.)</p>
-          <form id="paste-link-form" class="inline-form">
-            <input id="paste-link" type="url" placeholder="Paste the sign-in link" aria-label="Sign-in link" required>
-            <button type="submit">Sign in</button>
-          </form>
-          <p id="paste-link-note" class="hint" role="status"></p>
+          <div id="code-step">
+            <h3>Then enter the code from your browser</h3>
+            <p class="hint">On an iPhone, the link in the email opens in your browser (Safari or Chrome), not in this app. So: <strong>tap the link</strong> in the email. The browser signs you in and shows an <strong>8-digit code</strong>. Come back here and type it:</p>
+            <form id="code-form" class="inline-form">
+              <input id="signin-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="9" placeholder="1234 5678" aria-label="Sign-in code" required>
+              <button type="submit">Sign in</button>
+            </form>
+            <p id="code-note" class="hint" role="status"></p>
+          </div>
+          <p id="link-step-note" class="hint" hidden>Open the email and click the link; this page signs you in.</p>
+          <details class="paste-link">
+            <summary>Or paste the link instead</summary>
+            <p class="hint">Press and hold the link in the email, choose <strong>Copy Link</strong> (don't open it), and paste it here. A link works only once.</p>
+            <form id="paste-link-form" class="inline-form">
+              <input id="paste-link" type="url" placeholder="Paste the sign-in link" aria-label="Sign-in link" required>
+              <button type="submit" class="secondary">Sign in</button>
+            </form>
+            <p id="paste-link-note" class="hint" role="status"></p>
+          </details>
         </div>
-        <p><button type="button" id="have-link" class="link">Already have a sign-in link? Paste it</button></p>
+        <p><button type="button" id="have-link" class="link">Already have a sign-in code or link?</button></p>
         <div id="guest-box" class="guest-box" hidden>
           <p class="hint">Just want to try it? A guest session uses free models and free voices, and stays in this browser.</p>
           <button type="button" id="guest-button" class="secondary">Try it without an account</button>
@@ -131,6 +143,12 @@
     <!-- ============================================================ library -->
     <section id="view-library" class="view" hidden>
       <p id="free-banner" class="quiet-note" hidden></p>
+      <div id="handoff-box" class="card handoff" hidden>
+        <h2>You're signed in, here in your browser</h2>
+        <p class="hint">Using Ignatius from your Home Screen? Open it and type this code there. It works once, for ten minutes.</p>
+        <p id="handoff-code" class="handoff-code"></p>
+        <p><button type="button" id="handoff-new" class="link">Get a new code</button> · <button type="button" id="handoff-close" class="link">Done</button></p>
+      </div>
       <div id="upgrade-box" class="card" hidden>
         <h2>Keep your retreats</h2>
         <p class="hint">This guest session lives only in this browser. Add your email to turn it into an account with the same retreats, then sign in with that email on your phone.</p>
@@ -803,23 +821,23 @@
   </dialog>
 
   <script src="vendor/supabase.js?v=2.117.2"></script> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=62"></script>
+  <script src="config.js?v=63"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=62"></script>
-  <script src="js/look.js?v=62"></script>
-  <script src="js/settings.js?v=62"></script>
-  <script src="js/router.js?v=62"></script>
-  <script src="js/library.js?v=62"></script>
-  <script src="js/new-retreat.js?v=62"></script>
-  <script src="js/retreat.js?v=62"></script>
-  <script src="js/build-log.js?v=62"></script>
-  <script src="js/research.js?v=62"></script>
-  <script src="js/pray.js?v=62"></script>
-  <script src="js/about-me.js?v=62"></script>
-  <script src="js/talk.js?v=62"></script>
-  <script src="js/costs.js?v=62"></script>
-  <script src="js/practice.js?v=62"></script>
-  <script src="js/quotes.js?v=62"></script>
-  <script src="js/start.js?v=62"></script>
+  <script src="js/core.js?v=63"></script>
+  <script src="js/look.js?v=63"></script>
+  <script src="js/settings.js?v=63"></script>
+  <script src="js/router.js?v=63"></script>
+  <script src="js/library.js?v=63"></script>
+  <script src="js/new-retreat.js?v=63"></script>
+  <script src="js/retreat.js?v=63"></script>
+  <script src="js/build-log.js?v=63"></script>
+  <script src="js/research.js?v=63"></script>
+  <script src="js/pray.js?v=63"></script>
+  <script src="js/about-me.js?v=63"></script>
+  <script src="js/talk.js?v=63"></script>
+  <script src="js/costs.js?v=63"></script>
+  <script src="js/practice.js?v=63"></script>
+  <script src="js/quotes.js?v=63"></script>
+  <script src="js/start.js?v=63"></script>
 </body>
 </html>
