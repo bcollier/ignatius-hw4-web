@@ -156,19 +156,23 @@ function showStage(seg) {
   stage.className = `practice-stage mode-${mode} ${seg.kind === "journal" ? "compact" : ""}`;
   if (!stage.querySelector(".candle")) stage.append(candleSvg());
   const art = EXAMEN_ART[seg.step] || EXAMEN_ART.Presence;
-  const current = stage.querySelector("img.shown");
+  const current = stage.querySelector(".stage-art"); // the newest (each is prepended)
   if (mode === "painting" && current?.dataset.src !== art.src) {
-    const img = el("img", { src: art.src, alt: art.caption, "data-src": art.src });
-    img.style.transformOrigin = art.focus;
-    img.onload = () => requestAnimationFrame(() => img.classList.add("shown"));
+    // The whole painting, never cropped, over a soft blurred copy that fills the frame.
+    const img = el("div", { class: "stage-art", "data-src": art.src },
+      el("img", { class: "stage-fill", src: art.src, alt: "", "aria-hidden": "true" }),
+      el("img", { class: "stage-painting", src: art.src, alt: art.caption }));
+    img.querySelector(".stage-painting").style.transformOrigin = art.focus;
+    img.querySelector(".stage-painting").onload = () => requestAnimationFrame(() => img.classList.add("shown"));
     stage.prepend(img);
-    if (current) {
-      current.classList.remove("shown");
-      setTimeout(() => current.remove(), 2600);
+    for (const old of stage.querySelectorAll(".stage-art")) {
+      if (old === img) continue;
+      old.classList.remove("shown");
+      setTimeout(() => old.remove(), 2600);
     }
     $("practice-art-caption").textContent = art.caption;
   }
-  if (mode !== "painting") stage.querySelectorAll("img").forEach((i) => i.remove());
+  if (mode !== "painting") stage.querySelectorAll(".stage-art").forEach((i) => i.remove());
   $("practice-art-caption").hidden = mode !== "painting";
 }
 
