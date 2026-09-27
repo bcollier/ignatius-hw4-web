@@ -63,13 +63,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=71">
-  <link rel="icon" href="icons/icon-192.png?v=71" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=71">
+  <link rel="manifest" href="manifest.webmanifest?v=72">
+  <link rel="icon" href="icons/icon-192.png?v=72" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=72">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=71">
+  <link rel="stylesheet" href="style.css?v=72">
 </head>
 <body>
   <header class="topbar">
@@ -644,7 +644,37 @@
         <a href="./" data-nav="library" class="back">← My retreats</a>
         <h1>Prayer practice</h1>
         <p class="lede">Guided exercises for any day: a voice leads you through each step, leaves real silence, and gives you time to write. What you write is saved to your own journal.</p>
-        <div id="practice-list" class="practice-list"></div>
+        <section id="practice-yours" class="practice-section" hidden>
+          <h2>Your prayers</h2>
+          <div id="practice-yours-list" class="practice-list"></div>
+        </section>
+        <section id="practice-recent" class="practice-section" hidden>
+          <h2>Done recently</h2>
+          <div id="practice-recent-list" class="practice-list"></div>
+        </section>
+        <section class="practice-section">
+          <h2>The library</h2>
+          <div id="practice-list" class="practice-list"></div>
+        </section>
+        <section id="my-examen" class="my-examen card" hidden>
+          <p class="rubric small">Full version</p>
+          <h2 id="my-examen-heading">Your own Examen</h2>
+          <p>The same end-of-day prayer, written around your life: the review walks through the places God might have met you today, in your work, with your family in the car, in your art, outside, wherever your days go. It uses your <a href="./?me" data-nav="me">About me</a> notes and anything you add here. It's written once and recorded for you, and you can pray it every night.</p>
+          <p id="my-examen-free" class="meta" hidden>Your own Examen is part of the full version. The Examen above is for everyone.</p>
+          <div id="my-examen-status"></div>
+          <div id="my-examen-form">
+            <label>What are your days like? <span class="meta">(optional)</span>
+              <textarea id="my-examen-days" rows="4" maxlength="4000" placeholder="I teach third grade, drive my two kids to school, paint on weekends, walk the dog by the river…"></textarea>
+            </label>
+            <label>Voice
+              <select id="my-examen-voice">
+                <option value="deluxe">George, ElevenLabs (British man, deluxe)</option>
+                <option value="standard">Ryan, Microsoft (British man, free)</option>
+              </select>
+            </label>
+            <button type="button" id="my-examen-make" class="gold">Write my Examen</button>
+          </div>
+        </section>
         <label class="practice-voice-choice">Voice
           <select id="practice-voice">
             <option value="standard">Standard (Microsoft, free)</option>
@@ -665,25 +695,6 @@
           <p><button type="button" id="practice-music-sample" class="secondary">Play a sample</button></p>
           <p class="meta small">Chant, from Wikimedia Commons: Veni Sancte Spiritus (public domain, Membeth); Rorate Caeli (Inritter, CC BY-SA 4.0); Ave Maria (Schola Gregoriana, CC BY-SA 3.0); “Gregorian Chant” (Kevin MacLeod, incompetech.com, CC BY 3.0); Salve Regina by Hermann Contract (Les Petits Chanteurs de Passy, CC BY-SA 3.0). The instrumental was made for this app with ElevenLabs Music.</p>
         </details>
-        <section id="my-examen" class="my-examen card" hidden>
-          <p class="rubric small">Full version</p>
-          <h2>Your own Examen</h2>
-          <p>The same end-of-day prayer, written around your life: the review walks through the places God might have met you today, in your work, with your family in the car, in your art, outside, wherever your days go. It uses your <a href="./?me" data-nav="me">About me</a> notes and anything you add here. It's written once and recorded for you, and you can pray it every night.</p>
-          <p id="my-examen-free" class="meta" hidden>Your own Examen is part of the full version. The Examen above is for everyone.</p>
-          <div id="my-examen-status"></div>
-          <div id="my-examen-form">
-            <label>What are your days like? <span class="meta">(optional)</span>
-              <textarea id="my-examen-days" rows="4" maxlength="4000" placeholder="I teach third grade, drive my two kids to school, paint on weekends, walk the dog by the river…"></textarea>
-            </label>
-            <label>Voice
-              <select id="my-examen-voice">
-                <option value="deluxe">George, ElevenLabs (British man, deluxe)</option>
-                <option value="standard">Ryan, Microsoft (British man, free)</option>
-              </select>
-            </label>
-            <button type="button" id="my-examen-make" class="gold">Write my Examen</button>
-          </div>
-        </section>
         <details id="practice-journal-box" class="card" hidden>
           <summary>My practice journal</summary>
           <ol id="practice-journal" class="practice-journal"></ol>
@@ -825,23 +836,23 @@
   </dialog>
 
   <script src="vendor/supabase.js?v=2.117.2"></script> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=71"></script>
+  <script src="config.js?v=72"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=71"></script>
-  <script src="js/look.js?v=71"></script>
-  <script src="js/settings.js?v=71"></script>
-  <script src="js/router.js?v=71"></script>
-  <script src="js/library.js?v=71"></script>
-  <script src="js/new-retreat.js?v=71"></script>
-  <script src="js/retreat.js?v=71"></script>
-  <script src="js/build-log.js?v=71"></script>
-  <script src="js/research.js?v=71"></script>
-  <script src="js/pray.js?v=71"></script>
-  <script src="js/about-me.js?v=71"></script>
-  <script src="js/talk.js?v=71"></script>
-  <script src="js/costs.js?v=71"></script>
-  <script src="js/practice.js?v=71"></script>
-  <script src="js/quotes.js?v=71"></script>
-  <script src="js/start.js?v=71"></script>
+  <script src="js/core.js?v=72"></script>
+  <script src="js/look.js?v=72"></script>
+  <script src="js/settings.js?v=72"></script>
+  <script src="js/router.js?v=72"></script>
+  <script src="js/library.js?v=72"></script>
+  <script src="js/new-retreat.js?v=72"></script>
+  <script src="js/retreat.js?v=72"></script>
+  <script src="js/build-log.js?v=72"></script>
+  <script src="js/research.js?v=72"></script>
+  <script src="js/pray.js?v=72"></script>
+  <script src="js/about-me.js?v=72"></script>
+  <script src="js/talk.js?v=72"></script>
+  <script src="js/costs.js?v=72"></script>
+  <script src="js/practice.js?v=72"></script>
+  <script src="js/quotes.js?v=72"></script>
+  <script src="js/start.js?v=72"></script>
 </body>
 </html>

@@ -797,3 +797,4 @@ body.praying { overflow: hidden; }
 /* iPhone browsers zoom into a text box whose text is under 16px, and may stay zoomed. */
 input, select, textarea { font-size: max(16px, 1em); }
 .debug-badge { border: 1px solid currentColor; border-radius: 3px; padding: 0 6px; font-size: .85em; }
+.practice-section { margin: 22px 0 6px; } .practice-section h2 { font-size: 1.45rem; margin-bottom: 4px; } .practice-section .practice-list { margin-top: 10px; }

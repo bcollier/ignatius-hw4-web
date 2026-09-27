@@ -32,22 +32,65 @@ async function openPractice(which) {
   renderPracticeMenu(data);
 }
 
+// The menu, in three parts: prayers made for you (your own Examen), what you've done
+// recently, and the library of standard sessions.
 function renderPracticeMenu(data) {
   $("practice-run").hidden = true;
   $("practice-menu").hidden = false;
-  const list = $("practice-list");
-  list.innerHTML = "";
-  for (const s of data.sessions) {
-    list.append(el("a", { class: "practice-card", href: `./?practice=${s.id}`, "data-nav": "" },
-      el("span", { class: "rubric small", text: `about ${sessionMinutes(s)} minutes` }),
-      el("strong", { text: s.title }),
-      el("span", { class: "meta", text: s.summary }),
-      s.voices ? el("span", { class: "meta small", text: `Voice: ${s.voices.standard} or ${s.voices.deluxe}` }) : ""));
-  }
+  $("practice-list").replaceChildren(...data.sessions.map((s) => practiceCard(s)));
   $("practice-voice").value = store.get("practice.voice", "standard");
   $("practice-voice").onchange = () => store.set("practice.voice", $("practice-voice").value);
-  loadPracticeJournal();
+  loadPracticeJournal().then(renderRecent);
   renderMyExamen();
+}
+
+function practiceCard(s, lead = `about ${sessionMinutes(s)} minutes`, href = `./?practice=${s.id}`) {
+  const voices = s.voices && (s.voices.standard && s.voices.deluxe ? `${s.voices.standard} or ${s.voices.deluxe}` : Object.values(s.voices)[0]);
+  return el("a", { class: "practice-card", href, "data-nav": "" },
+    el("span", { class: "rubric small", text: lead }),
+    el("strong", { text: s.title }),
+    el("span", { class: "meta", text: s.summary }),
+    voices ? el("span", { class: "meta small", text: `Voice: ${voices}` }) : "");
+}
+
+// When each session was last used: started on this device, or written about in the
+// journal (which follows the person to every device).
+function noteSessionUsed(id) {
+  const recent = store.get("practice.recent", {});
+  recent[id] = new Date().toISOString();
+  store.set("practice.recent", recent);
+}
+
+let practiceEntries = [];
+const RECENT_COUNT = 3;
+
+function renderRecent() {
+  if (!practiceData) return;
+  const used = { ...store.get("practice.recent", {}) };
+  for (const e of practiceEntries) if (!used[e.session] || e.at > used[e.session]) used[e.session] = e.at;
+  const recent = Object.entries(used)
+    .filter(([id]) => id !== "my-examen") // your own prayers are already at the top
+    .map(([id, at]) => ({ at, s: practiceData.sessions.find((x) => x.id === id) }))
+    .filter((x) => x.s)
+    .sort((a, b) => (a.at < b.at ? 1 : -1))
+    .slice(0, RECENT_COUNT);
+  $("practice-recent").hidden = !recent.length;
+  $("practice-recent-list").replaceChildren(...recent.map(({ at, s }) => practiceCard(s, `${longDate(at)} · about ${sessionMinutes(s)} minutes`)));
+}
+
+async function loadPracticeJournal() {
+  const box = $("practice-journal");
+  box.innerHTML = "";
+  practiceEntries = [];
+  try {
+    practiceEntries = (await api("/api/practice/journal")).entries;
+  } catch {}
+  $("practice-journal-box").hidden = !practiceEntries.length;
+  for (const e of [...practiceEntries].reverse().slice(0, 60)) {
+    box.append(el("li", {},
+      el("span", { class: "rubric small", text: `${longDate(e.at)} · ${e.question}` }),
+      el("p", { text: e.answer })));
+  }
 }
 
 // ---------------------------------------------------------------- your own Examen
@@ -67,13 +110,12 @@ async function renderMyExamen() {
   if (state.voice) $("my-examen-voice").value = state.voice;
   const status = $("my-examen-status");
   status.innerHTML = "";
-  if (state.status === "ready") {
-    const s = state.session;
-    status.append(el("a", { class: "practice-card", href: "./?practice=my-examen", "data-nav": "" },
-      el("span", { class: "rubric small", text: `about ${sessionMinutes(s)} minutes · made ${longDate(state.made_at)}` }),
-      el("strong", { text: s.title }),
-      el("span", { class: "meta", text: s.summary }),
-      el("span", { class: "meta small", text: `Voice: ${Object.values(s.voices || {})[0] || ""}` })));
+  const ready = state.status === "ready";
+  $("practice-yours").hidden = !ready;
+  $("practice-yours-list").replaceChildren(...(ready ? [practiceCard(state.session, `about ${sessionMinutes(state.session)} minutes · made ${longDate(state.made_at)}`, "./?practice=my-examen")] : []));
+  $("my-examen-heading").textContent = ready ? "Write a new Examen" : "Your own Examen";
+  if (ready) {
+    status.append(el("p", { class: "meta", text: "Yours is at the top of this page. A new one replaces it." }));
     $("my-examen-make").textContent = "Write a new one";
   } else if (state.status === "making") {
     status.append(el("p", { class: "meta making-note", text: "Writing your Examen and recording it. This takes two or three minutes; you can leave this page and come back." }));
@@ -99,20 +141,6 @@ async function makeMyExamen() {
   }
 }
 
-async function loadPracticeJournal() {
-  const box = $("practice-journal");
-  box.innerHTML = "";
-  let entries = [];
-  try {
-    entries = (await api("/api/practice/journal")).entries;
-  } catch {}
-  $("practice-journal-box").hidden = !entries.length;
-  for (const e of [...entries].reverse().slice(0, 60)) {
-    box.append(el("li", {},
-      el("span", { class: "rubric small", text: `${longDate(e.at)} · ${e.question}` }),
-      el("p", { text: e.answer })));
-  }
-}
 
 // ---------------------------------------------------------------- the Examen's stage
 // While the Examen plays, a quiet picture to rest the eyes on: a painting for each step,
@@ -283,6 +311,7 @@ function wireMusic() {
 // ---------------------------------------------------------------- a session
 
 function startPractice(session) {
+  noteSessionUsed(session.id);
   $("practice-menu").hidden = true;
   $("practice-run").hidden = false;
   $("practice-title").textContent = session.title;
