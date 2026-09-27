@@ -284,8 +284,9 @@ function startPractice(session) {
   $("practice-menu").hidden = true;
   $("practice-run").hidden = false;
   $("practice-title").textContent = session.title;
-  practiceRun = { session, index: -1, timer: null, remaining: 0, paused: false, weekNotes: null };
+  practiceRun = { session, index: -1, timer: null, endAt: null, left: null, total: 0, paused: false };
   requestWakeLock();
+  wireLockScreen();
   startMusic();
   nextSegment(1);
 }
@@ -298,6 +299,7 @@ function stopPractice() {
   practiceRun = null;
   stopMusic();
   releaseWakeLock();
+  clearLockScreen();
 }
 
 function nextSegment(step) {
@@ -305,12 +307,14 @@ function nextSegment(step) {
   if (!run) return;
   savePracticeAnswer();
   clearInterval(run.timer);
-  practiceAudio.pause();
+  run.endAt = run.left = null;
+  run.paused = false;
   run.index += step;
   if (run.index < 0) run.index = 0;
   const seg = run.session.segments[run.index];
   if (!seg) return finishPractice();
   renderSegment(seg);
+  showOnLockScreen(seg);
   duckMusic(seg.kind === "speak");
   if (seg.kind === "speak") playNarration(seg);
   else startCountdown(seg);
@@ -340,33 +344,54 @@ function renderSegment(seg) {
     }
     if (run.session.id === "weekly" && /notes/i.test(seg.question)) body.append(weekNotesBox());
   }
-  $("practice-pause").textContent = "Pause";
+}
+
+// ---------------------------------------------------------------- one player for everything
+// One audio element plays the whole session, one sound after the next: the narration,
+// the silences (a near-silent track, looped) and the bell. On an iPhone this is what
+// keeps a session going with the screen off: a page that is already playing may move
+// on to its next sound, and the player's events keep firing while timers stop. The
+// countdowns run on the clock (endAt), so they are right when the screen comes back.
+
+const QUIET_TRACK = "sounds/quiet30.mp3";
+const BELL = "sounds/bell.mp3";
+
+function playOn(src, { loop = false, onended = null } = {}) {
+  const url = new URL(src, location.href).href;
+  practiceAudio.loop = loop;
+  practiceAudio.onended = onended;
+  if (practiceAudio.src !== url) practiceAudio.src = url; // a silence after a silence just keeps playing
+  practiceAudio.play().catch(showPlayState);
 }
 
 function playNarration(seg) {
   const voice = store.get("practice.voice", "standard");
   const clip = seg.audio?.file ? seg.audio : seg.audio?.[voice] || seg.audio?.standard; // your own Examen has one voice
   if (!clip) return startCountdown({ ...seg, seconds: Math.ceil(seg.text.split(/\s+/).length / 2.3) });
-  practiceAudio.src = clip.path ? fileUrl(clip.file) : clip.file; // your own Examen is served by the API
-  practiceAudio.onended = () => nextSegment(1);
-  practiceAudio.play().catch(() => ($("practice-pause").textContent = "Play"));
+  practiceAudio.ontimeupdate = null;
+  playOn(clip.path ? fileUrl(clip.file) : clip.file, { onended: () => nextSegment(1) }); // your own Examen is served by the API
 }
 
 function startCountdown(seg) {
   const run = practiceRun;
-  run.remaining = seg.seconds;
-  const tick = () => {
-    if (run.paused) return;
-    showClock(run.remaining, seg.seconds);
-    if (run.remaining <= 0) {
-      clearInterval(run.timer);
-      endChime();
-      return nextSegment(1);
-    }
-    run.remaining -= 1;
-  };
-  tick();
-  run.timer = setInterval(tick, 1000);
+  run.total = seg.seconds;
+  run.endAt = Date.now() + seg.seconds * 1000;
+  playOn(QUIET_TRACK, { loop: true });
+  practiceAudio.ontimeupdate = checkCountdown; // keeps firing with the screen off
+  run.timer = setInterval(checkCountdown, 500);
+  checkCountdown();
+}
+
+function checkCountdown() {
+  const run = practiceRun;
+  if (!run || run.paused || run.endAt == null) return;
+  const left = Math.max(0, Math.ceil((run.endAt - Date.now()) / 1000));
+  showClock(left, run.total);
+  if (left > 0) return;
+  run.endAt = null;
+  clearInterval(run.timer);
+  practiceAudio.ontimeupdate = null;
+  playOn(BELL, { onended: () => nextSegment(1) }); // the bell ends the pause, then the session moves on
 }
 
 function showClock(left, total) {
@@ -376,10 +401,67 @@ function showClock(left, total) {
   clock.style.setProperty("--p", 1 - left / total);
 }
 
-function endChime() {
-  const bell = new Audio("sounds/bell.mp3");
-  bell.volume = 0.5;
-  bell.play().catch(() => {});
+function pausePractice() {
+  const run = practiceRun;
+  if (!run || run.paused) return;
+  run.paused = true;
+  if (run.endAt != null) run.left = run.endAt - Date.now();
+  practiceAudio.pause();
+  showPlayState();
+}
+
+function resumePractice() {
+  const run = practiceRun;
+  if (!run) return;
+  run.paused = false;
+  if (run.left != null) {
+    run.endAt = Date.now() + run.left;
+    run.left = null;
+  }
+  practiceAudio.play().catch(showPlayState);
+  if (backgroundMusic.paused && store.get("practice.music", "none") !== "none") startMusic();
+  showPlayState();
+}
+
+function togglePracticePause() {
+  if (practiceRun?.paused || practiceAudio.paused) resumePractice();
+  else pausePractice();
+}
+
+// The button and the lock screen say what's really happening.
+function showPlayState() {
+  const playing = !practiceAudio.paused && !practiceRun?.paused;
+  $("practice-pause").textContent = playing ? "Pause" : "Play";
+  if ("mediaSession" in navigator) navigator.mediaSession.playbackState = playing ? "playing" : "paused";
+}
+practiceAudio.addEventListener("play", showPlayState);
+practiceAudio.addEventListener("pause", showPlayState);
+
+// Lock-screen controls: play, pause, and skipping between steps.
+function wireLockScreen() {
+  if (!("mediaSession" in navigator)) return;
+  const handlers = { play: resumePractice, pause: pausePractice, nexttrack: () => nextSegment(1), previoustrack: () => nextSegment(-1) };
+  for (const [action, handler] of Object.entries(handlers)) {
+    try {
+      navigator.mediaSession.setActionHandler(action, handler);
+    } catch {}
+  }
+}
+
+function showOnLockScreen(seg) {
+  if (!("mediaSession" in navigator) || !practiceRun) return;
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: seg.kind === "speak" ? seg.step : seg.question || seg.step,
+    artist: practiceRun.session.title,
+    album: "Ignatius at Home",
+    artwork: [{ src: new URL("icons/icon-512.png", location.href).href, sizes: "512x512", type: "image/png" }],
+  });
+}
+
+function clearLockScreen() {
+  if (!("mediaSession" in navigator)) return;
+  navigator.mediaSession.metadata = null;
+  navigator.mediaSession.playbackState = "none";
 }
 
 // Weekly review: the week's daily notes, to read during the pause.
@@ -411,25 +493,10 @@ async function savePracticeAnswer() {
   }
 }
 
-function togglePracticePause() {
-  const run = practiceRun;
-  if (!run) return;
-  const seg = run.session.segments[run.index];
-  if (seg.kind === "speak") {
-    if (practiceAudio.paused) {
-      practiceAudio.play().catch(() => {});
-      if (backgroundMusic.paused && store.get("practice.music", "none") !== "none") startMusic();
-    }
-    else practiceAudio.pause();
-    $("practice-pause").textContent = practiceAudio.paused ? "Play" : "Pause";
-    return;
-  }
-  run.paused = !run.paused;
-  $("practice-pause").textContent = run.paused ? "Continue" : "Pause";
-}
-
 function finishPractice() {
   const run = practiceRun;
+  practiceAudio.pause();
+  clearLockScreen();
   $("practice-stage").hidden = $("practice-art-caption").hidden = $("practice-picture").hidden = true;
   practiceRun = null;
   stopMusic();
