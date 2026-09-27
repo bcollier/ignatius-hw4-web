@@ -773,3 +773,10 @@ body.praying { overflow: hidden; }
 /* The live "what's happening now" line while a retreat is made */
 .build-now { margin: 10px 0 2px; font-family: var(--display, var(--serif)); font-style: italic; font-size: 1.2rem; min-height: 1.5em; }
 .build-now.changed { animation: rise .6s ease both; }
+/* Words to wait with */
+.quote { margin: 18px auto 6px; max-width: 34em; text-align: center; opacity: 0; transition: opacity .6s ease; }
+.quote.shown { opacity: 1; }
+.quote blockquote { margin: 0; font-family: var(--display, var(--serif)); font-style: italic; font-size: 1.2rem; line-height: 1.45; }
+.quote blockquote::before { content: "“"; } .quote blockquote::after { content: "”"; }
+.quote figcaption { margin-top: 6px; font-variant-caps: all-small-caps; letter-spacing: .08em; color: var(--muted); font-size: .95rem; }
+.build-quote-wrap, #build-quote { border-top: 1px solid var(--line); padding-top: 14px; }

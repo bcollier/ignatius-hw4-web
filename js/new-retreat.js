@@ -3,6 +3,7 @@
 function openNew() {
   show("new");
   fillIdeaDays();
+  noteEmptyAboutMe();
   document.title = "New retreat · Ignatius at Home";
   if ($("advanced").parentElement !== $("panel-advanced")) $("panel-advanced").append($("advanced"));
   setTab(store.get("tab", "simple"));
@@ -133,6 +134,7 @@ function newRetreatForm() {
   } else if (file) form.append("file", file);
   else form.append("example", chosenExample);
   form.append("model", $("plan-model").value);
+  form.append("personal", $("personal").checked ? "true" : "false");
   form.append("start_date", $("start-date").value || localToday());
   form.append("options", JSON.stringify(buildOptions()));
   const planPrompt = $("plan-prompt").value;
@@ -151,6 +153,14 @@ function chosenSourceFile() {
   const pasted = $("paste-text").value.trim();
   if (!file && pasted) return new File([pasted], "Pasted text.txt", { type: "text/plain" });
   return file;
+}
+
+// "Make it personal" only means something once there's something in About me.
+async function noteEmptyAboutMe() {
+  try {
+    const p = await api("/api/profile");
+    $("personal-hint").hidden = !!p.about?.trim();
+  } catch {}
 }
 
 // Days for a retreat from an idea: one to the most a retreat can have, a week by default.

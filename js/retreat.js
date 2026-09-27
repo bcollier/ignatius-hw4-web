@@ -8,6 +8,7 @@ async function openRetreat(id, prayDay) {
     $("retreat-title").textContent = "";
     $("days-area").hidden = true;
     $("progress").hidden = true;
+    stopQuotes($("build-quote"));
   }
   try {
     retreat = await api(`/api/retreats/${id}`);
@@ -67,6 +68,7 @@ function renderRetreat() {
   // While planning or building, the progress card; afterwards, the days.
   const making = retreat.status === "planning" || retreat.status === "building";
   $("progress").hidden = !making;
+  if (!making) stopQuotes($("build-quote"));
   if (making) renderProgress();
   $("days-area").hidden = !plan || making;
   if (plan && !making) {
@@ -467,7 +469,7 @@ function showTalkButton(show) {
   cta.classList.remove("arrive");
   void cta.offsetWidth; // restart the entrance animation
   cta.classList.add("arrive");
-  if (!store.get("talkIntroSeen")) {
+  if (!store.get("talkIntroSeen") && retreat.status === "ready") { // not over the progress while it is being made
     store.set("talkIntroSeen", true);
     setTimeout(() => cta.classList.add("intro"), 900);
     setTimeout(() => cta.classList.remove("intro"), 9000);
@@ -592,6 +594,8 @@ function renderBuildNow() {
 
 function renderBuildBar() {
   renderBuildNow();
+  const quote = $("build-quote");
+  if (!quote.dataset.started) showQuotes(quote, 20); // words to wait with, until the retreat is ready
   const p = buildProgressOf(retreat);
   drawBuildBar($("build-bar"), p.segments);
   $("build-bar").setAttribute("aria-valuenow", String(p.percent));

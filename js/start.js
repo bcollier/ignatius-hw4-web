@@ -126,6 +126,7 @@ const WAKING_PHRASES = [
 
 function showWaking() {
   $("waking-phrase").textContent = WAKING_PHRASES[Math.floor(Math.random() * WAKING_PHRASES.length)];
+  if (typeof showQuotes === "function") showQuotes($("waking-quote"), 15);
   $("waking").hidden = false;
   const began = Date.now();
   const tick = () => {
@@ -140,6 +141,7 @@ function showWaking() {
 
 function hideWaking() {
   clearTimeout(wakingTimer);
+  if (typeof stopQuotes === "function") stopQuotes($("waking-quote"));
   clearInterval(wakingClock);
   $("waking").hidden = true;
 }

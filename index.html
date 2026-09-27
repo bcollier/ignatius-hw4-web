@@ -11,13 +11,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=60">
-  <link rel="icon" href="icons/icon-192.png?v=60" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=60">
+  <link rel="manifest" href="manifest.webmanifest?v=61">
+  <link rel="icon" href="icons/icon-192.png?v=61" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=61">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=60">
+  <link rel="stylesheet" href="style.css?v=61">
 </head>
 <body>
   <header class="topbar">
@@ -40,6 +40,7 @@
     <div id="waking" class="waking" role="status">
       <div class="breath-circle" aria-hidden="true"><span id="breath-cue">Breathe in</span></div>
       <p id="waking-phrase">The candles are being lit…</p>
+      <figure id="waking-quote" class="quote shown"><blockquote>All shall be well, and all shall be well, and all manner of thing shall be well.</blockquote><figcaption>Julian of Norwich, Revelations of Divine Love, 27</figcaption></figure>
       <p class="hint">Ignatius runs on modest hardware that rests when no one is praying, and takes a moment to warm back up (up to a minute). While you wait, breathe slowly, low in your belly.</p>
       <p class="hint waking-time" id="waking-time"></p>
       <p class="hint waking-stuck">Still loading? Close the app and open it again.</p>
@@ -162,6 +163,9 @@
           </ol>
           <p class="hint">Each day you'll pray with the reading four times, lectio divina style, with the reflection and deep dive between the readings, a time of silence, and your own prayer at the end. Nothing is published; your retreats are private to your account.</p>
         </details>
+
+        <label class="check" id="personal-label"><input id="personal" type="checkbox" checked> <span>Make it personal: shape the reflections with what I've told you in <a href="./?me" data-nav="me">About me</a>. Untick for a general retreat anyone could pray.</span></label>
+        <p id="personal-hint" class="hint" hidden>You haven't written anything in About me yet, so for now it will be a general retreat.</p>
 
         <label class="check" id="watch-build-label" hidden><input id="watch-build" type="checkbox"> Watch the technical details as it's made: every step, and every call to a model, search service and voice, live</label>
 
@@ -315,6 +319,7 @@
         <div id="build-bar" class="build-bar" role="progressbar" aria-label="How far along the retreat is" aria-valuemin="0" aria-valuemax="100"></div>
         <p id="build-now" class="build-now" aria-live="polite"></p>
         <p id="build-step" class="build-step"></p>
+        <figure id="build-quote" class="quote"><blockquote></blockquote><figcaption></figcaption></figure>
         <ol id="progress-days" class="progress-days"></ol>
         <p class="hint">It's fine to close this page; your retreat keeps being made and will be here when you come back.</p>
         <button type="button" id="notify-button" class="link" hidden>Tell me when it's ready</button>
@@ -746,22 +751,23 @@
   </dialog>
 
   <script src="vendor/supabase.js?v=2.117.2"></script> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=60"></script>
+  <script src="config.js?v=61"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=60"></script>
-  <script src="js/look.js?v=60"></script>
-  <script src="js/settings.js?v=60"></script>
-  <script src="js/router.js?v=60"></script>
-  <script src="js/library.js?v=60"></script>
-  <script src="js/new-retreat.js?v=60"></script>
-  <script src="js/retreat.js?v=60"></script>
-  <script src="js/build-log.js?v=60"></script>
-  <script src="js/research.js?v=60"></script>
-  <script src="js/pray.js?v=60"></script>
-  <script src="js/about-me.js?v=60"></script>
-  <script src="js/talk.js?v=60"></script>
-  <script src="js/costs.js?v=60"></script>
-  <script src="js/practice.js?v=60"></script>
-  <script src="js/start.js?v=60"></script>
+  <script src="js/core.js?v=61"></script>
+  <script src="js/look.js?v=61"></script>
+  <script src="js/settings.js?v=61"></script>
+  <script src="js/router.js?v=61"></script>
+  <script src="js/library.js?v=61"></script>
+  <script src="js/new-retreat.js?v=61"></script>
+  <script src="js/retreat.js?v=61"></script>
+  <script src="js/build-log.js?v=61"></script>
+  <script src="js/research.js?v=61"></script>
+  <script src="js/pray.js?v=61"></script>
+  <script src="js/about-me.js?v=61"></script>
+  <script src="js/talk.js?v=61"></script>
+  <script src="js/costs.js?v=61"></script>
+  <script src="js/practice.js?v=61"></script>
+  <script src="js/quotes.js?v=61"></script>
+  <script src="js/start.js?v=61"></script>
 </body>
 </html>
