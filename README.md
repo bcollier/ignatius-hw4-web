@@ -370,8 +370,8 @@ By default the app uses **All services, combined**: the three searches go to eve
 | --- | --- | --- | --- |
 | **Muse Glimmer** (default, free) | Jetstream2 | Planning (reads the images too), reflection, deep dive, tailoring | A capable reasoning model that also reads images, so it can match paintings to days; no cost under an academic allocation |
 | **Llama 4 Scout** (free) | Jetstream2 | The same | Faster; a good fallback |
-| **Claude Opus 5** (premium default) | OpenRouter | Everything, with the free research as a head start plus its own web search | Strong, careful writing and planning at a reasonable price |
-| **Claude Opus 5.5** | OpenRouter | The same | The most capable Opus |
+| **Claude Opus 5.5** (premium default) | OpenRouter | Everything, with the free research as a head start plus its own web search | The most capable Opus: strong, careful writing and planning, and cheaper than Opus 5 ($4 / $20 per million tokens in / out) |
+| **Claude Opus 5** | OpenRouter | The same | The previous Opus ($5 / $25); still offered |
 | **Claude Fable 5.1** | OpenRouter | The same (the premium example uses it) | The finest writer of the family, for the most beautiful reflections; the priciest ($10 / $50 per million tokens in / out) |
 | **Claude Sonnet 5** | OpenRouter | The same | Faster and cheaper |
 | **Claude Haiku 4.5** | OpenRouter | The same | Fastest and cheapest; basic web search |
