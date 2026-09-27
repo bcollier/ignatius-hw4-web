@@ -63,13 +63,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=82">
-  <link rel="icon" href="icons/icon-192.png?v=82" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=82">
+  <link rel="manifest" href="manifest.webmanifest?v=83">
+  <link rel="icon" href="icons/icon-192.png?v=83" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=83">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=82">
+  <link rel="stylesheet" href="style.css?v=83">
 </head>
 <body>
   <header class="topbar">
@@ -678,18 +678,19 @@
       <p>With the free open models, the deep dive is written from web research the server does first: the model proposes three searches, the services run them, and the model writes from what comes back, citing only pages that were actually returned. Claude models get the same results as a head start and then search the web themselves as much as they need. By default <strong>all services, combined</strong> are asked at once and their results are interleaved, one from each in turn, so no single index decides what the model reads. If a service runs out of monthly credits it's paused until next month and the others carry on; every query and result is logged. On a computer, the research behind each day is under "Research notes" on the retreat page.</p>
       <dl class="services">
         <dt>Brave Search</dt>
-        <dd>Brave's own independent web index (not a reseller of Google or Bing). Fast, broad, and good for mainstream reference pages. The snippets are short, so the model sees less of each page.</dd>
+        <dd>Brave's own independent web index (not a reseller of Google or Bing). Fast, broad, and good for mainstream reference pages. The snippets are short, so the model sees less of each page.<br><span class="service-links">About 1,000 searches a month free ($5 of monthly credit). <a href="https://api-dashboard.search.brave.com/register" target="_blank" rel="noopener">Get a key</a> · <a href="https://api-dashboard.search.brave.com/app/documentation/web-search/get-started" target="_blank" rel="noopener">Quickstart</a> · <a href="https://api-dashboard.search.brave.com/api-reference/web/search/get" target="_blank" rel="noopener">Web search reference</a> · <a href="https://api-dashboard.search.brave.com/documentation/pricing" target="_blank" rel="noopener">Pricing</a> · key: <code>BRAVE_SEARCH_API_KEY</code></span></dd>
         <dt>Brave Answers</dt>
-        <dd>An AI-written answer from the Brave index, with its citations. A quick summary with sources in one call; but the answer is itself AI-generated, so it's one step removed from the pages.</dd>
+        <dd>An AI-written answer from the Brave index, with its citations. A quick summary with sources in one call; but the answer is itself AI-generated, so it's one step removed from the pages.<br><span class="service-links">$5 of monthly credit free; a separate plan to switch on, and its own key, in the same Brave account. <a href="https://api-dashboard.search.brave.com/register" target="_blank" rel="noopener">Get a key</a> · <a href="https://api-dashboard.search.brave.com/documentation/services/answers" target="_blank" rel="noopener">Answers guide</a> · <a href="https://api-dashboard.search.brave.com/api-reference/ai/answers" target="_blank" rel="noopener">Answers reference</a> · <a href="https://api-dashboard.search.brave.com/documentation/pricing" target="_blank" rel="noopener">Pricing</a> · key: <code>BRAVE_ANSWERS_API_KEY</code></span></dd>
         <dt>Exa</dt>
-        <dd>A search engine built for AI that searches by meaning rather than keywords, and returns highlighted passages. Strong at finding essays, commentaries and scholarly writing on an idea; weaker for exact phrases and very recent news.</dd>
+        <dd>A search engine built for AI that searches by meaning rather than keywords, and returns highlighted passages. Strong at finding essays, commentaries and scholarly writing on an idea; weaker for exact phrases and very recent news.<br><span class="service-links">About 1,400 searches a month free ($10 of credit, reset on the 1st; no card). <a href="https://dashboard.exa.ai/api-keys" target="_blank" rel="noopener">Get a key</a> · <a href="https://exa.ai/docs/reference/quickstart" target="_blank" rel="noopener">Quickstart</a> · <a href="https://exa.ai/docs/reference/search" target="_blank" rel="noopener">Search reference</a> · <a href="https://exa.ai/pricing" target="_blank" rel="noopener">Pricing</a> · key: <code>EXA_API_KEY</code></span></dd>
         <dt>Tavily</dt>
-        <dd>A search API made for AI agents that returns cleaned, relevance-ranked extracts of each page. Good all-round results with useful content; its free tier is a modest monthly number of searches.</dd>
+        <dd>A search API made for AI agents that returns cleaned, relevance-ranked extracts of each page. Good all-round results with useful content; its free tier is a modest monthly number of searches.<br><span class="service-links">1,000 searches a month free (no card). <a href="https://app.tavily.com" target="_blank" rel="noopener">Get a key</a> · <a href="https://docs.tavily.com/documentation/quickstart" target="_blank" rel="noopener">Quickstart</a> · <a href="https://docs.tavily.com/documentation/api-reference/endpoint/search" target="_blank" rel="noopener">Search reference</a> · <a href="https://www.tavily.com/pricing" target="_blank" rel="noopener">Pricing</a> · key: <code>TAVILY_API_KEY</code></span></dd>
         <dt>Firecrawl</dt>
-        <dd>Mainly a tool for reading web pages; its search returns results with page content. Useful for getting the substance of a page; slower than the others, and free credits go quickly.</dd>
+        <dd>Mainly a tool for reading web pages; its search returns results with page content. Useful for getting the substance of a page; slower than the others, and free credits go quickly.<br><span class="service-links">About 500 searches a month free (1,000 credits; no card). <a href="https://www.firecrawl.dev/signin" target="_blank" rel="noopener">Get a key</a> · <a href="https://docs.firecrawl.dev/introduction" target="_blank" rel="noopener">Introduction</a> · <a href="https://docs.firecrawl.dev/api-reference/endpoint/search" target="_blank" rel="noopener">Search reference</a> · <a href="https://www.firecrawl.dev/pricing" target="_blank" rel="noopener">Pricing</a> · key: <code>FIRECRAWL_API_KEY</code></span></dd>
         <dt>Linkup</dt>
-        <dd>A search API with a standard mode and a <em>deep</em> mode that researches a question over several steps and returns a sourced answer. Deep research is thorough but takes about 20 seconds a question, so it's offered only on its own, not in the combined mix.</dd>
+        <dd>A search API with a standard mode and a <em>deep</em> mode that researches a question over several steps and returns a sourced answer. Deep research is thorough but takes about 20 seconds a question, so it's offered only on its own, not in the combined mix.<br><span class="service-links">$20 of credit a month free: about 4,000 standard or 360 deep searches. <a href="https://app.linkup.so" target="_blank" rel="noopener">Get a key</a> · <a href="https://docs.linkup.so/pages/documentation/get-started/quickstart" target="_blank" rel="noopener">Quickstart</a> · <a href="https://docs.linkup.so/pages/documentation/api-reference/endpoint/post-search" target="_blank" rel="noopener">Search reference</a> · <a href="https://docs.linkup.so/pages/documentation/development/pricing" target="_blank" rel="noopener">Pricing</a> · key: <code>LINKUP_API_KEY</code></span></dd>
       </dl>
+      <p>To run your own copy, you don't need all six: any one is enough, and with none the deep dive is written without web research. Sign up (each has a free tier), create an API key, and put it in the server's environment under the name shown: in <code>.env</code> when running it on your computer, or under Environment on Render. The server uses every service that has a key. Setup is in the <a href="https://github.com/bcollier/ignatius-hw4-api#5-research-all-the-free-services-at-once" target="_blank" rel="noopener">backend README</a>. Free allowances are as the services listed them in September 2026.</p>
 
       <p class="hint">The spoken guidance, reflection and deep dive are written by AI models from your material, and the voices are synthetic. Treat them as a companion to your own prayer and, if you have one, your spiritual director, not a replacement. Upload only material you have the right to use; your retreats are private to your account.</p>
       <p class="hint">A FastAPI backend on Render; this page on GitHub Pages. <a href="https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">How it works</a>.</p>
@@ -893,23 +894,23 @@
 
   <script src="vendor/supabase.js?v=2.117.2"></script>
   <script src="vendor/qrcode.js?v=2.0.4"></script> <!-- qrcode-generator 2.0.4 (MIT), for the sign-in QR code --> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=82"></script>
+  <script src="config.js?v=83"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=82"></script>
-  <script src="js/look.js?v=82"></script>
-  <script src="js/settings.js?v=82"></script>
-  <script src="js/router.js?v=82"></script>
-  <script src="js/library.js?v=82"></script>
-  <script src="js/new-retreat.js?v=82"></script>
-  <script src="js/retreat.js?v=82"></script>
-  <script src="js/build-log.js?v=82"></script>
-  <script src="js/research.js?v=82"></script>
-  <script src="js/pray.js?v=82"></script>
-  <script src="js/about-me.js?v=82"></script>
-  <script src="js/talk.js?v=82"></script>
-  <script src="js/costs.js?v=82"></script>
-  <script src="js/practice.js?v=82"></script>
-  <script src="js/quotes.js?v=82"></script>
-  <script src="js/start.js?v=82"></script>
+  <script src="js/core.js?v=83"></script>
+  <script src="js/look.js?v=83"></script>
+  <script src="js/settings.js?v=83"></script>
+  <script src="js/router.js?v=83"></script>
+  <script src="js/library.js?v=83"></script>
+  <script src="js/new-retreat.js?v=83"></script>
+  <script src="js/retreat.js?v=83"></script>
+  <script src="js/build-log.js?v=83"></script>
+  <script src="js/research.js?v=83"></script>
+  <script src="js/pray.js?v=83"></script>
+  <script src="js/about-me.js?v=83"></script>
+  <script src="js/talk.js?v=83"></script>
+  <script src="js/costs.js?v=83"></script>
+  <script src="js/practice.js?v=83"></script>
+  <script src="js/quotes.js?v=83"></script>
+  <script src="js/start.js?v=83"></script>
 </body>
 </html>
