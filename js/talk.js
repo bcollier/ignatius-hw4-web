@@ -2,6 +2,8 @@
 // OpenAI GPT-Live: WebRTC; the server relays the offer and returns the answer.
 // xAI Grok voice: WebSocket with a short-lived token from the server; audio is PCM16
 // at 24 kHz, captured with an AudioWorklet and played back as scheduled buffers.
+// Taking turns ("turns"): the browser's own speech recognition, a chosen brain on the
+// server, and a free voice, sentence by sentence (see "taking turns" below).
 
 let talkState = null;
 
@@ -34,7 +36,8 @@ function talkVoiceLine() {
   const info = providers[$("talk-provider").value];
   if (!info) return;
   const v = $("talk-voice").value;
-  $("talk-voice-line").textContent = `Voice: ${info.voices[v] || v}, ${info.label}.`;
+  const brain = $("talk-provider").value === "turns" ? $("talk-brain").selectedOptions[0]?.textContent : "";
+  $("talk-voice-line").textContent = `Voice: ${String(info.voices[v] || v).replace(/ \(.*\)$/, "")}, ${info.label}.${brain ? ` Brain: ${brain}.` : ""}`;
 }
 
 // The conversation voice pickers ("Change voice" on the Talk page). Every choice is
@@ -47,7 +50,8 @@ function fillTalkSettings() {
   psel.innerHTML = "";
   for (const [id, info] of Object.entries(providers)) psel.add(new Option(info.label, id));
   const savedP = store.get("talk.provider");
-  psel.value = providers[savedP] ? savedP : options.talk.default_provider;
+  const firstChoice = isFree() && providers.turns ? "turns" : options.talk.default_provider; // free accounts: the free way to talk
+  psel.value = providers[savedP] ? savedP : firstChoice;
   psel.onchange = () => {
     store.set("talk.provider", psel.value);
     fillTalkVoices();
@@ -73,8 +77,27 @@ function fillTalkVoices() {
     showSampleButton();
     talkVoiceLine();
   };
+  fillTalkBrains(provider);
   showSampleButton();
   talkVoiceLine();
+}
+
+// Taking turns: which model writes the replies (premium accounts choose; free use the free one).
+function fillTalkBrains(provider) {
+  const turns = provider === "turns";
+  $("talk-brain-label").hidden = !turns;
+  $("talk-turns-hint").hidden = !turns;
+  if (!turns) return;
+  const brains = options.talk.turn_brains?.[isFree() ? "free" : "full"] || {};
+  const bsel = $("talk-brain");
+  bsel.innerHTML = "";
+  for (const [id, label] of Object.entries(brains)) bsel.add(new Option(label, id));
+  const saved = store.get("talk.brain");
+  bsel.value = brains[saved] ? saved : Object.keys(brains)[0];
+  bsel.onchange = () => {
+    store.set("talk.brain", bsel.value);
+    talkVoiceLine();
+  };
 }
 
 // Most voices have a recorded sample; OpenAI's live-only voices don't.
@@ -118,7 +141,9 @@ async function openTalk(retreatId) {
   talkVoiceLine();
   wireVoiceChange();
   $("talk-limit").hidden = !isFree();
-  $("talk-limit").textContent = `Free accounts can talk for ${t.free_seconds} seconds a day. Premium accounts can talk for up to ${Math.round(t.max_seconds / 60)} minutes at a time.`;
+  $("talk-limit").textContent = t.providers?.turns
+    ? `Free accounts can talk as long as they like with the free voice, which takes turns, and can try the live voices for ${t.free_seconds} seconds a day.`
+    : `Free accounts can talk for ${t.free_seconds} seconds a day. Premium accounts can talk for up to ${Math.round(t.max_seconds / 60)} minutes at a time.`;
   resetTalkControls(t, r);
   loadTalkHistory();
 }
@@ -200,6 +225,7 @@ function talkConnected(max) {
 }
 
 async function startTalk(provider, voice, retreatId) {
+  if (provider === "turns") return startTurns(voice, $("talk-brain").value, retreatId);
   const status = $("talk-status");
   status.className = "status working";
   status.textContent = "Asking for your microphone…";
@@ -390,14 +416,14 @@ function startOrb() {
   if (!ctx) return;
   ctx.resume?.().catch(() => {});
   t.meters = {
-    mic: makeMeter(ctx, ctx.createMediaStreamSource(t.stream)),
+    mic: t.stream ? makeMeter(ctx, ctx.createMediaStreamSource(t.stream)) : null,
     ai: t.aiOut ? makeMeter(ctx, t.aiOut) : t.remoteStream ? makeMeter(ctx, ctx.createMediaStreamSource(t.remoteStream)) : null,
   };
   let mic = 0, ai = 0;
   const tick = () => {
     if (talkState !== t) return;
-    mic = Math.max(meterLevel(t.meters.mic), mic * 0.88);
-    ai = Math.max(meterLevel(t.meters.ai), ai * 0.88);
+    mic = t.meters.mic ? Math.max(meterLevel(t.meters.mic), mic * 0.88) : t.listening ? 0.08 : 0; // taking turns: no mic stream
+    ai = t.meters.ai ? Math.max(meterLevel(t.meters.ai), ai * 0.88) : 0;
     const speaking = ai > 0.015;
     const listening = !speaking && mic > 0.03;
     orb.classList.toggle("speaking", speaking);
@@ -448,6 +474,9 @@ async function endTalk(message) {
 function cleanupTalk(t = talkState) {
   if (!t) return;
   clearInterval(t.timer);
+  try { t.recog?.abort(); } catch {}
+  try { t.player?.pause(); } catch {}
+  $("talk-turns").hidden = true;
   cancelAnimationFrame(t.orbFrame);
   const orb = $("talk-orb");
   orb.classList.remove("speaking", "listening");
@@ -461,6 +490,145 @@ function cleanupTalk(t = talkState) {
   if (t.audio) t.audio.srcObject = null;
 }
 
+
+// ---------------------------------------------------------------- taking turns
+// The browser listens with its own speech recognition (free; Chrome, and Safari on an
+// iPhone), the server's chosen brain writes the reply, and a free voice speaks it,
+// one sentence at a time so it starts soon. Where the browser can't recognize speech,
+// the person types instead.
+
+const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+async function startTurns(voice, brain, retreatId) {
+  const status = $("talk-status");
+  // Started during the tap, so the phone lets this player speak every reply later.
+  const player = new Audio("sounds/quiet1_5.mp3");
+  player.play().catch(() => {});
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  talkState = { provider: "turns", player, audioCtx, speaking: 0 };
+  const t = talkState;
+  try {
+    t.aiOut = audioCtx.createMediaElementSource(player);
+    t.aiOut.connect(audioCtx.destination);
+  } catch {}
+  $("talk-start").disabled = true;
+  status.className = "status working";
+  status.textContent = "Connecting…";
+  try {
+    const res = await postJson("/api/talk/session", { provider: "turns", voice, brain, retreat_id: retreatId, local_time: localTimeWithOffset() });
+    t.sessionId = res.session_id;
+    talkConnected(res.max_seconds);
+    status.textContent = SpeechRec ? "Tap to talk when you're ready." : "This browser can't listen, so type what you'd say.";
+    $("talk-turns").hidden = false;
+    $("talk-turn").hidden = !SpeechRec;
+    $("talk-turn").onclick = () => toggleListening(t);
+    $("talk-type-form").onsubmit = (e) => {
+      e.preventDefault();
+      const text = $("talk-type").value.trim();
+      $("talk-type").value = "";
+      if (text) sayToCompanion(t, text);
+    };
+    await speakReply(t, res.greeting);
+  } catch (err) {
+    status.className = "status bad";
+    status.textContent = err.message;
+    $("talk-start").disabled = false;
+    cleanupTalk(t);
+    talkState = null;
+  }
+}
+
+function toggleListening(t) {
+  if (t.recog) return t.recog.stop(); // done talking: send what was heard
+  t.player.pause(); // talking over the companion stops it
+  t.queue = [];
+  const recog = new SpeechRec();
+  recog.lang = navigator.language || "en-US";
+  recog.interimResults = true;
+  recog.continuous = true;
+  let heard = "";
+  recog.onresult = (e) => {
+    heard = [...e.results].map((r) => r[0].transcript).join(" ").trim();
+    $("talk-heard").textContent = heard;
+  };
+  recog.onerror = (e) => {
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") $("talk-status").textContent = microphoneHelp();
+    else if (e.error !== "no-speech" && e.error !== "aborted") $("talk-status").textContent = `Couldn't hear that (${e.error}). Try again, or type instead.`;
+  };
+  recog.onend = () => {
+    t.recog = null;
+    t.listening = false;
+    $("talk-turn").textContent = "Tap to talk";
+    $("talk-turn").classList.remove("listening");
+    $("talk-heard").textContent = "";
+    if (talkState === t && heard) sayToCompanion(t, heard);
+  };
+  t.recog = recog;
+  t.listening = true;
+  $("talk-turn").textContent = "Done talking";
+  $("talk-turn").classList.add("listening");
+  $("talk-status").className = "status ok";
+  $("talk-status").textContent = "Listening… tap Done talking when you've finished.";
+  recog.start();
+}
+
+async function sayToCompanion(t, text) {
+  addTranscript("you", text);
+  transcriptLine("companion", false); // the companion's reply starts a new line
+  $("talk-status").className = "status working";
+  $("talk-status").textContent = "The companion is thinking…";
+  $("talk-turn").disabled = true;
+  try {
+    const { reply } = await postJson("/api/talk/turn", { session_id: t.sessionId, text });
+    if (talkState === t) await speakReply(t, reply);
+  } catch (err) {
+    if (talkState === t) talkError(err.message);
+  } finally {
+    $("talk-turn").disabled = false;
+  }
+}
+
+// Speak a reply sentence by sentence: the next sentence is recorded while this one plays.
+async function speakReply(t, reply) {
+  if (!reply) return;
+  addTranscript("companion", reply);
+  $("talk-status").className = "status ok";
+  $("talk-status").textContent = "The companion is speaking. Tap to talk to answer.";
+  const sentences = reply.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g)?.map((x) => x.trim()).filter(Boolean) || [reply];
+  const turn = ++t.speaking;
+  let next = fetchSpeech(t, sentences[0]);
+  for (let i = 0; i < sentences.length; i++) {
+    const url = await next;
+    if (i + 1 < sentences.length) next = fetchSpeech(t, sentences[i + 1]);
+    if (talkState !== t || t.speaking !== turn || t.recog) return URL.revokeObjectURL(url); // interrupted
+    await playClip(t, url);
+  }
+  if (talkState === t && t.speaking === turn && !t.recog) $("talk-status").textContent = SpeechRec ? "Tap to talk to answer." : "Type your answer.";
+}
+
+async function fetchSpeech(t, text) {
+  const res = await fetch(`${API}/api/talk/speak`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...(await authHeaders()) },
+    body: JSON.stringify({ session_id: t.sessionId, text }),
+  });
+  if (!res.ok) throw new Error("The voice couldn't be recorded just now.");
+  return URL.createObjectURL(await res.blob());
+}
+
+function playClip(t, url) {
+  return new Promise((resolve) => {
+    const done = () => {
+      URL.revokeObjectURL(url);
+      resolve();
+    };
+    t.player.onended = done;
+    t.player.onpause = done; // interrupted by Tap to talk or the end of the conversation
+    t.player.src = url;
+    t.audioCtx.resume?.().catch(() => {});
+    t.player.play().catch(done);
+  });
+}
 
 // ---------------------------------------------------------------- the companion's instructions
 

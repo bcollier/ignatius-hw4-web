@@ -185,6 +185,7 @@ async function signedInAs(newSession) {
     return showMessage(err.message);
   }
   fillSettings();
+  if (session && !me.anonymous) applyMyDefaults(); // the defaults saved to the account, on this device too
   $("account").hidden = !session;
   $("me-link").hidden = false;
   $("account-email").textContent = !session ? "" : me.anonymous ? "Guest" : `${session.user.email}${me.mode === "full" ? " · premium" : ""}`;

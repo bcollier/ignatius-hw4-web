@@ -800,3 +800,10 @@ input, select, textarea { font-size: max(16px, 1em); }
 .practice-section { margin: 22px 0 6px; } .practice-section h2 { font-size: 1.45rem; margin-bottom: 4px; } .practice-section .practice-list { margin-top: 10px; }
 .heart-voice { border: 0; padding: 0; margin: 14px 0 6px; } .heart-voice legend { font-family: var(--display); font-size: 1.15rem; margin-bottom: 4px; } .heart-voice .check { margin: 4px 0; }
 .toast { width: max-content; text-align: center; }
+/* Talk it over, taking turns */
+.talk-brain { display: grid; gap: 4px; margin-top: 10px; }
+.talk-turns { display: grid; justify-items: center; gap: 10px; margin: 14px 0; }
+.talk-turns #talk-turn { min-width: 12em; }
+.talk-turns #talk-turn.listening { box-shadow: 0 0 0 4px color-mix(in srgb, var(--rubric) 30%, transparent); }
+.talk-turns #talk-heard { min-height: 1.5em; font-style: italic; text-align: center; }
+.talk-turns form { width: 100%; max-width: 32em; }

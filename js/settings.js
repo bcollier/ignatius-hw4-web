@@ -26,18 +26,23 @@ function modelOptionLabel(m) {
   return m.free ? `${m.label} · free` : `${m.label} · $${m.input_per_m} in / $${m.output_per_m} out per million tokens`;
 }
 
+// Planning and writing can use different models (say, a cheaper one to plan and a
+// finer writer for the reflections); each menu remembers its own choice.
+const MODEL_MENUS = { "plan-model": "model.plan", "write-model": "model.write" };
+
 function fillModelSelects() {
   const allowed = allowedModels();
-  const savedModel = store.get("model");
-  const fallback = allowed.some((m) => m.id === options.default_model) ? options.default_model : allowed[0]?.id;
-  for (const select of document.querySelectorAll(".model-select")) {
+  const known = (id) => allowed.some((m) => m.id === id);
+  const fallback = known(options.default_model) ? options.default_model : allowed[0]?.id;
+  const earlier = store.get("model"); // one choice for both, from before they were separate
+  for (const [id, key] of Object.entries(MODEL_MENUS)) {
+    const select = $(id);
     select.innerHTML = "";
     for (const m of allowed) select.add(new Option(modelOptionLabel(m), m.id));
-    select.value = allowed.some((m) => m.id === savedModel) ? savedModel : fallback;
+    const saved = store.get(key) ?? earlier;
+    select.value = known(saved) ? saved : fallback;
     select.onchange = () => {
-      // One model plans and writes: the two menus move together.
-      document.querySelectorAll(".model-select").forEach((other) => (other.value = select.value));
-      store.set("model", select.value);
+      store.set(key, select.value);
       fillResearch();
       updateEstimate();
     };
@@ -145,9 +150,53 @@ function fillGuideFields() {
 }
 
 // Saved settings, by key prefix: what "Reset every option" clears.
-const SETTING_KEYS = /^(model|voice\.|play\.|prompt\.|guide\.|tailor|searchProvider|talk\.)/;
+const SETTING_KEYS = /^(model|voice\.|play\.|prompt\.|guide\.|heart\.|tailor|search|talk\.)/;
+
+// ---------------------------------------------------------------- my defaults
+// "Save my defaults" keeps every choice in Advanced (voices, models, research, the
+// reflection's voice, prompts, guidance, the prayer's order) in the person's account.
+// Each device applies the saved defaults once, whenever they're newer than what it
+// last applied; changes made after that stay on the device until saved again.
+
+function currentSettings() {
+  const out = {};
+  try {
+    for (const k of Object.keys(localStorage)) if (SETTING_KEYS.test(k)) out[k] = localStorage.getItem(k);
+  } catch {}
+  return out;
+}
+
+async function saveMyDefaults(button) {
+  button.disabled = true;
+  try {
+    const saved = await postJson("/api/profile/defaults", { settings: currentSettings() }, "PUT");
+    store.set("defaults.applied", saved.saved_at);
+    toast("Saved. New retreats on any device will start with these choices.");
+  } catch (err) {
+    showMessage(`Your defaults couldn't be saved: ${err.message}`);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function applyMyDefaults() {
+  let saved;
+  try {
+    saved = await api("/api/profile/defaults");
+  } catch {
+    return;
+  }
+  if (!saved.saved_at || saved.saved_at <= (store.get("defaults.applied") || "")) return;
+  try {
+    Object.keys(localStorage).filter((k) => SETTING_KEYS.test(k)).forEach((k) => localStorage.removeItem(k));
+    for (const [k, v] of Object.entries(saved.settings || {})) if (SETTING_KEYS.test(k)) localStorage.setItem(k, v);
+  } catch {}
+  store.set("defaults.applied", saved.saved_at);
+  fillSettings();
+}
 
 function wireResetButtons() {
+  document.querySelectorAll(".save-defaults").forEach((b) => (b.onclick = () => saveMyDefaults(b)));
   $("reset-guide").onclick = () => {
     Object.keys(options.prompts.guide).forEach((n) => store.set(`guide.${n}`, null));
     fillSettings();

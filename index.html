@@ -63,13 +63,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=74">
-  <link rel="icon" href="icons/icon-192.png?v=74" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=74">
+  <link rel="manifest" href="manifest.webmanifest?v=77">
+  <link rel="icon" href="icons/icon-192.png?v=77" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=77">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=74">
+  <link rel="stylesheet" href="style.css?v=77">
 </head>
 <body>
   <header class="topbar">
@@ -280,6 +280,7 @@
                 <button type="button" id="use-premium-voices" class="link">Use the ElevenLabs voices (Sarah, George, Brian, Alice)</button>
               </p>
               <p id="tier-note" class="hint"></p>
+              <p class="row-buttons"><button type="button" class="secondary save-defaults">Save my defaults</button> <span class="hint">Your voices and every other choice here, for new retreats on any device.</span></p>
               <p id="advanced-estimate" class="estimate" hidden></p>
             </fieldset>
             <div id="playback-fields">
@@ -356,7 +357,8 @@
               <textarea id="background-prompt" rows="10" readonly aria-label="Background"></textarea>
               <textarea id="house-style-prompt" rows="8" readonly aria-label="House style"></textarea>
             </details>
-            <button type="button" class="link" id="reset-all">Reset every option to its default</button>
+            <p class="row-buttons"><button type="button" class="secondary save-defaults">Save my defaults</button>
+              <button type="button" class="link" id="reset-all">Reset every option to the app's defaults</button></p>
           </div>
         </div>
 
@@ -450,6 +452,8 @@
             <label>Voice service <select id="talk-provider"></select></label>
             <label>Voice <select id="talk-voice"></select></label>
           </div>
+          <label id="talk-brain-label" class="talk-brain" hidden>Brain, the model that writes the companion's replies <select id="talk-brain"></select></label>
+          <p id="talk-turns-hint" class="hint" hidden>Taking turns: tap to talk, and the companion answers after a moment in a free voice. Slower than the live voices, but it costs only what the brain reads and writes, so a conversation that is mostly you talking costs very little, and with the free brain nothing at all.</p>
           <p class="row-buttons">
             <button type="button" id="talk-hear" class="link with-icon"><span data-icon="speaker" data-size="18"></span>Hear this voice</button>
             <span id="talk-no-sample" class="hint" hidden>No sample for this voice: OpenAI offers it only in live conversation. Marin and Cedar have samples.</span>
@@ -474,6 +478,14 @@
         </div>
         <p id="talk-status" class="status" role="status"></p>
         <div id="talk-orb" class="talk-orb" hidden aria-hidden="true"></div>
+        <div id="talk-turns" class="talk-turns" hidden>
+          <button type="button" id="talk-turn" class="gold big">Tap to talk</button>
+          <p id="talk-heard" class="meta" aria-live="polite"></p>
+          <form id="talk-type-form" class="inline-form">
+            <input id="talk-type" type="text" placeholder="Or type what you'd say" aria-label="Type to the companion" autocomplete="off">
+            <button type="submit" class="secondary">Send</button>
+          </form>
+        </div>
         <ol id="talk-transcript" class="talk-transcript" aria-live="polite"></ol>
         <p class="hint">This is an AI, not a priest, spiritual director or counselor. If you're in crisis or thinking about harming yourself, call or text 988 (in the US) or your local emergency number.</p>
       </div>
@@ -841,23 +853,23 @@
   </dialog>
 
   <script src="vendor/supabase.js?v=2.117.2"></script> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=74"></script>
+  <script src="config.js?v=77"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=74"></script>
-  <script src="js/look.js?v=74"></script>
-  <script src="js/settings.js?v=74"></script>
-  <script src="js/router.js?v=74"></script>
-  <script src="js/library.js?v=74"></script>
-  <script src="js/new-retreat.js?v=74"></script>
-  <script src="js/retreat.js?v=74"></script>
-  <script src="js/build-log.js?v=74"></script>
-  <script src="js/research.js?v=74"></script>
-  <script src="js/pray.js?v=74"></script>
-  <script src="js/about-me.js?v=74"></script>
-  <script src="js/talk.js?v=74"></script>
-  <script src="js/costs.js?v=74"></script>
-  <script src="js/practice.js?v=74"></script>
-  <script src="js/quotes.js?v=74"></script>
-  <script src="js/start.js?v=74"></script>
+  <script src="js/core.js?v=77"></script>
+  <script src="js/look.js?v=77"></script>
+  <script src="js/settings.js?v=77"></script>
+  <script src="js/router.js?v=77"></script>
+  <script src="js/library.js?v=77"></script>
+  <script src="js/new-retreat.js?v=77"></script>
+  <script src="js/retreat.js?v=77"></script>
+  <script src="js/build-log.js?v=77"></script>
+  <script src="js/research.js?v=77"></script>
+  <script src="js/pray.js?v=77"></script>
+  <script src="js/about-me.js?v=77"></script>
+  <script src="js/talk.js?v=77"></script>
+  <script src="js/costs.js?v=77"></script>
+  <script src="js/practice.js?v=77"></script>
+  <script src="js/quotes.js?v=77"></script>
+  <script src="js/start.js?v=77"></script>
 </body>
 </html>
