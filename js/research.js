@@ -56,11 +56,18 @@ function researchFound(d, cited) {
   if (f.queries?.length) out.push(el("p", { class: "meta", text: "Searches" }), el("ol", { class: "research-queries" }, f.queries.map((q) => el("li", { text: q }))));
   out.push(el("ul", { class: "research-results" }, f.results.map((x) =>
     el("li", { class: cited.has(x.url) ? "cited" : "" },
-      el("a", { href: x.url, target: "_blank", rel: "noopener", text: x.title || x.url }),
+      webLink(x.url, x.title || x.url),
       x.service && el("span", { class: "service", text: serviceName(x.service) }),
       cited.has(x.url) && el("span", { class: "service", text: "· cited" }),
       x.content && el("p", { class: "snippet", text: x.content })))));
   return out;
+}
+
+// A link from web research: only ordinary web addresses become links (a search result
+// can't smuggle in a javascript: address); anything else stays plain text.
+function webLink(url, text) {
+  const safe = typeof url === "string" && /^https?:\/\//i.test(url.trim());
+  return safe ? el("a", { href: url.trim(), target: "_blank", rel: "noopener noreferrer", text }) : el("span", { text });
 }
 
 function citedSources(lines) {
@@ -68,7 +75,7 @@ function citedSources(lines) {
     el("h3", { text: "Sources the deep dive cites" }),
     el("ul", { class: "sources" }, lines.map((line) => {
       const url = urlIn(line);
-      return el("li", {}, url ? el("a", { href: url, target: "_blank", rel: "noopener", text: line }) : line);
+      return el("li", {}, webLink(url, line));
     })),
   ];
 }
