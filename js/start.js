@@ -197,6 +197,20 @@ async function start() {
 wireForms();
 start();
 
+// In an app on an iPhone's Home Screen, the page can stay shifted after the keyboard
+// closes, and then won't scroll to the bottom. A tiny scroll when a text box loses
+// focus puts it back.
+if (typeof inHomeScreenApp === "function" && inHomeScreenApp()) {
+  document.addEventListener("focusout", (e) => {
+    if (!e.target.matches?.("input, textarea, select")) return;
+    setTimeout(() => {
+      if (document.activeElement?.matches?.("input, textarea, select")) return; // moved to another box
+      window.scrollTo(window.scrollX, window.scrollY + 1);
+      window.scrollTo(window.scrollX, window.scrollY - 1);
+    }, 60);
+  });
+}
+
 
 // ---------------------------------------------------------------- staying up to date
 // Browsers may keep the page for a while (GitHub Pages allows ten minutes; phones

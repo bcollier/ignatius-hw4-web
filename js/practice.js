@@ -87,9 +87,11 @@ async function renderMyExamen() {
 async function makeMyExamen() {
   const button = $("my-examen-make");
   button.disabled = true;
+  document.activeElement?.blur(); // close the keyboard before the form is hidden (iPhones can get stuck otherwise)
   try {
     await postJson("/api/practice/examen", { days: $("my-examen-days").value, voice: $("my-examen-voice").value });
     await renderMyExamen();
+    $("my-examen-status").scrollIntoView({ block: "center", behavior: "smooth" }); // show that it's being made
   } catch (err) {
     showMessage(err.message);
   } finally {
