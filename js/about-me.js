@@ -37,6 +37,25 @@ async function saveMe(event) {
   }
 }
 
+// A Google Doc by its link (on a phone, Google Docs can't be picked as files).
+async function aboutMeFromGoogleDoc(event) {
+  event.preventDefault();
+  $("me-status").textContent = "Reading your Google Doc…";
+  try {
+    const p = await postJson("/api/profile/google-doc", { link: $("me-gdoc").value.trim() });
+    if ($("me-notes").value.trim() !== (p.companion_notes || "").trim()) {
+      await postJson("/api/profile", { companion_notes: $("me-notes").value }, "PUT");
+      p.companion_notes = $("me-notes").value;
+    }
+    renderMe(p);
+    $("me-gdoc").value = "";
+    $("me-status").textContent = p.summarized ? "Saved as a summary of your Google Doc." : "Saved from your Google Doc.";
+  } catch (err) {
+    $("me-status").textContent = "";
+    showMessage(err.message);
+  }
+}
+
 async function uploadMe() {
   const file = $("me-file").files[0];
   if (!file) return;

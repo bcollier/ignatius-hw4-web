@@ -11,13 +11,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=56">
-  <link rel="icon" href="icons/icon-192.png?v=56" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=56">
+  <link rel="manifest" href="manifest.webmanifest?v=57">
+  <link rel="icon" href="icons/icon-192.png?v=57" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=57">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=56">
+  <link rel="stylesheet" href="style.css?v=57">
 </head>
 <body>
   <header class="topbar">
@@ -418,6 +418,11 @@
           <span class="drop-title">Or upload a text, Word or PDF file about yourself</span>
           <span class="hint">It replaces what's above. Long documents are condensed to about 6,000 characters.</span>
         </label>
+        <form id="me-gdoc-form" class="inline-form me-gdoc">
+          <label for="me-gdoc" class="meta">Or a Google Doc: in Google Docs choose Share, set it to "Anyone with the link can view", copy the link and paste it here.</label>
+          <input id="me-gdoc" type="url" placeholder="https://docs.google.com/document/d/…" required aria-label="Google Doc link">
+          <button type="submit" class="secondary">Use this Google Doc</button>
+        </form>
         <label>What I'm looking for in the conversation companion
           <textarea id="me-notes" rows="5" spellcheck="true" placeholder="For example: ask me about my family; help me notice consolation; don't give advice unless I ask; keep it short."></textarea>
         </label>
@@ -738,22 +743,22 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=56"></script>
+  <script src="config.js?v=57"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=56"></script>
-  <script src="js/look.js?v=56"></script>
-  <script src="js/settings.js?v=56"></script>
-  <script src="js/router.js?v=56"></script>
-  <script src="js/library.js?v=56"></script>
-  <script src="js/new-retreat.js?v=56"></script>
-  <script src="js/retreat.js?v=56"></script>
-  <script src="js/build-log.js?v=56"></script>
-  <script src="js/research.js?v=56"></script>
-  <script src="js/pray.js?v=56"></script>
-  <script src="js/about-me.js?v=56"></script>
-  <script src="js/talk.js?v=56"></script>
-  <script src="js/costs.js?v=56"></script>
-  <script src="js/practice.js?v=56"></script>
-  <script src="js/start.js?v=56"></script>
+  <script src="js/core.js?v=57"></script>
+  <script src="js/look.js?v=57"></script>
+  <script src="js/settings.js?v=57"></script>
+  <script src="js/router.js?v=57"></script>
+  <script src="js/library.js?v=57"></script>
+  <script src="js/new-retreat.js?v=57"></script>
+  <script src="js/retreat.js?v=57"></script>
+  <script src="js/build-log.js?v=57"></script>
+  <script src="js/research.js?v=57"></script>
+  <script src="js/pray.js?v=57"></script>
+  <script src="js/about-me.js?v=57"></script>
+  <script src="js/talk.js?v=57"></script>
+  <script src="js/costs.js?v=57"></script>
+  <script src="js/practice.js?v=57"></script>
+  <script src="js/start.js?v=57"></script>
 </body>
 </html>

@@ -96,6 +96,7 @@ function wireRetreatPage() {
 function wireAboutMeAndTalk() {
   $("me-form").addEventListener("submit", saveMe);
   $("me-file").onchange = uploadMe;
+  $("me-gdoc-form").addEventListener("submit", aboutMeFromGoogleDoc);
   const forget = $("talk-forget");
   confirmTwice(forget, "Click again to forget everything", async () => {
     await api("/api/talk/history", { method: "DELETE" });

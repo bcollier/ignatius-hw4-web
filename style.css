@@ -767,3 +767,4 @@ body.praying { overflow: hidden; }
 .practice-body { padding-bottom: 24px; }
 .paste-step { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); animation: rise .5s ease both; }
 .paste-step h3 { margin: 0 0 4px; }
+.me-gdoc { margin: 10px 0 16px; } .me-gdoc label { flex-basis: 100%; }
