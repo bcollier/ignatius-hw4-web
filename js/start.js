@@ -188,6 +188,7 @@ const RUNNING_VERSION = new URL(document.querySelector('script[src*="js/core.js"
 
 async function reloadIfUpdated() {
   if (document.body.classList.contains("praying") || (typeof talkState !== "undefined" && talkState)) return;
+  if (typeof practiceRun !== "undefined" && practiceRun) return; // in the middle of a guided exercise
   try {
     const html = await (await fetch(`./?check=${Date.now()}`, { cache: "no-store" })).text();
     const latest = html.match(/js\/core\.js\?v=(\d+)/)?.[1];
