@@ -63,13 +63,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=85">
-  <link rel="icon" href="icons/icon-192.png?v=85" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=85">
+  <link rel="manifest" href="manifest.webmanifest?v=86">
+  <link rel="icon" href="icons/icon-192.png?v=86" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=86">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=85">
+  <link rel="stylesheet" href="style.css?v=86">
 </head>
 <body>
   <header class="topbar">
@@ -353,6 +353,7 @@
               </fieldset>
             </div>
             <label class="check"><input id="tailor-guide" type="checkbox" checked> Tailor the spoken guidance to each day's reflection and deep dive</label>
+            <p class="hint">These start from your own versions, if you've made any on the <a href="./?agents" data-nav="agents">Agents</a> page, where every agent's prompt is listed.</p>
             <details class="prompt-box">
               <summary>How the retreat is planned</summary>
               <textarea id="plan-prompt" rows="10" spellcheck="true" aria-label="Planning prompt"></textarea>
@@ -489,7 +490,7 @@
         </div>
         <details class="talk-prompt" id="talk-prompt">
           <summary>The companion's instructions (advanced)</summary>
-          <p class="hint">The full instructions the companion follows, before what it knows about you and this retreat. Change them if you like; they're saved to your account and used in every conversation. The shared background (under New retreat → Advanced) is always added after them.</p>
+          <p class="hint">The full instructions the companion follows, before what it knows about you and this retreat. Change them if you like; they're saved to your account and used in every conversation. The shared background (under New retreat → Advanced) is always added after them. Every agent's prompt, and the companion's model, are also on the <a href="./?agents" data-nav="agents">Agents</a> page.</p>
           <textarea id="companion-prompt" rows="16" spellcheck="true" aria-label="Companion instructions"></textarea>
           <p class="row-buttons">
             <button type="button" id="companion-save">Save</button>
@@ -555,6 +556,12 @@
         </div>
       </form>
 
+      <h2>Agents</h2>
+      <div class="card">
+        <p>Every AI agent in the app, from the planner to the prayer companion: what it does, the prompt it follows, and the model it uses. Read them, make your own versions, or choose a different model.</p>
+        <a href="./?agents" data-nav="agents" class="button secondary">Open the agents</a>
+      </div>
+
       <div id="me-account-box" hidden>
         <h2>Account</h2>
         <div class="card">
@@ -566,6 +573,17 @@
       <div class="card">
         <label class="check"><input id="me-debug" type="checkbox"> <strong>Debug mode</strong>: show technical details, each retreat's build log and what it cost to make, and a Costs page</label>
       </div>
+    </section>
+
+    <!-- ============================================================ agents -->
+    <section id="view-agents" class="view agents" hidden>
+      <a href="./?me" data-nav="me" class="back">← Settings</a>
+      <h1>Agents</h1>
+      <p class="lede">Each part of the app is written or spoken by an AI agent following a prompt: a set of instructions. Here are all of them. Read any prompt; make your own version to change how that agent behaves for you (it's saved to your account and used from the next time the agent runs); or go back to the default at any time. Where it makes sense, you can also choose a different model.</p>
+      <div id="agents-list"></div>
+      <h2>Always added (read only)</h2>
+      <p class="hint">These go to the agents along with their prompts. The background and house style are shared by every agent; the format rules ask for exactly what the app reads back, so they can't be changed here.</p>
+      <div id="agents-fixed"></div>
     </section>
 
     <!-- ============================================================ about -->
@@ -894,23 +912,24 @@
 
   <script src="vendor/supabase.js?v=2.117.2"></script>
   <script src="vendor/qrcode.js?v=2.0.4"></script> <!-- qrcode-generator 2.0.4 (MIT), for the sign-in QR code --> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=85"></script>
+  <script src="config.js?v=86"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=85"></script>
-  <script src="js/look.js?v=85"></script>
-  <script src="js/settings.js?v=85"></script>
-  <script src="js/router.js?v=85"></script>
-  <script src="js/library.js?v=85"></script>
-  <script src="js/new-retreat.js?v=85"></script>
-  <script src="js/retreat.js?v=85"></script>
-  <script src="js/build-log.js?v=85"></script>
-  <script src="js/research.js?v=85"></script>
-  <script src="js/pray.js?v=85"></script>
-  <script src="js/about-me.js?v=85"></script>
-  <script src="js/talk.js?v=85"></script>
-  <script src="js/costs.js?v=85"></script>
-  <script src="js/practice.js?v=85"></script>
-  <script src="js/quotes.js?v=85"></script>
-  <script src="js/start.js?v=85"></script>
+  <script src="js/core.js?v=86"></script>
+  <script src="js/look.js?v=86"></script>
+  <script src="js/settings.js?v=86"></script>
+  <script src="js/router.js?v=86"></script>
+  <script src="js/library.js?v=86"></script>
+  <script src="js/new-retreat.js?v=86"></script>
+  <script src="js/retreat.js?v=86"></script>
+  <script src="js/build-log.js?v=86"></script>
+  <script src="js/research.js?v=86"></script>
+  <script src="js/pray.js?v=86"></script>
+  <script src="js/about-me.js?v=86"></script>
+  <script src="js/talk.js?v=86"></script>
+  <script src="js/agents.js?v=86"></script>
+  <script src="js/costs.js?v=86"></script>
+  <script src="js/practice.js?v=86"></script>
+  <script src="js/quotes.js?v=86"></script>
+  <script src="js/start.js?v=86"></script>
 </body>
 </html>

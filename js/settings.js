@@ -3,7 +3,10 @@
 // Simple uses the same choices. The panel moves into the dialog when a day is rebuilt.
 
 const PROMPT_FIELDS = { plan: "plan-prompt", heart: "heart-prompt", deep: "deep-prompt" };
-const defaultPrompt = (key) => (key === "heart" ? options.prompts.heart.companion : options.prompts[key]);
+// The starting text for each prompt: the person's own version (Agents page) or the app's.
+const heartText = (name) => myAgentPrompt(`heart_${name}`) || options.prompts.heart[name];
+const defaultPrompt = (key) =>
+  key === "heart" ? heartText(heartPreset()) : myAgentPrompt(key === "deep" ? "deep_dive" : key) || options.prompts[key];
 const allowedModels = () => options.models.filter((m) => (isFree() ? m.free : true));
 const allowedTiers = () => Object.entries(options.tiers).filter(([key]) => !isFree() || key === "free");
 
@@ -103,7 +106,7 @@ function fillPromptFields() {
     $(id).value = store.get(`prompt.${key}`) || defaultPrompt(key);
     $(id).oninput = () => store.set(`prompt.${key}`, $(id).value.trim() === defaultPrompt(key).trim() ? null : $(id).value);
   }
-  if (!store.get("prompt.heart")) $("heart-prompt").value = options.prompts.heart[heartPreset()] || defaultPrompt("heart");
+  if (!store.get("prompt.heart")) $("heart-prompt").value = heartText(heartPreset());
   document.querySelectorAll('input[name="heart-voice"]').forEach((r) => {
     r.checked = r.value === heartPreset();
     r.onchange = () => r.checked && chooseHeartPreset(r.value);
@@ -124,7 +127,7 @@ const heartPreset = () => store.get("heart.preset", "companion");
 function chooseHeartPreset(name) {
   store.set("heart.preset", name === "companion" ? null : name);
   store.set("prompt.heart", null); // the chosen voice's current text, not a saved copy
-  $("heart-prompt").value = options.prompts.heart[name];
+  $("heart-prompt").value = heartText(name);
   document.querySelectorAll('input[name="heart-voice"]').forEach((r) => (r.checked = r.value === name));
 }
 

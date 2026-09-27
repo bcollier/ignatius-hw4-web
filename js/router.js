@@ -19,7 +19,7 @@ document.addEventListener("click", (event) => {
 });
 window.addEventListener("popstate", () => route());
 
-const VIEWS = ["signin", "library", "new", "retreat", "research", "talk", "me", "about", "costs", "practice"];
+const VIEWS = ["signin", "library", "new", "retreat", "research", "talk", "me", "agents", "about", "costs", "practice"];
 function show(view) {
   window.__appStarted = true; // for the start-up guard in index.html
   if (typeof hideWaking === "function") hideWaking();
@@ -50,6 +50,7 @@ async function route() {
   if (!signedIn()) return show("signin");
   if (p.has("new")) return openNew();
   if (p.has("me")) return openMe();
+  if (p.has("agents")) return openAgents();
   if (p.has("costs")) return openCosts();
   if (!p.has("practice") && typeof stopPractice === "function") {
     stopPractice();
@@ -217,6 +218,7 @@ async function signedInAs(newSession) {
   } catch (err) {
     return showMessage(err.message);
   }
+  await loadMyAgents(); // the person's own agent prompts: New retreat starts from them
   fillSettings();
   if (session && !me.anonymous) applyMyDefaults(); // the defaults saved to the account, on this device too
   $("account").hidden = !session;
@@ -230,6 +232,7 @@ function showSignedOut() {
   me = null;
   retreat = null;
   $("account").hidden = true;
+  myAgents = {}; // one person's prompts never carry over to the next
   $("guest-box").hidden = !options?.free_mode?.enabled;
   closePrayer(false);
   route();

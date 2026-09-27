@@ -819,3 +819,20 @@ input, select, textarea { font-size: max(16px, 1em); }
 .site-foot a + a { margin-left: 22px; }
 .card > .me-account { margin: 0; }
 .service-links { display: inline-block; margin-top: 4px; font-size: 0.92em; color: var(--muted); }
+
+/* ---------------------------------------------------------------- agents */
+.agents .agent-group { margin-top: 28px; }
+.agent-card { display: grid; gap: 10px; margin: 14px 0; min-width: 0; }
+.agent-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.agent-head h3 { margin: 0; }
+.agent-badge { font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line-strong); padding: 2px 8px; border-radius: 3px; }
+.agent-badge.mine { color: var(--rubric); border-color: var(--rubric); }
+.agent-facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0; font-size: 0.95rem; }
+.agent-facts dt { color: var(--muted); }
+.agent-facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.agent-model { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+.agent-model select { max-width: 100%; }
+.agent-prompt { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 420px; overflow: auto; font-size: 0.85rem; line-height: 1.45; background: var(--page); border: 1px solid var(--line); padding: 12px; border-radius: 4px; }
+.agent-editor textarea { width: 100%; font-family: var(--mono); font-size: 16px; line-height: 1.45; }
+.agent-fixed summary { cursor: pointer; }
+@media (max-width: 560px) { .agent-facts { grid-template-columns: 1fr; } .agent-facts dt { margin-top: 6px; } }
