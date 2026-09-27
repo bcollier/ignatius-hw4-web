@@ -783,3 +783,11 @@ body.praying { overflow: hidden; }
 /* The code for signing in on the Home Screen app */
 .handoff-code { font-family: var(--display, var(--serif)); font-size: 2.6rem; letter-spacing: .12em; margin: 6px 0; font-variant-numeric: tabular-nums; user-select: all; }
 #signin-code { font-size: 1.4rem; letter-spacing: .1em; width: 11em; max-width: 100%; }
+/* The part's name ("Opening: asking for the grace") fits the dock instead of widening the
+   whole prayer screen: its box may shrink, so the name wraps on a phone. */
+.dock-labels { min-width: 0; flex: 1 1 auto; }
+.dock-top .now-part { white-space: normal; }
+#view-pray, .dock, .stage { max-width: 100vw; }
+#view-pray { overflow-x: hidden; }
+/* iPhone browsers zoom into a text box whose text is under 16px, and may stay zoomed. */
+input, select, textarea { font-size: max(16px, 1em); }
