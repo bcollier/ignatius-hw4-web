@@ -144,6 +144,7 @@ function exerciseTodayCard(r, { d }) {
     done.disabled = true;
     try {
       await postJson(`/api/retreats/${r.id}/days/${d.day}/prayed`, { prayed: true });
+      toast(prayedToast(d.day, true, true));
       openLibrary();
     } catch (err) {
       done.disabled = false;

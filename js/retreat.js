@@ -353,10 +353,17 @@ function dayMenu(d, st) {
 
 // ---------------------------------------------------------------- marking, rebuilding, prayer settings
 
+// The little confirmation after marking a day: "Day 3 marked as prayed."
+function prayedToast(day, prayed, exercise) {
+  const done = exercise ? "complete" : "prayed";
+  return prayed ? `Day ${day} marked as ${done}.` : `Day ${day} marked as not ${done}.`;
+}
+
 async function markPrayed(day, body) {
   try {
     retreat = await postJson(`/api/retreats/${retreat.id}/days/${day}/prayed`, body);
     if (params().get("r")) renderRetreat();
+    toast(prayedToast(day, body.prayed, isExercise(retreat.plan?.days?.find((d) => d.day === day) || {}, retreat.days?.[String(day)] || {})));
   } catch (err) {
     showMessage(err.message);
   }
