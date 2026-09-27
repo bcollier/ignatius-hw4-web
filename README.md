@@ -39,7 +39,8 @@ This repository is the **frontend**: plain HTML, CSS and JavaScript, no framewor
 19. [Deploying on GitHub Pages](#19-deploying-on-github-pages)
 20. [How it was built: a journal](#20-how-it-was-built-a-journal)
 21. [Lessons learned and bugs fixed](#21-lessons-learned-and-bugs-fixed)
-22. [Resources, credits and links](#22-resources-credits-and-links)
+22. [Services: what runs it, free and paid](#22-services-what-runs-it-free-and-paid)
+23. [Resources, credits and links](#23-resources-credits-and-links)
 
 ---
 
@@ -541,10 +542,32 @@ Settings → Pages → Deploy from branch → `main`, `/ (root)`. Every push to 
 
 ## 20. How it was built: a journal
 
-The whole app was built in conversation with **Claude Code** (Claude Opus 5.5, with one design review by Claude Fable 5.1) over two days in September 2026. Every prompt is in [PROMPT_LOG.md](PROMPT_LOG.md). In outline:
+The whole app was built in conversation with **Claude Code** (Claude Opus 5.5, with one design review by Claude Fable 5.1) over two days in September 2026, from a design made the day before. Every prompt is in [PROMPT_LOG.md](PROMPT_LOG.md). In outline:
+
+### The method: spec-driven, in phases
+
+This wasn't built by asking for features one at a time. Each big step started from a written spec, was built against it, and was then reviewed against it:
+
+1. **Spec first.** Before any code: a [design spec](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/original-spec/design-spec.md), a [technical spec](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/original-spec/technical-spec.md), screen designs and a [build plan](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/original-spec/staging-plan.md) (September 24 to 25).
+2. **Build to the spec.** The iPhone plan was scoped down to what the class project needed, a server and a web app anyone can use with their own material, and built against the spec's core: the lectio day, the reflection for the heart, the close reading, two voice tiers, a model that plans the days from a handout (September 25 to 26).
+3. **A large spec-driven revision.** Claude Fable reviewed the working app, visually and in use, and wrote a redesign spec, [IMPROVEMENTS.md](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/IMPROVEMENTS.md). The app was then rebuilt to it: one step to make a retreat, the library, listening progress, the full-screen prayer screen, the journal, the installable app.
+4. **A deep code cleanup.** A full readability audit on Clean Code principles: small functions that do one thing, names that say what they mean, no magic numbers, one place for one idea, comments that explain why, no dead code. The 730-line `main.py` became a thin app module plus one routes module per area; the 2,391-line `app.js` became thirteen scripts, one per view; the 155-line function that makes a day became an 11-line one running a small class whose steps read in order. All recorded in [CODE_CLEANUP.md](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/CODE_CLEANUP.md).
+5. **The prompts, rewritten from a brief.** Claude Fable wrote the planning, reflection, deep dive and companion prompts from a [brief](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/prompt-design/README.md) describing the whole app; they live as files in [app/prompt_texts](https://github.com/bcollier/ignatius-hw4-api/tree/main/app/prompt_texts).
+6. **A visual redesign from a spec.** First written ideas, then seven mockups in Claude Design (Today at dawn and at night, praying, the silence, a prayed day gilded, a day as a two-page spread, the library), approved, then built: the "modern book of hours" described in [section 12](#12-design-choices).
+7. **Then testing on a real iPhone.** Each problem seen on the phone went back in as a prompt, was fixed and checked at iPhone size in Safari's engine, and was logged in [PROMPT_LOG.md](PROMPT_LOG.md), all 160-odd of them.
+
+The journal below is the same story day by day.
+
+**Wednesday night into Thursday, September 24 to 25: the original design.** The idea began with a real retreat: a 19th Annotation program (the Spiritual Exercises in daily life, September to May) that came as weekly handout PDFs. In a long session with Claude, the handouts first became daily documents with a close reading and a reflection "for listening", and a question about what it would cost to turn them into audio (Microsoft's free voices, a middle tier, and ElevenLabs and OpenAI's live voice at the high end). That grew into a plan for a native iPhone app, written up as four pieces:
+- the [design spec](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/original-spec/design-spec.md): three sections a day (the Reading, A Word for You in Christ's voice, and The Text Up Close) in a lectio sequence, a pause to journal, three voices per tier, and a start date the user chooses;
+- the voices and a virtual director: a live spoken companion, with its costs and safety;
+- the [technical spec](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/original-spec/technical-spec.md): SwiftUI on iPhone and a Google Cloud pipeline (Cloud Run, Firestore, Workflows, Claude on Vertex AI);
+- twenty screen designs in Claude Design (working name "Wellspring"), and the [build plan](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/original-spec/staging-plan.md): six to eight weeks to TestFlight with Claude Code and Codex working in parallel.
+
+The planning repository's first commit was at 1:27 a.m. Eastern on Thursday, September 25; it was renamed **Ignatius at Home** at 4:54 p.m. that afternoon. The documents are copied in [docs/original-spec](https://github.com/bcollier/ignatius-hw4-api/tree/main/docs/original-spec).
 
 **Thursday evening, September 25.**
-- Pulled the earlier design for a native iPhone app (written that day: the [design spec](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/original-spec/design-spec.md), the [technical spec](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/original-spec/technical-spec.md) and the [build plan](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/original-spec/staging-plan.md)), read the HW4 assignment, and scoped a server-plus-web version: upload a PDF exercise, get three MP3s (reading, heart, deep dive).
+- Pulled that iPhone design, read the HW4 assignment, and scoped a server-plus-web version: upload a PDF exercise, get three MP3s (reading, heart, deep dive).
 - Decided to call Claude through **OpenRouter's Anthropic-compatible endpoint**, keeping Claude's web search and structured output while using OpenRouter credits.
 - Talked through copyright, which led to the key design decision: *the user brings the material*. A handout with seven days becomes a seven-day retreat as written; seven loose verses and a painting become a composed seven-day retreat.
 - Added free Microsoft voices beside ElevenLabs; chose MP3; editable prompts; images shown, not described; sign-in so a retreat made on a laptop plays on a phone; the bell-and-silence player; Supabase.
@@ -584,7 +607,50 @@ Throughout, Claude ran free builds on the Mac mini (Jetstream models, Microsoft 
 
 ---
 
-## 22. Resources, credits and links
+## 22. Services: what runs it, free and paid
+
+Everything a free account uses costs nothing to run; the premium pieces are paid and limited to an allowlist of accounts. Most pieces can be swapped for another provider with a setting, not a code change.
+
+### Free services
+
+| Service | What it is | What it does here | Why it's free |
+| --- | --- | --- | --- |
+| [GitHub Pages](https://pages.github.com) | Static web hosting from a GitHub repository | Serves this web app: the HTML, CSS, JavaScript, icons, paintings, the example and practice audio | Free for public repositories |
+| [Render](https://render.com) | A cloud platform that builds and runs web services straight from a Git repository | Runs the Python server ([ignatius-hw4-api](https://github.com/bcollier/ignatius-hw4-api)): FastAPI and Uvicorn on Python 3.12, from a `render.yaml` Blueprint, redeployed automatically on every push, checked at `/api/health`. It extracts documents, runs the background jobs that plan, write and record retreats, and talks to every other service | The free web service. It sleeps after 15 minutes without visitors and takes up to a minute to wake (hence the waiting screen with its breathing circle and quotes), and its disk is temporary, so everything is kept in Supabase. A paid instance (about $7 a month) stays awake |
+| [Supabase](https://supabase.com) | Hosted Postgres with sign-in and file storage | Sign-in (email links, guests, the Home Screen code), the `retreats` table, the `llm_calls` log of every model call, and a private bucket for the audio, paintings, research records and notes | The free plan |
+| [Jetstream2](https://jetstream-cloud.org) | An NSF-funded academic cloud (Indiana University) with an OpenAI-compatible model API | Writes every free-mode retreat: Muse Glimmer (default, reads images) and Llama 4 Scout | An academic allocation: this is a class project. See below for other free options |
+| Microsoft neural voices, through [edge-tts](https://github.com/rany2/edge-tts) | The voices of Microsoft Edge's Read Aloud, reached through an open-source Python package | Every free voice: Ava, Andrew, Christopher, Emma, Brian, Aria, Ryan and Sonia, with word timings for following the text | No key and no cost. It's unofficial; an app for the public should use [Azure AI Speech](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support), which has a free monthly allowance and then charges per character |
+| [Brave Search](https://brave.com/search/api/), [Brave Answers](https://brave.com/search/api/), [Exa](https://exa.ai), [Tavily](https://tavily.com), [Firecrawl](https://www.firecrawl.dev), [Linkup](https://www.linkup.so) | Six web search services (see [section 9](#9-research-services)) | Research for every deep dive, all at once | Free monthly tiers; a service that runs out is paused until the next month |
+| [bible-api.com](https://bible-api.com) | A free API for public-domain Bible text | The scripture for retreats made from an idea, in the [World English Bible](https://worldenglish.bible) | Free, no key |
+| [Wikimedia Commons](https://commons.wikimedia.org) | The free media library behind Wikipedia | Public-domain paintings (the Examen's paintings) and open-licence Gregorian chant for the background music | Public domain and open licences, credited |
+| Google Docs export | A shared Google Doc's download link | Reading a retreat's material, or About me, from a Google Doc link | Free for docs shared as "Anyone with the link" |
+| [Google Fonts](https://fonts.google.com) | Free web fonts | Cormorant Garamond and EB Garamond | Free |
+
+### Paid services (premium)
+
+| Service | What it is | What it does here | What it costs |
+| --- | --- | --- | --- |
+| [OpenRouter](https://openrouter.ai) → [Claude](https://www.anthropic.com/claude) | One account and API for many models; the app uses its Anthropic-compatible endpoint | Premium planning and writing: **Claude Opus 5.5** by default, also Opus 5, Fable 5.1 (the premium example), Sonnet 5 and Haiku 4.5, with Claude's own web search on top of the free research | Per token: Opus 5.5 is $4 in and $20 out per million tokens, Fable 5.1 $10 and $50, and $0.01 a web search. A premium retreat usually costs a few dollars |
+| [ElevenLabs](https://elevenlabs.io) | Expressive AI voices, and AI music | Premium voices (Sarah, George, Brian, Alice, Bill, Lily; [hear them](#7-voices-hear-them-and-compare)), and the quiet organ-and-strings background music (Music API) | A monthly plan with credits: here the $5 Starter plan plus $20 of extra credits, about 139,000 credits a month. A voice costs about half a credit per character; thirty minutes of narration is about $2 |
+| [OpenAI GPT-Live-1](https://platform.openai.com) (Realtime API) | Real-time spoken conversation over WebRTC | Talk it over: the spoken prayer companion | Per minute of audio; free accounts get a few minutes a day |
+| [xAI Grok voice](https://x.ai/api) | A second real-time voice model | An alternative voice for Talk it over | Per minute of audio |
+
+### Swapping the free writing model
+
+The free path speaks the standard OpenAI chat-completions format to whatever address `JETSTREAM_BASE_URL` points at (the settings are named after Jetstream2 because that came first). So another free model, your own model, or an OpenAI key is a change of three settings on Render, not of code:
+
+| Instead of Jetstream2 | `JETSTREAM_BASE_URL` | `JETSTREAM_API_KEY` | `JETSTREAM_MODELS` (the first is the default) |
+| --- | --- | --- | --- |
+| **OpenRouter's free models** | `https://openrouter.ai/api/v1` | an OpenRouter key | For example, free at the time of writing: `nvidia/nemotron-3-ultra-550b-a55b:free`, `nvidia/nemotron-3-super-120b-a12b:free`, `google/gemma-4-31b-it:free`, `qwen/qwen3.8-27b:free`, `thinkingmachines/inkling:free`, or `openrouter/free` (OpenRouter picks one). Free models are rate-limited and the list changes; see [OpenRouter's free models](https://openrouter.ai/models?max_price=0) |
+| **Your own model** with [Ollama](https://ollama.com) (or LM Studio, vLLM) | `http://your-machine:11434/v1` | anything (Ollama doesn't check it) | whatever you've pulled, for example `gemma4`, `qwen3`, `llama4` |
+| **An OpenAI key** | `https://api.openai.com/v1` | your OpenAI key (the one Talk it over already uses works) | any OpenAI chat model your key can use |
+| Claude directly, instead of through OpenRouter | (premium path) | set `ANTHROPIC_API_KEY` and `LLM_MODE=anthropic` | the same Claude models |
+
+A model that can't read images still works: planning falls back to the text alone. Models on this path get the JSON format in the prompt rather than as a schema, so larger models plan more reliably.
+
+---
+
+## 23. Resources, credits and links
 
 **On the tradition**
 - [What are the Spiritual Exercises?](https://www.ignatianspirituality.com/ignatian-prayer/the-spiritual-exercises/what-are-the-spiritual-exercises/) and [Ignatian contemplation](https://www.ignatianspirituality.com/ignatian-prayer/ignatian-contemplation/), IgnatianSpirituality.com (Loyola Press)
