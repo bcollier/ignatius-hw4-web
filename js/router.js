@@ -43,7 +43,8 @@ async function route() {
   const p = params();
   if (!p.has("pray")) closePrayer(false);
   if (!p.has("talk") && talkState) endTalk("You left the conversation.");
-  $("site-foot").hidden = !signedIn() || !debugMode();
+  $("site-foot").hidden = !signedIn();
+  $("costs-link").hidden = !debugMode();
   $("practice-link").hidden = !signedIn();
   if (p.has("about")) return show("about");
   if (!signedIn()) return show("signin");
@@ -219,7 +220,6 @@ async function signedInAs(newSession) {
   fillSettings();
   if (session && !me.anonymous) applyMyDefaults(); // the defaults saved to the account, on this device too
   $("account").hidden = !session;
-  $("me-link").hidden = false;
   $("account-email").textContent = !session ? "" : me.anonymous ? "Guest" : `${session.user.email}${me.mode === "full" ? " · premium" : ""}`;
   route();
   offerHandoff(); // on an iPhone, straight from the email: the code for the Home Screen app
@@ -230,7 +230,6 @@ function showSignedOut() {
   me = null;
   retreat = null;
   $("account").hidden = true;
-  $("me-link").hidden = true;
   $("guest-box").hidden = !options?.free_mode?.enabled;
   closePrayer(false);
   route();

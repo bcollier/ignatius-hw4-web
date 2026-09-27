@@ -2,9 +2,15 @@
 
 async function openMe() {
   show("me");
-  document.title = "About me · Ignatius at Home";
+  document.title = "Settings · Ignatius at Home";
   $("me-status").textContent = "";
   showAccount();
+  $("me-debug").checked = debugMode();
+  $("me-debug").onchange = (e) => {
+    store.set("debug", e.target.checked || null);
+    document.documentElement.classList.toggle("debug", debugMode());
+    $("costs-link").hidden = !debugMode();
+  };
   try {
     renderMe(await api("/api/profile"));
   } catch (err) {
@@ -85,6 +91,7 @@ function showAccount() {
   const box = $("me-account");
   const who = $("account-email").textContent.trim();
   box.hidden = $("account").hidden || !who;
+  $("me-account-box").hidden = box.hidden;
   box.innerHTML = "";
   if (box.hidden) return;
   box.append(el("span", { text: `Signed in as ${who}` }),

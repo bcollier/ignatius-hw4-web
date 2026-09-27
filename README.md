@@ -252,7 +252,7 @@ The paintings were chosen for drama and for how well they invite imaginative pra
 | `./?r=ID&pray=N` | **Praying** | Full screen: the day's paintings cross-fading, the title and grace, the current part, and a player docked at the bottom (play/pause, back and skip by part, a progress line). After the last part: "After praying." |
 | `./?r=ID&research` | **Research** | Desktop only. For each day: the passage and notes from the document, the searches, every result with its service, which were cited. See section 11. |
 | `./?talk&r=ID` | **Talk it over** | Start/end, a timer, a live transcript, past conversations with **Forget all our conversations**, and a plain statement that this is an AI, with the 988 lifeline. |
-| `./?me` | **About me** | Type or upload (text, Markdown, Word, PDF) what you'd like the app to know about you; a note if a long file was condensed; what you want from the conversation companion. |
+| `./?me` | **Settings** (linked at the bottom of every page) | First, **About me**: type or upload (text, Markdown, Word, PDF, or a Google Doc link) what you'd like the app to know about you, with a note if a long file was condensed, and what you want from the conversation companion. Then your account (sign out, sign in on your phone) and a switch to show technical details (build logs and costs). |
 | `./?about` | **About** | The Spiritual Exercises, retreats, lectio divina, how a day is prayed, [every voice with a sample to play](https://bcollier.github.io/ignatius-hw4-web/?about#voices), [each research service](https://bcollier.github.io/ignatius-hw4-web/?about#research), links. Readable without signing in. |
 
 Views are plain `<section>`s in `index.html`; the router shows one at a time based on the query string, so every view has a real, shareable, back-button-friendly URL.
@@ -514,7 +514,7 @@ flowchart LR
         V4["Praying"]
         V5["Research"]
         V6["Talk it over"]
-        V7["About me, About"]
+        V7["Settings, About"]
     end
     R["Router (query string)"] --> Page
     Page --> API["api() helper<br/>fetch with Bearer token"]
