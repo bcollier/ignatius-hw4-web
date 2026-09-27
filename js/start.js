@@ -103,6 +103,7 @@ function wireAboutMeAndTalk() {
 }
 
 async function start() {
+  if (typeof wirePractice === "function") wirePractice();
   drawIcons();
   setPlayIcon(false);
   readDebugFlag();

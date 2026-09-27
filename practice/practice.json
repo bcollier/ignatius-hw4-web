@@ -1,0 +1,807 @@
+{
+ "sessions": [
+  {
+   "id": "daily",
+   "title": "Daily Prayer Practice",
+   "summary": "A quiet daily practice: settle into God's presence, name the grace you seek, pray with scripture or in stillness, then look back on what happened and write a few honest lines.",
+   "segments": [
+    {
+     "kind": "speak",
+     "step": "Beginning prayer",
+     "text": "Welcome. Let yourself arrive in this place, just as you are. Settle your body so that it can be still for a while. When you are ready, take a slow, deep breath in, and let it go.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "A short, plain welcome lowers the pace before any spiritual content, which matters for someone coming straight from a busy morning or a long day.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/daily-01.mp3",
+       "seconds": 12.5
+      },
+      "deluxe": {
+       "file": "practice/deluxe/daily-01.mp3",
+       "seconds": 10.7
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Beginning prayer",
+     "text": "",
+     "seconds": 40,
+     "question": "Breathe slowly, and settle",
+     "prompts": [],
+     "why": "Forty seconds allows four or five unhurried breaths without the silence feeling empty to a beginner."
+    },
+    {
+     "kind": "speak",
+     "step": "Beginning prayer",
+     "text": "As you keep breathing slowly, remind yourself of something simple and true. You are not alone. God is here with you, right now, in this very place. You do not have to make that happen. Only notice it, and rest there.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "This follows the handout's invitation to place oneself in God's presence, and frames it as receiving rather than achieving.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/daily-03.mp3",
+       "seconds": 15.1
+      },
+      "deluxe": {
+       "file": "practice/deluxe/daily-03.mp3",
+       "seconds": 14.1
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Beginning prayer",
+     "text": "",
+     "seconds": 30,
+     "question": "Rest in God's presence",
+     "prompts": [],
+     "why": "A brief second silence lets the awareness of presence sink in before the next step asks for something."
+    },
+    {
+     "kind": "speak",
+     "step": "Name the grace",
+     "text": "Saint Ignatius invites us to begin every time of prayer by naming the grace we seek. So bring God a simple question: what is the grace I seek today? Don't hunt for the right answer. Just listen, and notice what word rises in you. It might be rest, or peace, or courage, or light, or mercy, or something else entirely. You have about a minute and a half to let it come.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Giving a few example words and permission not to strain helps newcomers, and saying the length aloud lets people relax into the pause.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/daily-05.mp3",
+       "seconds": 26.5
+      },
+      "deluxe": {
+       "file": "practice/deluxe/daily-05.mp3",
+       "seconds": 26.4
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Name the grace",
+     "text": "",
+     "seconds": 90,
+     "question": "What is the grace I seek?",
+     "prompts": [],
+     "why": "Ninety seconds is long enough for a word to surface and for a first word to give way to a truer one, without dragging."
+    },
+    {
+     "kind": "speak",
+     "step": "Name the grace",
+     "text": "Now gently turn that word into a prayer. In your own heart, say to God: God, as I begin, I seek the grace of, and then your word. Say it once, slowly, and mean it.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "This uses the handout's form for the petition and keeps it personal and brief, as Ignatius' preludes are.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/daily-07.mp3",
+       "seconds": 13.7
+      },
+      "deluxe": {
+       "file": "practice/deluxe/daily-07.mp3",
+       "seconds": 11.2
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Name the grace",
+     "text": "",
+     "seconds": 20,
+     "question": "Ask God for the grace you seek",
+     "prompts": [],
+     "why": "A short pause lets the person actually say the prayer instead of only hearing about it."
+    },
+    {
+     "kind": "speak",
+     "step": "Prayer",
+     "text": "Now there are about nine minutes for prayer. You might pray with a passage of scripture, perhaps today's retreat reading, reading it slowly and staying with any word that catches your heart. Or you might simply stay in quiet with God, carrying the grace you have asked for. If your mind wanders, that is all right. Just come back gently. A soft sound will tell you when the time is over.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Offering both ways to pray, with reassurance about distraction, lets the person enter the long silence without worrying about doing it right or watching the clock.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/daily-09.mp3",
+       "seconds": 24.8
+      },
+      "deluxe": {
+       "file": "practice/deluxe/daily-09.mp3",
+       "seconds": 25.1
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Prayer",
+     "text": "",
+     "seconds": 540,
+     "question": "Pray with scripture, or rest in quiet with God",
+     "prompts": [],
+     "why": "Nine minutes is the heart of the practice: enough to go below the surface, while keeping the whole practice under twenty minutes on most days."
+    },
+    {
+     "kind": "speak",
+     "step": "Prayer",
+     "text": "Gently let your prayer come to a close. Take a breath. Before you move on, thank God for this time, however it went.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "A soft ending with thanks marks the change from prayer to reflection without judging the prayer time.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/daily-11.mp3",
+       "seconds": 8.6
+      },
+      "deluxe": {
+       "file": "practice/deluxe/daily-11.mp3",
+       "seconds": 7.7
+      }
+     }
+    },
+    {
+     "kind": "speak",
+     "step": "Review of prayer",
+     "text": "Saint Ignatius suggests looking back over the time you have just spent in prayer, with one simple question: what happened here? Perhaps a word or phrase caught your heart. Perhaps God stirred a memory or an image. Notice too what you felt: hopeful or sad, afraid or at peace. Some moments may have drawn you closer to God, and others may have felt heavy or far away. Both are worth writing down. The question will be on the screen, and you have about three minutes to write a few honest lines.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "It asks the journal question aloud, names consolation and desolation in plain words without jargon, and says how long the pause lasts.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/daily-12.mp3",
+       "seconds": 34.1
+      },
+      "deluxe": {
+       "file": "practice/deluxe/daily-12.mp3",
+       "seconds": 33.6
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Review of prayer",
+     "text": "",
+     "seconds": 180,
+     "question": "What happened in my prayer today?",
+     "prompts": [
+      "A word or phrase that caught my heart was…",
+      "A memory or image that came to me…",
+      "I felt…",
+      "I felt drawn toward God, or away, when…"
+     ],
+     "why": "Three minutes is enough to write two or three honest sentences by hand or on a phone, and the prompts follow the handout's three suggestions plus the direction of the feelings."
+    },
+    {
+     "kind": "speak",
+     "step": "Close",
+     "text": "Thank you, God, for being with me in this time, and for whatever you gave me here, even what I don't yet understand. Stay close to me through the rest of this day. Amen.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "A brief spoken thanksgiving gives a clear, restful ending and joins the prayer to the day ahead.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/daily-14.mp3",
+       "seconds": 11.6
+      },
+      "deluxe": {
+       "file": "practice/deluxe/daily-14.mp3",
+       "seconds": 9.4
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Close",
+     "text": "",
+     "seconds": 15,
+     "question": "Rest a moment before you go",
+     "prompts": [],
+     "why": "A final short silence keeps the practice from ending abruptly."
+    }
+   ]
+  },
+  {
+   "id": "weekly",
+   "title": "Weekly Review of Prayer",
+   "summary": "Once a week, settle before God, read back over your daily notes, and write down how God has been moving in your heart and your life, so that looking back helps you go forward.",
+   "segments": [
+    {
+     "kind": "speak",
+     "step": "Beginning prayer",
+     "text": "Welcome to this weekly review. Find a still place, and let your body settle. Take a slow, deep breath, and let it go. Remember that God is here with you now, just as God has been with you all week.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "It opens the same way as the daily practice so the weekly review feels familiar, while turning attention toward the whole week.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/weekly-01.mp3",
+       "seconds": 14.0
+      },
+      "deluxe": {
+       "file": "practice/deluxe/weekly-01.mp3",
+       "seconds": 14.6
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Beginning prayer",
+     "text": "",
+     "seconds": 45,
+     "question": "Breathe, and rest in God's presence",
+     "prompts": [],
+     "why": "Forty-five seconds is enough for a person to arrive before they are asked to look back."
+    },
+    {
+     "kind": "speak",
+     "step": "Weekly review",
+     "text": "Before you look back, ask God for light. You might pray: God, help me to see this week the way you see it, with honesty and with kindness.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Asking for light before reviewing follows the Examen, and it frames the review as gentle rather than self-critical.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/weekly-03.mp3",
+       "seconds": 10.5
+      },
+      "deluxe": {
+       "file": "practice/deluxe/weekly-03.mp3",
+       "seconds": 9.3
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Weekly review",
+     "text": "",
+     "seconds": 20,
+     "question": "Ask God for light to see",
+     "prompts": [],
+     "why": "A short pause lets the person make the request their own."
+    },
+    {
+     "kind": "speak",
+     "step": "Weekly review",
+     "text": "Now your notes from this week's prayer are there for you to read. Take about three minutes to read them slowly, one day at a time. You don't need to analyze anything yet. Just notice what stands out, a word that returns, a feeling that repeats, a moment you had forgotten. A soft sound will end the pause.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Asking for receptive reading first, and not analysis, lets patterns surface on their own, the way Ignatian repetition returns to where something was happening.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/weekly-05.mp3",
+       "seconds": 21.0
+      },
+      "deluxe": {
+       "file": "practice/deluxe/weekly-05.mp3",
+       "seconds": 17.9
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Weekly review",
+     "text": "",
+     "seconds": 180,
+     "question": "Read your notes from this week slowly",
+     "prompts": [],
+     "why": "Three minutes gives time to read five to seven short entries without rushing."
+    },
+    {
+     "kind": "speak",
+     "step": "Weekly review",
+     "text": "Now ask yourself: what has God been doing in me this week? Where did I feel drawn toward God, more alive, more hopeful, more at peace? And where did things feel heavy, restless, or far from God? Both are part of the story. The question will be on the screen, and you have about three minutes to write.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "This puts consolation and desolation in plain words and asks the journal question aloud with its length.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/weekly-07.mp3",
+       "seconds": 21.5
+      },
+      "deluxe": {
+       "file": "practice/deluxe/weekly-07.mp3",
+       "seconds": 17.9
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Weekly review",
+     "text": "",
+     "seconds": 180,
+     "question": "What has happened in this week's movement of God within my heart and my life?",
+     "prompts": [
+      "A word or theme that kept returning…",
+      "I felt closest to God when…",
+      "It felt heavy or distant when…",
+      "Something in my life that changed…"
+     ],
+     "why": "Three minutes allows an honest paragraph, and the prompts guide the person from patterns in prayer to their effect in daily life, as the handout asks."
+    },
+    {
+     "kind": "speak",
+     "step": "Weekly review",
+     "text": "Looking back helps us keep moving forward. As you think about the week ahead, what would you like to carry with you, or ask of God? Perhaps a grace you want to keep seeking, or a word to hold on to. The question will be on the screen, and you have about two minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "This carries out the handout's point that reviewing serves forward growth, and it ends the review on hope, not assessment.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/weekly-09.mp3",
+       "seconds": 16.5
+      },
+      "deluxe": {
+       "file": "practice/deluxe/weekly-09.mp3",
+       "seconds": 16.2
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Weekly review",
+     "text": "",
+     "seconds": 120,
+     "question": "What do I want to carry into the coming week?",
+     "prompts": [
+      "The grace I want to keep asking for is…",
+      "A word I want to hold on to…",
+      "God, in the week ahead, I ask…"
+     ],
+     "why": "A shorter two-minute pause fits a single forward-looking intention."
+    },
+    {
+     "kind": "speak",
+     "step": "Close",
+     "text": "Thank you, God, for walking with me through this week, in the bright moments and the hard ones. Thank you for all you are doing in me, seen and unseen. Lead me on into the days ahead. Amen.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "A brief thanksgiving gathers the whole week before God and gives the review a warm, clear ending.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/weekly-11.mp3",
+       "seconds": 14.2
+      },
+      "deluxe": {
+       "file": "practice/deluxe/weekly-11.mp3",
+       "seconds": 11.7
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Close",
+     "text": "",
+     "seconds": 15,
+     "question": "Rest a moment before you go",
+     "prompts": [],
+     "why": "A final short stillness lets the review settle before the person returns to their day."
+    }
+   ]
+  },
+  {
+   "id": "dossier",
+   "title": "Your Life's Faith Story",
+   "summary": "A thirty-minute guided life review. After settling and asking the Holy Spirit to guide memory and emotion, you ask for the grace to remember the fragments of your life in a way that reveals the patterns leading toward wholeness with God. You then move through six areas, writing after each one: childhood and family, the people and events that made a difference, the seasons of your life, where God was present or absent, your gifts and struggles, and God's voice in your story. The session ends with an honest conversation with God and a brief thanksgiving. Adapted from a retreat handout based on Margaret Silf's Inner Compass.",
+   "segments": [
+    {
+     "kind": "speak",
+     "step": "Beginning prayer",
+     "text": "Welcome. Find a place where you can sit comfortably, with something to write on close at hand. Let your shoulders drop. Take a slow breath in, and let it go. For the next half hour, you are going to look back over your life, not to judge it, but to see it with God. Let's begin by resting for a moment in God's presence.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The opening names the length and purpose right away, so the person can commit to thirty minutes and put down any fear of being judged.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/dossier-01.mp3",
+       "seconds": 20.4
+      },
+      "deluxe": {
+       "file": "practice/deluxe/dossier-01.mp3",
+       "seconds": 18.8
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Beginning prayer",
+     "text": "",
+     "seconds": 28,
+     "question": "Breathe, and rest in God's presence",
+     "prompts": [],
+     "why": "Just under half a minute gives time for a few slow breaths before any memory work begins."
+    },
+    {
+     "kind": "speak",
+     "step": "Beginning prayer",
+     "text": "Holy Spirit, come and guide this remembering. Direct my memory to what matters, and hold my emotions gently as they rise. Show me my life as you see it.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The handout asks the Spirit to direct both memory and emotion, so the voice prays that request plainly in the first person, and the listener can make it their own.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/dossier-03.mp3",
+       "seconds": 11.8
+      },
+      "deluxe": {
+       "file": "practice/deluxe/dossier-03.mp3",
+       "seconds": 10.2
+      }
+     }
+    },
+    {
+     "kind": "speak",
+     "step": "Beginning prayer",
+     "text": "What you write today is just for you. You can write sentences, make a list, sketch a timeline of the decades, or draw images and symbols. If you ever share any of it, you share only what you choose.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Saying early that the writing is private and can take any form removes pressure before the first pause.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/dossier-04.mp3",
+       "seconds": 13.6
+      },
+      "deluxe": {
+       "file": "practice/deluxe/dossier-04.mp3",
+       "seconds": 12.0
+      }
+     }
+    },
+    {
+     "kind": "speak",
+     "step": "Name the grace",
+     "text": "Remembering means gathering up again what has been scattered or broken. So ask God now for the grace of this time: to remember the fragments of your life in a way that shows the patterns, the threads that have been drawing you toward wholeness with God. Ask for it in your own words, quietly.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The handout's idea of remembering as re-membering is put in plain words, and the grace is named as a specific request, as Saint Ignatius asks in the petition.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/dossier-05.mp3",
+       "seconds": 18.2
+      },
+      "deluxe": {
+       "file": "practice/deluxe/dossier-05.mp3",
+       "seconds": 19.0
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Name the grace",
+     "text": "",
+     "seconds": 45,
+     "question": "Ask for the grace to see the patterns of your life",
+     "prompts": [],
+     "why": "A little under a minute is enough to put the request into one's own words without the session losing momentum."
+    },
+    {
+     "kind": "speak",
+     "step": "Prayer",
+     "text": "Let's begin at the beginning. Think of the family you were born into, and the people who were close to you as a child. Who comes to mind first? How did they shape the person you have become, for good, and perhaps in harder ways too? The question will be on the screen. Take about three minutes, and a soft sound will end the pause.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The first area starts with one person who comes to mind, which is an easy way in, and explains once how the pauses work.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/dossier-07.mp3",
+       "seconds": 20.3
+      },
+      "deluxe": {
+       "file": "practice/deluxe/dossier-07.mp3",
+       "seconds": 20.8
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Prayer",
+     "text": "",
+     "seconds": 180,
+     "question": "Who from your family and childhood shaped who you are, and how?",
+     "prompts": [
+      "The first face that comes to mind is…",
+      "From them I learned…",
+      "A childhood memory that still matters…",
+      "Something I carry from home, for better or worse…"
+     ],
+     "why": "Three minutes lets someone name two or three people with a line each; the area matters but should not use up the time needed for the heavier sections."
+    },
+    {
+     "kind": "speak",
+     "step": "Prayer",
+     "text": "Now widen the circle. Think of the events and people that made a real difference in your life. Some may go back before you were born, a grandparent's choice, a family move. Some are recent, and some are still with you. What difference did they make? The question is on the screen. Take about three minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Concrete examples of influences from before one's birth help the listener grasp an idea that is easy to pass over.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/dossier-09.mp3",
+       "seconds": 19.4
+      },
+      "deluxe": {
+       "file": "practice/deluxe/dossier-09.mp3",
+       "seconds": 18.7
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Prayer",
+     "text": "",
+     "seconds": 180,
+     "question": "Which events and people made an important difference in your life, and how?",
+     "prompts": [
+      "Before I was born…",
+      "A turning point was when…",
+      "Someone who changed my direction…",
+      "Someone still with me who matters…"
+     ],
+     "why": "Three minutes is enough to jot a short list with a word on each difference made."
+    },
+    {
+     "kind": "speak",
+     "step": "Prayer",
+     "text": "Now look at the seasons of your life. There have been joys and losses, victories and failures, times of trial, and times of healing and change. You might sketch them decade by decade, or simply name the seasons that come to you. Then ask yourself which of them seems most significant. This one gets more time, about five minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The voice suggests the timeline here because this area covers the most ground, and says up front that the pause is longer.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/dossier-11.mp3",
+       "seconds": 22.4
+      },
+      "deluxe": {
+       "file": "practice/deluxe/dossier-11.mp3",
+       "seconds": 21.1
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Prayer",
+     "text": "",
+     "seconds": 290,
+     "question": "What have been the seasons of your life, and which seems most significant?",
+     "prompts": [
+      "Decade by decade: a joy and a sorrow from each…",
+      "A victory, and a failure…",
+      "A time of trial…",
+      "A time of healing or transformation…"
+     ],
+     "why": "This area has the most to remember, so it gets nearly five minutes, enough to sketch a whole timeline."
+    },
+    {
+     "kind": "speak",
+     "step": "Prayer",
+     "text": "Stay with those seasons, and look at them now with God in mind. Where do you notice God was present? Where did God seem absent? Some times may have strengthened you or prepared you to grow. There may also be griefs and wounds that still weigh on you. Go gently here. Write only what you are comfortable writing; a single word is enough, and you can leave something unwritten and simply hold it before God. You have about five minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "This is the heaviest area, so it builds directly on the timeline just made and gives clear permission to write little or nothing before the pause begins.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/dossier-13.mp3",
+       "seconds": 28.8
+      },
+      "deluxe": {
+       "file": "practice/deluxe/dossier-13.mp3",
+       "seconds": 27.2
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Prayer",
+     "text": "",
+     "seconds": 290,
+     "question": "Looking back, where was God present, or absent, in the seasons of your life?",
+     "prompts": [
+      "I sense God was near when…",
+      "God felt far away when…",
+      "A hard time that prepared me to grow…",
+      "A grief or wound I still carry (only if you wish)…"
+     ],
+     "why": "Discerning presence and absence while touching old wounds needs unhurried time, so this pause matches the longest one."
+    },
+    {
+     "kind": "speak",
+     "step": "Prayer",
+     "text": "Whatever came up, you don't have to carry it alone right now. Lay down your pen for a moment. If something hurt, let God hold it with you. Breathe slowly.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "A gentle word after the hard area lets feelings settle before the person turns to something new.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/dossier-15.mp3",
+       "seconds": 10.6
+      },
+      "deluxe": {
+       "file": "practice/deluxe/dossier-15.mp3",
+       "seconds": 9.8
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Prayer",
+     "text": "",
+     "seconds": 15,
+     "question": "Breathe, and let God hold what came up",
+     "prompts": [],
+     "why": "A short breathing space marks the move from wounds to gifts, so the next area does not feel abrupt."
+    },
+    {
+     "kind": "speak",
+     "step": "Prayer",
+     "text": "Now turn to yourself as you are. What are your gifts, your temperament, the traits others see in you? How does God seem to work through what you are good at? And where do your struggles get in the way, like stones in a stream? The question is on the screen. Take about three minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The image of stones in a stream makes the handout's phrase about God's flow easy to hold on a single hearing.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/dossier-17.mp3",
+       "seconds": 17.2
+      },
+      "deluxe": {
+       "file": "practice/deluxe/dossier-17.mp3",
+       "seconds": 17.9
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Prayer",
+     "text": "",
+     "seconds": 180,
+     "question": "Who are you, how does God work through your gifts, and where do your struggles get in the way?",
+     "prompts": [
+      "People often say I am…",
+      "A gift God seems to use…",
+      "A struggle that blocks the flow…",
+      "Who I understand myself to be…"
+     ],
+     "why": "Three minutes is enough to name a gift and a struggle honestly without turning it into a self-assessment."
+    },
+    {
+     "kind": "speak",
+     "step": "Prayer",
+     "text": "Last, listen for God's voice across your story. Where have you heard God quietly, in a still, small voice? Where have you felt God's presence strongly, guiding you? And where do you long for more of God's grace and love? Take about three minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The final area ends on longing, which leads naturally into the conversation with God that follows.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/dossier-19.mp3",
+       "seconds": 17.4
+      },
+      "deluxe": {
+       "file": "practice/deluxe/dossier-19.mp3",
+       "seconds": 17.2
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Prayer",
+     "text": "",
+     "seconds": 180,
+     "question": "Where have you heard God's still, small voice, felt God's guidance, and longed for more?",
+     "prompts": [
+      "A quiet moment when God spoke…",
+      "A time God's guidance was strong…",
+      "Where I long for more of God's love…"
+     ],
+     "why": "Three minutes lets the person gather a few moments of God's voice from all they have already written."
+    },
+    {
+     "kind": "speak",
+     "step": "Prayer",
+     "text": "Now set your writing aside. Look over what you have written, or simply remember it. Then speak honestly with God about whatever has risen to the surface, as one friend speaks to another. Ask, Lord, what do you want me to notice? Then listen. You have two minutes of quiet.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The handout's closing question is framed as an Ignatian colloquy, a conversation between friends, and the person hears how long the quiet will last.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/dossier-21.mp3",
+       "seconds": 19.0
+      },
+      "deluxe": {
+       "file": "practice/deluxe/dossier-21.mp3",
+       "seconds": 18.3
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Prayer",
+     "text": "",
+     "seconds": 120,
+     "question": "Lord, what do you want me to notice?",
+     "prompts": [],
+     "why": "Two minutes leaves room both to speak honestly and to listen, without adding more writing."
+    },
+    {
+     "kind": "speak",
+     "step": "Close",
+     "text": "Thank you, God, for every part of this story, the bright threads and the broken ones. Gather what I have remembered today into your hands, and keep drawing me toward wholeness in you. Amen. You might return to these pages another day, when something new comes to mind.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The close gives thanks, returns to the grace of wholeness, and leaves the review open, since a life story is rarely finished in one sitting.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/dossier-23.mp3",
+       "seconds": 18.5
+      },
+      "deluxe": {
+       "file": "practice/deluxe/dossier-23.mp3",
+       "seconds": 17.4
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "model": "anthropic/claude-opus-5.5",
+ "usd": 0.12,
+ "voices": {
+  "standard": "Ava, Microsoft (free)",
+  "deluxe": "Sarah, ElevenLabs"
+ },
+ "recording": {
+  "characters": 3486,
+  "elevenlabs_credits_used": 0
+ },
+ "script_usd": {
+  "dossier": 0.1823
+ },
+ "recordings": [
+  {
+   "characters": 7071,
+   "elevenlabs_credits_used": 160
+  }
+ ]
+}

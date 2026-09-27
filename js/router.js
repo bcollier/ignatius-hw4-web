@@ -19,7 +19,7 @@ document.addEventListener("click", (event) => {
 });
 window.addEventListener("popstate", () => route());
 
-const VIEWS = ["signin", "library", "new", "retreat", "research", "talk", "me", "about", "costs"];
+const VIEWS = ["signin", "library", "new", "retreat", "research", "talk", "me", "about", "costs", "practice"];
 function show(view) {
   const swap = () => {
     for (const v of VIEWS) $(`view-${v}`).hidden = v !== view;
@@ -39,11 +39,14 @@ async function route() {
   if (!p.has("pray")) closePrayer(false);
   if (!p.has("talk") && talkState) endTalk("You left the conversation.");
   $("site-foot").hidden = !signedIn() || !debugMode();
+  $("practice-link").hidden = !signedIn();
   if (p.has("about")) return show("about");
   if (!signedIn()) return show("signin");
   if (p.has("new")) return openNew();
   if (p.has("me")) return openMe();
   if (p.has("costs")) return openCosts();
+  if (!p.has("practice") && typeof stopPractice === "function") stopPractice();
+  if (p.has("practice")) return openPractice(p.get("practice"));
   if (p.has("talk")) return openTalk(p.get("r"));
   if (p.has("research") && p.get("r")) return openResearch(p.get("r"));
   if (p.get("r")) return openRetreat(p.get("r"), p.get("pray"));

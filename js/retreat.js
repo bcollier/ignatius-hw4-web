@@ -239,6 +239,10 @@ function exercisePage(d, st, s) {
       el("div", { class: "quiet-row" },
         el("button", { type: "button", class: "link", text: "Mark as not complete", onclick: () => markPrayed(d.day, { prayed: false }) })));
   } else {
+    if (/dossier|life.?s faith story/i.test(`${d.title} ${d.passage_text}`)) {
+      page.append(el("p", { class: "state-line", text: "There's a guided version: a voice leads you through your life's faith story, with time to write after each question (thirty minutes)." }),
+        el("div", { class: "pray-row" }, el("a", { class: "button gold", href: "./?practice=dossier", "data-nav": "", text: "Do the guided exercise" })));
+    }
     page.append(el("p", { class: "state-line", text: "Go and do this exercise today, then mark it complete." }),
       el("div", { class: "pray-row" },
         el("button", { type: "button", class: "big gold", text: "Mark as complete", onclick: (e) => { e.target.disabled = true; markPrayed(d.day, { prayed: true }); } })));
