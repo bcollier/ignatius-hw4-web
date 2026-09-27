@@ -1273,6 +1273,936 @@
     "standard": "Ryan, Microsoft (free)",
     "deluxe": "George, ElevenLabs"
    }
+  },
+  {
+   "id": "my-dossier",
+   "title": "Prayer Over My Dossier",
+   "summary": "A prayer of praise over the plain facts of your life, writing down your family, places and traits one group at a time and turning each into thanks to the God who chose them for you. Adapted from a retreat worksheet (Prayer Unit 2, Day 3: Prayer Over My Dossier).",
+   "segments": [
+    {
+     "kind": "speak",
+     "step": "Beginning prayer",
+     "text": "Welcome. Today you will pray over the plain facts of your life: names, dates, places, the shape of your family and of yourself. Saint Ignatius believed God can be found in all things, and that includes the ordinary details of who you are. For now, simply let yourself arrive.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Names the unusual shape of this prayer at the start so the listener is not surprised when a prayer turns into writing facts.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-01.mp3",
+       "seconds": 20.2
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Beginning prayer",
+     "text": "",
+     "seconds": 30,
+     "question": "Breathe, and let your body settle",
+     "prompts": [],
+     "why": "Thirty seconds allows four or five slow breaths before God is addressed."
+    },
+    {
+     "kind": "speak",
+     "step": "Beginning prayer",
+     "text": "Now become aware that God is here. Not a distant God, but your Maker, the One who thought of you before anyone knew your name. Rest for a moment before the One who made you, and who is making you still.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Places the person before God as Maker, the image the whole session returns to at the end.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-03.mp3",
+       "seconds": 14.0
+      }
+     }
+    },
+    {
+     "kind": "speak",
+     "step": "Beginning prayer",
+     "text": "Ask now for the grace of this prayer. You might say it simply: Lord, let me see the facts of my life as your gifts, and let me thank and praise you for choosing me, here, in this time, with these people. Or ask it in your own words.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Gives the petition in plain words the listener can borrow or replace with their own.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-04.mp3",
+       "seconds": 16.5
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Beginning prayer",
+     "text": "",
+     "seconds": 30,
+     "question": "Ask for the grace in your own words",
+     "prompts": [],
+     "why": "A short pause is enough to ask for one grace, since the long work of the session lies ahead."
+    },
+    {
+     "kind": "speak",
+     "step": "Beginning prayer",
+     "text": "A word before we begin. What you write is just for you. Write as much or as little as you like. If something is unknown to you, or too painful to write today, it's fine to leave that line blank. God already knows it, and holds it gently. At each step the question will be on the screen, and a soft sound will end the pause.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Gives explicit permission to leave lines blank before the family questions begin, since adoption, estrangement or loss can make them painful.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-06.mp3",
+       "seconds": 22.2
+      }
+     }
+    },
+    {
+     "kind": "speak",
+     "step": "Family",
+     "text": "Let's begin with your father. Whatever you know of him, and whatever your story with him, he is part of how God brought you into being. Write his full name, his birth date, and where he was born. As you write, you might simply say, thank you. You have two minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Acknowledges that the story with a father may be complicated before asking only for simple facts.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-07.mp3",
+       "seconds": 16.7
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Family",
+     "text": "",
+     "seconds": 120,
+     "question": "What do you know of your father?",
+     "prompts": [
+      "Father's full name",
+      "His birth date",
+      "His birthplace"
+     ],
+     "why": "Two minutes is enough to write three facts and lift a brief word of thanks."
+    },
+    {
+     "kind": "speak",
+     "step": "Family",
+     "text": "Now your mother. Let her name come to you slowly. Write her full name, her birth date, and her birthplace, and as you write, lift your mind to God, who gave you life through her. You have two minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Mirrors the father's segment so the rhythm of writing and then praising becomes familiar.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-09.mp3",
+       "seconds": 13.9
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Family",
+     "text": "",
+     "seconds": 120,
+     "question": "What do you know of your mother?",
+     "prompts": [
+      "Mother's full name",
+      "Her birth date",
+      "Her birthplace"
+     ],
+     "why": "The same length as the father's pause keeps the simple facts brisk."
+    },
+    {
+     "kind": "speak",
+     "step": "Myself",
+     "text": "Now write about yourself, as if for the first time. Your full name, the day and place you were born. Your gender, your race and ethnicity. The color of your hair and eyes, the build of your body. None of this was an accident to God. You have two minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Reads the fields as a gentle walk through the self rather than a form, and ends on God's intention.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-11.mp3",
+       "seconds": 18.2
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Myself",
+     "text": "",
+     "seconds": 120,
+     "question": "Who am I, in plain facts?",
+     "prompts": [
+      "My full name",
+      "My birth date and birthplace",
+      "My gender, race and ethnicity",
+      "My hair color, eye color and build"
+     ],
+     "why": "These facts come quickly, so two minutes leaves room for a moment of wonder."
+    },
+    {
+     "kind": "speak",
+     "step": "Family",
+     "text": "Now your brothers and sisters, if you have them. Write each name and birth date. If you have none, or if some are lost to you, you might write that too, or simply rest. You have two minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Anticipates only children and lost siblings so no one feels the question does not fit them.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-13.mp3",
+       "seconds": 13.0
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Family",
+     "text": "",
+     "seconds": 120,
+     "question": "Who are my brothers and sisters?",
+     "prompts": [
+      "First sibling: name and birth date",
+      "Second sibling: name and birth date",
+      "Others: names and birth dates"
+     ],
+     "why": "Two minutes covers most families, and anyone without siblings can simply rest."
+    },
+    {
+     "kind": "speak",
+     "step": "Places and family",
+     "text": "Now take a little longer with your family's story. What details matter? A move, a loss, a marriage, a faith handed down, a hardship survived. Write what seems significant, and let each thing become thanks where you can. You have two and a half minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Offers concrete examples so an open-ended question has a place to start, and says thanks is asked only where it can be given.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-15.mp3",
+       "seconds": 18.6
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Places and family",
+     "text": "",
+     "seconds": 150,
+     "question": "What are the significant details of my family's story?",
+     "prompts": [
+      "A move or a turning point",
+      "A loss or a hardship",
+      "A faith or tradition handed down",
+      "Something I'm grateful for"
+     ],
+     "why": "Family details need more recollection than names, so this pause runs longer."
+    },
+    {
+     "kind": "speak",
+     "step": "Places and family",
+     "text": "Now the places you have lived. Let them come back one by one: the towns and streets, the houses and rooms. God was with you in each of them. Write them down, in whatever order they come. You have two and a half minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Evokes sensory memory of places so the listener recalls them rather than simply listing them.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-17.mp3",
+       "seconds": 15.5
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Places and family",
+     "text": "",
+     "seconds": 150,
+     "question": "Where have I lived?",
+     "prompts": [
+      "Where I was born and grew up",
+      "The places I moved to",
+      "Where I live now"
+     ],
+     "why": "The places of a lifetime take longer to remember, so this pause matches the family details."
+    },
+    {
+     "kind": "speak",
+     "step": "Places and family",
+     "text": "Last among the facts, your extended family. Grandparents, aunts and uncles, cousins, the people who were like family to you. Write whom you remember, and thank God for them. You have two minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Includes chosen family so the question fits many kinds of lives.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-19.mp3",
+       "seconds": 13.1
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Places and family",
+     "text": "",
+     "seconds": 120,
+     "question": "Who is my extended family?",
+     "prompts": [
+      "My grandparents",
+      "Aunts, uncles and cousins",
+      "People who were like family"
+     ],
+     "why": "Two minutes closes the section on facts at a steady pace."
+    },
+    {
+     "kind": "speak",
+     "step": "God's choices",
+     "text": "Now set your pen down and look over everything you have written. These are the choices God made for you and in you. Simply look, and ponder, and let praise rise if it will. Take a quiet moment.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Turns the listener from writing to pondering before the more personal traits begin.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-21.mp3",
+       "seconds": 13.5
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "God's choices",
+     "text": "",
+     "seconds": 45,
+     "question": "Look over it all, and ponder God's choices for you",
+     "prompts": [],
+     "why": "Forty-five seconds is enough to read back over the page without losing momentum."
+    },
+    {
+     "kind": "speak",
+     "step": "Traits",
+     "text": "Now we turn from facts to traits. Some things were formed in you before you had any choice: the place you grew up, your temperament, self-assured or anxious, your mind, the languages you speak, your habits of study, the things you love to do. Write six of them. You have nearly four minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Speaks the worksheet's examples aloud so the listener has them in hand, since nothing can be looked back at.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-23.mp3",
+       "seconds": 20.0
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Traits",
+     "text": "",
+     "seconds": 225,
+     "question": "What was formed in me before I had a choice?",
+     "prompts": [
+      "The world I grew up in",
+      "My temperament, self-assured or anxious",
+      "My kind of intelligence",
+      "The languages I speak",
+      "My habits of study",
+      "Activities I enjoy"
+     ],
+     "why": "Six reflective items need close to four minutes to name them and offer thanks."
+    },
+    {
+     "kind": "speak",
+     "step": "Traits",
+     "text": "Now think of what came to you through your parents or your wider family. A laugh, a temper, a gift for music, a way of worrying. Some you are glad of, some you would rather not have. Write six, honestly. You have nearly four minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Mixes welcome and unwelcome examples so honesty feels allowed from the start.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-25.mp3",
+       "seconds": 16.4
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Traits",
+     "text": "",
+     "seconds": 225,
+     "question": "What have I inherited from my family?",
+     "prompts": [
+      "Something from my father",
+      "Something from my mother",
+      "Something from grandparents or relatives",
+      "One I'm glad to have",
+      "Another I'm glad to have",
+      "One I'd rather not have"
+     ],
+     "why": "The same length as the other trait pauses keeps the four sets in balance."
+    },
+    {
+     "kind": "speak",
+     "step": "Traits",
+     "text": "Now name six qualities you particularly like in yourself. Perhaps you are quiet, or outgoing, thorough, sensitive to others, energetic, able to get a great deal done. Receive each as a gift from the One who makes you, and thank God for it. You have nearly four minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Frames self-appreciation as receiving a gift, which eases the discomfort many people feel in naming their good qualities.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-27.mp3",
+       "seconds": 17.9
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Traits",
+     "text": "",
+     "seconds": 225,
+     "question": "What do I like in myself, as God's gift?",
+     "prompts": [
+      "Quiet or outgoing",
+      "Thorough",
+      "Sensitive to others' feelings",
+      "Energetic",
+      "Accomplishing a great deal",
+      "Another gift I see in myself"
+     ],
+     "why": "Gives time to write each quality and turn it into praise."
+    },
+    {
+     "kind": "speak",
+     "step": "Traits",
+     "text": "Now, gently, the qualities you don't particularly like. Your height, perhaps, or an attitude you can't shake, an illness you live with, a voice inside that speaks poorly of you. Name six honestly, without contempt for yourself. You don't have to praise what still hurts. If it helps, pray each one this way: for this too, I place it in your hands. You have nearly four minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The slowest and gentlest introduction of the session, and it offers a way to pray these traits that is truthful without forcing praise.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-29.mp3",
+       "seconds": 26.2
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Traits",
+     "text": "",
+     "seconds": 225,
+     "question": "What don't I like in myself, that I can place in God's hands?",
+     "prompts": [
+      "Something about my body",
+      "An attitude I can't shake",
+      "An illness or limit I live with",
+      "How I see myself",
+      "Another I struggle with",
+      "For this too, I place it in your hands"
+     ],
+     "why": "The final prompt models the prayer itself, so the pause ends in offering rather than self-criticism."
+    },
+    {
+     "kind": "speak",
+     "step": "God's choices",
+     "text": "Now rest from writing. Consider this: God loved you before you existed. And God did not finish making you long ago. God is creating you still, in this very hour, and the Spirit still hopes for you, that you will grow until you love as God loves. Stay with that, and marvel.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Comes directly after the hardest traits so that the unfinished parts of the person are seen as God's ongoing work.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-31.mp3",
+       "seconds": 20.3
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "God's choices",
+     "text": "",
+     "seconds": 60,
+     "question": "Marvel that God is still making you",
+     "prompts": [],
+     "why": "A full minute of quiet lets this central truth settle after so much writing."
+    },
+    {
+     "kind": "speak",
+     "step": "God's choices",
+     "text": "If you like, take a little time for anything else that has come to you: a memory, an image, a few words, even a small sketch. Or simply sit. This last pause is yours, a little over a minute.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Presents the worksheet's last page as optional so a tired person can simply rest.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-33.mp3",
+       "seconds": 12.9
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "God's choices",
+     "text": "",
+     "seconds": 75,
+     "question": "Is there anything more I want to remember, write or draw?",
+     "prompts": [
+      "A memory that surfaced",
+      "An image or a sketch",
+      "A word to God"
+     ],
+     "why": "Kept short because it is optional and the session is nearly complete."
+    },
+    {
+     "kind": "speak",
+     "step": "Close",
+     "text": "Now gather all of it and offer it back. Thank God for your father and mother, your family, the places that held you, and the person you are and are becoming. For all of this, praise and thanks to you, my God.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Gathers every group into one thanksgiving and echoes the worksheet's refrain of praise.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-35.mp3",
+       "seconds": 14.4
+      }
+     }
+    },
+    {
+     "kind": "speak",
+     "step": "Close",
+     "text": "May the God who made you keep making you. May Christ walk with you in every ordinary detail of your life. And may the Holy Spirit bring you to love as God loves. Amen.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "A brief blessing that returns to the image of God still creating and sends the person into the day.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/my-dossier-36.mp3",
+       "seconds": 12.2
+      }
+     }
+    }
+   ],
+   "voices": {
+    "standard": "Ava, Microsoft (free)"
+   }
+  },
+  {
+   "id": "birth",
+   "title": "Meditation on My Birth",
+   "summary": "A prayer of memory and imagination, in the manner of Ignatian imaginative contemplation, in which you stand beside God your Creator as an observer at your own birth and hear how deeply you are loved. Adapted from a meditation by Dr. Eileen C. Burke-Sullivan, Creighton University.",
+   "segments": [
+    {
+     "kind": "speak",
+     "step": "Settling",
+     "text": "Welcome. This prayer is a meditation on your own birth, made with memory and with imagination, in the way Saint Ignatius taught people to enter a scene as if they were really there. Find a place where you can be still. Let your feet rest flat on the floor, and let your hands be open or at rest in your lap. Now begin to breathe slowly, in and out, letting each breath be a little longer than the one before.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Grounds the body first and names the kind of prayer so the listener knows what is coming.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-01.mp3",
+       "seconds": 27.4
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Settling",
+     "text": "",
+     "seconds": 45,
+     "question": "Breathe slowly until you are somewhat at peace",
+     "prompts": [],
+     "why": "Forty-five seconds allows six or seven slow breaths, enough to settle without feeling idle."
+    },
+    {
+     "kind": "speak",
+     "step": "Settling",
+     "text": "You don't need to be perfectly calm. Somewhat at peace is enough. God is already here, closer to you than your own breath. Now ask for what you desire in this prayer. You might say, in your own words: Lord, give me the gift of memory, or of imagination, so that I may be present at my own birth. And let me come to know how much you love me.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Names the petition plainly, as Ignatius asks, and lowers the bar for how settled one must feel.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-03.mp3",
+       "seconds": 24.0
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Settling",
+     "text": "",
+     "seconds": 40,
+     "question": "Ask God for this grace in your own words",
+     "prompts": [],
+     "why": "A short pause lets the person make the petition their own rather than just hearing it."
+    },
+    {
+     "kind": "speak",
+     "step": "Remembering",
+     "text": "Now let your mind turn to what you have been told. Families keep stories about a birth. Where was your mother when her labor began? At home, at work, on the way somewhere? Did you come early, or late, or just on time? Was it a long labor, or did you arrive suddenly? Let whatever you have heard come back to you, without hurrying.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Concrete questions give memory something to catch on before imagination begins.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-05.mp3",
+       "seconds": 23.2
+      }
+     }
+    },
+    {
+     "kind": "speak",
+     "step": "Remembering",
+     "text": "If no one ever told you these things, that's all right. You can imagine, drawing on what you know of how babies are born, even from a film or a television show. If you were adopted, or never knew your birth parents, you may imagine them as you would like them to have been. And if the story of your birth is a painful one, you don't have to go into the details. You can simply stay with God's presence, or stop at any point. This prayer is meant to be gentle.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Said plainly and before the silence so that no one is left out or pressed into a painful memory.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-06.mp3",
+       "seconds": 28.7
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Remembering",
+     "text": "",
+     "seconds": 60,
+     "question": "Recall or imagine the story of your birth",
+     "prompts": [],
+     "why": "A full minute lets family stories surface or a picture form without rushing."
+    },
+    {
+     "kind": "speak",
+     "step": "Contemplation",
+     "text": "Now, in your imagination, go to the place where you were born. You are there as you are today, an observer, standing quietly. And God your Creator is standing at your side. You may not see God. But you know God is near, the way you know the warmth of someone standing close beside you. Let yourself feel that warmth.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Establishes God's presence by warmth before any detail of the scene, so the whole contemplation happens in company.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-08.mp3",
+       "seconds": 20.9
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Contemplation",
+     "text": "",
+     "seconds": 30,
+     "question": "Stand with God at your side",
+     "prompts": [],
+     "why": "Short silences between each movement keep the pace slow without losing the thread."
+    },
+    {
+     "kind": "speak",
+     "step": "Contemplation",
+     "text": "Look around the room. Notice what it is like, the light, the walls, the bed where your mother lies. There are people caring for her, a doctor and nurses, or a midwife and her helpers. They are busy and focused, all their attention on your mother. They cannot see you as you are now, and they cannot see God. Only you and God are watching.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The composition of place, with the observers unseen, makes the scene private between the person and God.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-10.mp3",
+       "seconds": 22.8
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Contemplation",
+     "text": "",
+     "seconds": 30,
+     "question": "Look around the room",
+     "prompts": [],
+     "why": "Time to let the room take shape in the imagination."
+    },
+    {
+     "kind": "speak",
+     "step": "Contemplation",
+     "text": "Now listen. Hear your mother in labor, breathing hard, perhaps crying out, perhaps suddenly catching her breath. Your father may be there, or he may not. But someone is beside her, encouraging her, telling her she can do this, that it won't be long now.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Moves from sight to hearing, as Ignatian contemplation does, and leaves the father's presence open.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-12.mp3",
+       "seconds": 17.6
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Contemplation",
+     "text": "",
+     "seconds": 30,
+     "question": "Listen to the sounds of the room",
+     "prompts": [],
+     "why": "Hearing takes a little time to imagine; thirty seconds keeps momentum."
+    },
+    {
+     "kind": "speak",
+     "step": "Contemplation",
+     "text": "And now you see the child you were, being born. So tiny. So defenseless. Coming into a strange, bright, cold new world. Someone lifts you, and helps you take your very first breath. Watch that little one breathe.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Very short sentences slow the voice at the moment of birth itself.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-14.mp3",
+       "seconds": 17.2
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Contemplation",
+     "text": "",
+     "seconds": 30,
+     "question": "Watch the child you were take a first breath",
+     "prompts": [],
+     "why": "Lets the tenderness of the image register before moving on."
+    },
+    {
+     "kind": "speak",
+     "step": "Contemplation",
+     "text": "A nurse takes you now. She washes you, weighs you, measures you, and wraps you, getting ready to lay you in your mother's arms.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "A brief ordinary moment that sets up the pause in which God steps forward.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-16.mp3",
+       "seconds": 9.3
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Contemplation",
+     "text": "",
+     "seconds": 20,
+     "question": "Watch the child being washed and wrapped",
+     "prompts": [],
+     "why": "A shorter silence, since this is a transition rather than the heart of the scene."
+    },
+    {
+     "kind": "speak",
+     "step": "Contemplation",
+     "text": "But just for a moment, before you are handed to your mother, God steps forward. God takes you, that newborn, into the divine arms. And God gazes at you with complete love. See God's delight. God is almost playful, full of joy at simply holding you. Stay and watch this for a while.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The turning point of the prayer, stated simply so the image, not the words, does the work.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-18.mp3",
+       "seconds": 21.5
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Contemplation",
+     "text": "",
+     "seconds": 45,
+     "question": "Watch God holding you with delight",
+     "prompts": [],
+     "why": "Longer silence here because this is where consolation is most likely to stir."
+    },
+    {
+     "kind": "speak",
+     "step": "Contemplation",
+     "text": "Now God gives the child back, to be placed in your mother's arms. And then God turns, and looks deep into your eyes, the eyes you have now. And God says to you: You are my beloved child. I longed for the moment you would come into life. And I long even more for you to know how deeply you are loved.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "God's words are given in the first person and kept few, so they can be heard and held.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-20.mp3",
+       "seconds": 20.2
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Contemplation",
+     "text": "",
+     "seconds": 120,
+     "question": "Stay with God's gaze and God's words",
+     "prompts": [],
+     "why": "Two minutes to rest in the moment, in the spirit of Ignatian repetition and contemplatio."
+    },
+    {
+     "kind": "speak",
+     "step": "Colloquy",
+     "text": "When you are ready, speak to God from your heart, as one friend speaks to another. What do you want to say to this God who loves you so completely? And do you believe what God has just told you? If you do, say so. If part of you doubts it, you can say that too. Talk with God about whatever is in your heart. You have about three minutes, and a soft sound will end the time.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Invites honesty, including doubt, so the colloquy is real conversation rather than a correct answer.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-22.mp3",
+       "seconds": 24.5
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Colloquy",
+     "text": "",
+     "seconds": 180,
+     "question": "Speak with God from your heart",
+     "prompts": [],
+     "why": "Three minutes gives the colloquy real time, the longest pause in the prayer."
+    },
+    {
+     "kind": "speak",
+     "step": "Doxology",
+     "text": "Now let's close the prayer together. If you are able, bow toward God as we pray, slowly. Glory be to the Father, and to the Son, and to the Holy Spirit; as it was in the beginning, is now, and ever shall be, world without end. Amen.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The traditional words, prayed slowly with a bodily gesture, seal the prayer as an act of praise.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-24.mp3",
+       "seconds": 18.4
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Doxology",
+     "text": "",
+     "seconds": 15,
+     "question": "Rest after the prayer",
+     "prompts": [],
+     "why": "A brief breath between prayer and review so the shift is not abrupt."
+    },
+    {
+     "kind": "speak",
+     "step": "Review of prayer",
+     "text": "Now take a few minutes to look back over the prayer. Writing is optional; if you'd rather simply reflect, that's fine. Before you write, you might talk for a moment with Jesus about what just happened, as you would with a friend who was there. Then, if you like, write. The first question is this: What did you feel during this prayer, and did any of it seem real to you? You have about two and a half minutes, and the question will be on the screen.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Joins the conversation with Jesus to the first question so the review stays prayerful and within time.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-26.mp3",
+       "seconds": 26.1
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Review of prayer",
+     "text": "",
+     "seconds": 150,
+     "question": "What did you feel in this prayer, and did it seem real to you?",
+     "prompts": [
+      "During the prayer I felt…",
+      "When God held me, I…",
+      "I did, or didn't, sense a connection with my Creator because…",
+      "Talking with Jesus about it, I said…"
+     ],
+     "why": "Two and a half minutes allows a short word with Jesus and two or three honest sentences."
+    },
+    {
+     "kind": "speak",
+     "step": "Review of prayer",
+     "text": "Now the second question. What did you see in your imagination, what did you think, and what do you long for from this kind of prayer? If you were disappointed, or nothing much seemed to happen, write that honestly too. It belongs to your prayer as much as anything else. You have about two and a half minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Explicitly welcomes disappointment so the person can notice desolation without shame.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-28.mp3",
+       "seconds": 19.4
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Review of prayer",
+     "text": "",
+     "seconds": 150,
+     "question": "What did you see, what did you think, and what do you long for from this prayer?",
+     "prompts": [
+      "In my imagination I saw…",
+      "What I kept thinking was…",
+      "What I long for in prayer like this is…",
+      "I was disappointed that…"
+     ],
+     "why": "Enough time to describe the scene and name a longing, the seed of the next prayer."
+    },
+    {
+     "kind": "speak",
+     "step": "Review of prayer",
+     "text": "One last question. Were there distractions? When did they come, what were they, and how did you handle them? Everyone's prayer has distractions, and simply noticing them helps. You have two minutes.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Normalizes distraction before asking about it, keeping the tone free of judgment.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-30.mp3",
+       "seconds": 13.0
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Review of prayer",
+     "text": "",
+     "seconds": 120,
+     "question": "Were there distractions? When, from what, and how did you handle them?",
+     "prompts": [
+      "I got distracted when…",
+      "My mind went to…",
+      "I came back by…"
+     ],
+     "why": "A shorter pause since this question is usually quick to answer."
+    },
+    {
+     "kind": "speak",
+     "step": "Close",
+     "text": "Thank you for praying today. Whatever you saw or didn't see, what God said is still true: you are God's beloved child, and God longed for you to be born. Carry that with you into the rest of your day, or into your rest tonight. Amen.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "A brief thanksgiving that hands back God's words as the one thing to carry, whatever the prayer felt like.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/birth-32.mp3",
+       "seconds": 16.7
+      }
+     }
+    }
+   ],
+   "voices": {
+    "standard": "Ava, Microsoft (free)"
+   }
   }
  ],
  "model": "anthropic/claude-opus-5.5",
@@ -1287,7 +2217,9 @@
  },
  "script_usd": {
   "dossier": 0.1823,
-  "examen": 0.1377
+  "examen": 0.1377,
+  "my-dossier": 0.2171,
+  "birth": 0.194
  },
  "recordings": [
   {
@@ -1297,6 +2229,10 @@
   {
    "characters": 12054,
    "elevenlabs_credits_used": 2044
+  },
+  {
+   "characters": 22021,
+   "elevenlabs_credits_used": 0
   }
  ]
 }

@@ -143,7 +143,7 @@ async function makeMyExamen() {
 
 
 // ---------------------------------------------------------------- the Examen's stage
-// While the Examen plays, a quiet picture to rest the eyes on: a painting for each step,
+// While the Examen (or the Meditation on My Birth) plays, a quiet picture to rest the eyes on: a painting for each step,
 // drifting slowly, with a candle; or just the candle; or nothing ("practice.picture").
 
 const EXAMEN_ART = {
@@ -154,8 +154,16 @@ const EXAMEN_ART = {
   Tomorrow: { src: "practice/art/tomorrow.jpg", caption: "Caspar David Friedrich, Moonrise over the Sea, 1822", focus: "50% 40%" },
   Close: { src: "practice/art/close.jpg", caption: "Vincent van Gogh, The Starry Night, 1889", focus: "60% 40%" },
 };
+// The Meditation on My Birth rests on one painting: a mother and her newborn by candlelight.
+const NEWBORN = { src: "practice/art/newborn.jpg", caption: "Georges de La Tour, The Newborn, 1640s", focus: "45% 50%" };
+const SESSION_ART = { birth: { Settling: EXAMEN_ART.Presence, default: NEWBORN } };
 const PICTURES = { painting: "Painting and candle", candle: "Candle only", none: "No picture" };
-const hasStage = (session) => /examen/.test(session.id);
+const hasStage = (session) => /examen/.test(session.id) || session.id in SESSION_ART;
+
+function stageArt(session, step) {
+  const own = SESSION_ART[session.id];
+  return own ? own[step] || own.default : EXAMEN_ART[step] || EXAMEN_ART.Presence;
+}
 
 function candleSvg() {
   const wrap = el("div", { class: "candle", "aria-hidden": "true" });
@@ -185,7 +193,7 @@ function showStage(seg) {
   stage.hidden = false;
   stage.className = `practice-stage mode-${mode} ${seg.kind === "journal" ? "compact" : ""}`;
   if (!stage.querySelector(".candle")) stage.append(candleSvg());
-  const art = EXAMEN_ART[seg.step] || EXAMEN_ART.Presence;
+  const art = stageArt(practiceRun.session, seg.step);
   const current = stage.querySelector(".stage-art"); // the newest (each is prepended)
   if (mode === "painting" && current?.dataset.src !== art.src) {
     // The whole painting, never cropped, over a soft blurred copy that fills the frame.

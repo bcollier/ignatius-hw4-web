@@ -10,6 +10,7 @@ async function openMe() {
     store.set("debug", e.target.checked || null);
     document.documentElement.classList.toggle("debug", debugMode());
     $("costs-link").hidden = !debugMode();
+    $("debug-badge").hidden = !debugMode();
   };
   try {
     renderMe(await api("/api/profile"));
