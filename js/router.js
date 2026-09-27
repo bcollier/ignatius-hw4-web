@@ -21,6 +21,7 @@ window.addEventListener("popstate", () => route());
 
 const VIEWS = ["signin", "library", "new", "retreat", "research", "talk", "me", "about", "costs", "practice"];
 function show(view) {
+  if (typeof hideWaking === "function") hideWaking();
   const swap = () => {
     for (const v of VIEWS) $(`view-${v}`).hidden = v !== view;
     window.scrollTo(0, 0);
@@ -69,6 +70,34 @@ async function sendSignInLink(event) {
   $("signin-note").textContent = limited
     ? "Too many sign-in emails have gone out in the last hour, so no more can be sent just now. Try again in a little while, or try it without an account below."
     : error ? `Couldn't send the link: ${error.message}` : `Check ${email} for a sign-in link, and open it on the device you want to use.`;
+}
+
+// Sign-in links open in Safari, but an app added to the Home Screen keeps its own
+// storage, so there the person pastes the link instead: the link's token is checked here.
+async function signInWithPastedLink(event) {
+  event.preventDefault();
+  const note = $("paste-link-note");
+  const text = $("paste-link").value.trim();
+  let url;
+  try {
+    url = new URL(text);
+  } catch {
+    note.textContent = "That doesn't look like a link. In the email, press and hold the sign-in link, choose Copy Link, and paste it here.";
+    return;
+  }
+  const hash = new URLSearchParams(url.hash.slice(1));
+  const token = url.searchParams.get("token_hash") || url.searchParams.get("token");
+  let error;
+  if (hash.get("access_token")) {
+    ({ error } = await sb.auth.setSession({ access_token: hash.get("access_token"), refresh_token: hash.get("refresh_token") }));
+  } else if (token) {
+    ({ error } = await sb.auth.verifyOtp({ token_hash: token, type: url.searchParams.get("type") || "magiclink" }));
+  } else {
+    error = { message: "that link has no sign-in code in it" };
+  }
+  note.textContent = error
+    ? `Couldn't sign in: ${error.message}. A link works once and expires after an hour; if it's been used or is old, send a new one.`
+    : "Signed in.";
 }
 
 async function signedInAs(newSession) {

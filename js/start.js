@@ -28,6 +28,7 @@ function wireForms() {
 
 function wireSignIn() {
   $("signin-form").addEventListener("submit", sendSignInLink);
+  $("paste-link-form").addEventListener("submit", signInWithPastedLink);
   $("upgrade-form").addEventListener("submit", upgradeGuest);
   $("guest-button").onclick = async () => {
     $("guest-button").disabled = true;
@@ -102,13 +103,61 @@ function wireAboutMeAndTalk() {
   });
 }
 
+let wakingTimer = null;
+let wakingClock = null;
+const WAKING_PHRASES = [
+  "The candles are being lit…",
+  "The sacristan is finding the keys…",
+  "The server is finishing its morning prayer…",
+  "Ringing the bell for the server to come in from the garden…",
+  "Brother Server is putting on his sandals…",
+  "Warming up the chapel…",
+  "The monks are shuffling in for vespers…",
+  "Dusting off the hymnals…",
+  "Trimming the lamp wicks…",
+  "Our server was resting in the Lord. It's getting up now…",
+];
+
+function showWaking() {
+  $("waking-phrase").textContent = WAKING_PHRASES[Math.floor(Math.random() * WAKING_PHRASES.length)];
+  $("waking").hidden = false;
+  const began = Date.now();
+  const tick = () => {
+    const seconds = Math.round((Date.now() - began) / 1000) + 1;
+    $("waking-time").textContent = `Waiting ${seconds} second${seconds === 1 ? "" : "s"}`;
+    // four seconds in, six seconds out, as the circle grows and shrinks
+    $("breath-cue").textContent = ((Date.now() - began) % 10000) < 4000 ? "Breathe in" : "Breathe out";
+  };
+  tick();
+  wakingClock = setInterval(tick, 250);
+}
+
+function hideWaking() {
+  clearTimeout(wakingTimer);
+  clearInterval(wakingClock);
+  $("waking").hidden = true;
+}
+
 async function start() {
   if (typeof wirePractice === "function") wirePractice();
   drawIcons();
   setPlayIcon(false);
   readDebugFlag();
   document.documentElement.classList.toggle("debug", debugMode());
-  if (!(await checkServer())) return;
+  // The server sleeps after a quiet spell and can take up to a minute to wake. Say so
+  // rather than leave the page blank, and start from the last known options if there
+  // are any (the sign-in settings rarely change), checking the server alongside.
+  clearTimeout(wakingTimer);
+  wakingTimer = setTimeout(showWaking, 1200);
+  const cached = store.get("options.cache");
+  if (cached) {
+    options = cached;
+    checkServer().then((ok) => ok && store.set("options.cache", options));
+  } else if (await checkServer()) {
+    store.set("options.cache", options);
+  } else {
+    return hideWaking();
+  }
   if (options.auth) {
     sb = window.supabase.createClient(options.auth.url, options.auth.publishable_key);
     const { data } = await sb.auth.getSession(); // also reads a token from a sign-in link

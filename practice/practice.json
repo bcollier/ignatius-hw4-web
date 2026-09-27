@@ -225,7 +225,11 @@
      "prompts": [],
      "why": "A final short silence keeps the practice from ending abruptly."
     }
-   ]
+   ],
+   "voices": {
+    "standard": "Ava, Microsoft (free)",
+    "deluxe": "Sarah, ElevenLabs"
+   }
   },
   {
    "id": "weekly",
@@ -409,7 +413,11 @@
      "prompts": [],
      "why": "A final short stillness lets the review settle before the person returns to their day."
     }
-   ]
+   ],
+   "voices": {
+    "standard": "Ava, Microsoft (free)",
+    "deluxe": "Sarah, ElevenLabs"
+   }
   },
   {
    "id": "dossier",
@@ -782,7 +790,489 @@
       }
      }
     }
-   ]
+   ],
+   "voices": {
+    "standard": "Ava, Microsoft (free)",
+    "deluxe": "Sarah, ElevenLabs"
+   }
+  },
+  {
+   "id": "examen",
+   "title": "The Examen",
+   "summary": "A gentle fifteen-minute end-of-day prayer in the way of Saint Ignatius, looking back over the day with God to see where love was given, where it was received, and what grace to ask for tomorrow.",
+   "segments": [
+    {
+     "kind": "speak",
+     "step": "Presence",
+     "text": "Good evening. The day is nearly over, and you have come to rest in it for a little while. You can lie down or sit, whichever is kindest to you tonight. Let your eyes close if you like. There is nothing to achieve here. This is a short prayer from Saint Ignatius, called the Examen, and it is simply a way of looking back over the day with God, not to deliver a verdict, but to notice.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "A soft welcome that lowers the stakes for a tired listener and frames the Examen as noticing rather than judging.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-01.mp3",
+       "seconds": 26.5
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-01.mp3",
+       "seconds": 23.4
+      }
+     }
+    },
+    {
+     "kind": "speak",
+     "step": "Presence",
+     "text": "Let us begin with a few slow breaths. Feel the weight of your body, wherever it is resting. Notice whatever you are carrying, tiredness, worry, relief, and you don't need to fix any of it. Just breathe.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Brief bodily cue before the first silence so the pause has something gentle to do.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-02.mp3",
+       "seconds": 15.5
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-02.mp3",
+       "seconds": 13.1
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Presence",
+     "text": "",
+     "seconds": 30,
+     "question": "Breathe slowly, and let the day settle",
+     "prompts": [],
+     "why": "Thirty seconds allows four or five slow breaths without drifting toward sleep."
+    },
+    {
+     "kind": "speak",
+     "step": "Presence",
+     "text": "You are not alone in this looking back. God has been with you through every hour of today, and already knows all of it. So we ask for help to see. Pray with me quietly. God, you have been with me throughout this day. Help me become aware of you now, and let me see this day as you see it.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The Examen begins with grace, not introspection, so the petition comes before any reviewing.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-04.mp3",
+       "seconds": 21.1
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-04.mp3",
+       "seconds": 18.7
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Presence",
+     "text": "",
+     "seconds": 15,
+     "question": "Rest in God's presence",
+     "prompts": [],
+     "why": "A short rest lets the prayer land before moving on."
+    },
+    {
+     "kind": "speak",
+     "step": "Gratitude",
+     "text": "Before anything else, we look for what was given. It might be something large, or something very ordinary. A good conversation. A cup of tea. Someone who made you laugh. A moment outside, a piece of music, your body carrying you through. If today was hard, you don't have to pretend otherwise. Simply ask, what was given to me today? And let whatever comes, come.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Gratitude comes early because life is received as gift; the concrete examples help a tired mind find something quickly.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-06.mp3",
+       "seconds": 29.8
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-06.mp3",
+       "seconds": 23.5
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Gratitude",
+     "text": "",
+     "seconds": 50,
+     "question": "What was given to me today?",
+     "prompts": [],
+     "why": "Fifty seconds gives time for two or three gifts to surface and be savoured."
+    },
+    {
+     "kind": "speak",
+     "step": "Review",
+     "text": "Now we walk back through the day together, gently, as if watching a recording. You don't need to examine every minute. Look for the moments that carry some feeling: irritation, a sudden peace, anxiety, hope, loneliness, tenderness. Your feelings and desires are telling you something. Saint Ignatius spoke of consolation and desolation. Consolation isn't just feeling good. It is whatever moves you toward faith, hope and love, toward courage and connection, even something hard, like an awkward apology. Desolation isn't just feeling bad. It is whatever pulls you inward, toward fear, resentment, numbness, even something pleasant that left you empty. For now, just notice, before you judge.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The heart of the Examen, so consolation and desolation are explained here, briefly and in plain words, before the replay begins.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-08.mp3",
+       "seconds": 50.2
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-08.mp3",
+       "seconds": 44.6
+      }
+     }
+    },
+    {
+     "kind": "speak",
+     "step": "Review",
+     "text": "Go back to this morning. Waking up. The first thoughts of the day. Breakfast, getting ready, getting out of the door. What was happening in you?",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Short, concrete cues guide the replay through an ordinary day without crowding it.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-09.mp3",
+       "seconds": 12.5
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-09.mp3",
+       "seconds": 9.1
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Review",
+     "text": "",
+     "seconds": 40,
+     "question": "This morning: what was stirring in me?",
+     "prompts": [],
+     "why": "Forty seconds per part of the day keeps the replay moving while allowing a moment to be revisited."
+    },
+    {
+     "kind": "speak",
+     "step": "Review",
+     "text": "Now the middle of the day. Work, or study, or the tasks of home. The people you spoke to. Lunch. Was there a moment that lifted you, or one that weighed on you?",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Naming common midday moments helps the listener locate real memories quickly.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-11.mp3",
+       "seconds": 13.8
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-11.mp3",
+       "seconds": 9.5
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Review",
+     "text": "",
+     "seconds": 40,
+     "question": "The middle of the day: what lifted me, what weighed on me?",
+     "prompts": [],
+     "why": "Matches the rhythm of the morning pause so the replay feels steady."
+    },
+    {
+     "kind": "speak",
+     "step": "Review",
+     "text": "And the afternoon and the evening, right up to now, lying here. Where did you feel most alive? Where did you close yourself off?",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Bringing the replay up to the present moment grounds it and introduces the key contrasting questions.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-13.mp3",
+       "seconds": 9.9
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-13.mp3",
+       "seconds": 8.0
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Review",
+     "text": "",
+     "seconds": 40,
+     "question": "The afternoon and evening, until now",
+     "prompts": [],
+     "why": "Completes the replay with equal time for the last part of the day."
+    },
+    {
+     "kind": "speak",
+     "step": "Review",
+     "text": "Now choose one moment that stands out, whichever one seems to ask for attention, and stay with it. What were you wanting then? Where did it lead you, toward peace or toward restlessness? Did God feel near, or far away? Just let it be seen.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Ignatius returns to where there was movement, so the listener dwells on one moment rather than skimming many.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-15.mp3",
+       "seconds": 18.5
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-15.mp3",
+       "seconds": 16.0
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Review",
+     "text": "",
+     "seconds": 45,
+     "question": "Stay with one moment, and let it be seen",
+     "prompts": [],
+     "why": "The longest review silence, since staying with one moment is where the real noticing happens."
+    },
+    {
+     "kind": "speak",
+     "step": "Review",
+     "text": "If you'd like to, you can write a line or two now, about the moment you are most grateful for today, and the moment you are least grateful for. The question will be on the screen, and you have about a minute and a quarter. Writing is entirely optional. It is just as good to keep your eyes closed and hold those two moments before God. A soft sound will end the pause.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "An optional short journal pause gathers the review into the simple two-moment variation, with clear permission not to write.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-17.mp3",
+       "seconds": 24.0
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-17.mp3",
+       "seconds": 22.0
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Review",
+     "text": "",
+     "seconds": 75,
+     "question": "For what moment today am I most grateful, and least grateful?",
+     "prompts": [
+      "The moment I'm most grateful for was...",
+      "The moment I'd rather forget was...",
+      "What I noticed in me then..."
+     ],
+     "why": "Seventy-five seconds is enough for two short sentences on a phone, and not so long that eyes-closed listeners feel stranded."
+    },
+    {
+     "kind": "speak",
+     "step": "Forgiveness",
+     "text": "Now, gently, is there something from today you regret? Perhaps impatience, a sharp word, someone you ignored, a resentment you fed. Bring that one thing before God, honestly, but without beating yourself up. You might say, I see what I did. I see how it hurt. I am sorry. Forgive me.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "One particular thing, named plainly, keeps this honest without turning it into self-loathing.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-19.mp3",
+       "seconds": 23.8
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-19.mp3",
+       "seconds": 20.4
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Forgiveness",
+     "text": "",
+     "seconds": 40,
+     "question": "Bring it before God, and ask forgiveness",
+     "prompts": [],
+     "why": "Forty seconds for a sincere, private word of sorrow."
+    },
+    {
+     "kind": "speak",
+     "step": "Forgiveness",
+     "text": "And ask, underneath it, what was I actually seeking? Sometimes there is fear under anger, or a longing to feel valued under envy, or fear of failing under putting things off. This does not excuse anything. But it can show you something that guilt alone never would. Ask God to help you understand.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The question of the deeper desire links the Examen to discernment and moves beyond mere guilt.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-21.mp3",
+       "seconds": 21.0
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-21.mp3",
+       "seconds": 19.3
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Forgiveness",
+     "text": "",
+     "seconds": 30,
+     "question": "What was I really seeking?",
+     "prompts": [],
+     "why": "A shorter pause, because insight here often comes as a glimpse rather than an answer."
+    },
+    {
+     "kind": "speak",
+     "step": "Forgiveness",
+     "text": "And if there was something good today, a patience you didn't expect of yourself, a kindness that came easily, receive it too. Not as a trophy, but as grace. Simply say thank you.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Receiving the good as gift balances the review and guards against both pride and scrupulosity.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-23.mp3",
+       "seconds": 13.2
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-23.mp3",
+       "seconds": 11.5
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Forgiveness",
+     "text": "",
+     "seconds": 15,
+     "question": "Receive the good as grace",
+     "prompts": [],
+     "why": "A brief breath of thanksgiving before turning toward tomorrow."
+    },
+    {
+     "kind": "speak",
+     "step": "Tomorrow",
+     "text": "Now look ahead to tomorrow. What is actually coming? A meeting, a difficult conversation, family, a decision, a worry you already know will visit. Given what you have seen tonight, what grace will you need? Make it concrete. Not, make me better, but something like, when I talk to that person, help me listen instead of trying to win. Or simply, give me patience.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "Concrete examples help the listener name a specific, usable grace rather than a vague resolution.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-25.mp3",
+       "seconds": 27.6
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-25.mp3",
+       "seconds": 23.1
+      }
+     }
+    },
+    {
+     "kind": "silence",
+     "step": "Tomorrow",
+     "text": "",
+     "seconds": 25,
+     "question": "What is coming tomorrow?",
+     "prompts": [],
+     "why": "A short pause to picture tomorrow before naming the grace."
+    },
+    {
+     "kind": "speak",
+     "step": "Tomorrow",
+     "text": "If you'd like to, write down the grace you are asking for tomorrow, so it is there for you in the morning. The question will be on the screen, and you have about a minute and a half. Again, writing is optional. You can simply stay with your eyes closed and ask for it. A soft sound will end the pause.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The one main journal pause is kept for tomorrow's grace, because having it written down helps in the morning.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-27.mp3",
+       "seconds": 20.0
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-27.mp3",
+       "seconds": 17.3
+      }
+     }
+    },
+    {
+     "kind": "journal",
+     "step": "Tomorrow",
+     "text": "",
+     "seconds": 90,
+     "question": "What grace do I need for tomorrow?",
+     "prompts": [
+      "Tomorrow I will face...",
+      "Lord, when that happens, help me...",
+      "The grace I ask for is..."
+     ],
+     "why": "Ninety seconds is enough to write one honest sentence, even when tired."
+    },
+    {
+     "kind": "speak",
+     "step": "Close",
+     "text": "Now we place tomorrow, and everything in today, into God's hands. Let us pray slowly together the prayer Jesus gave us.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "A short entrusting line leads naturally into the traditional ending of the Examen.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-29.mp3",
+       "seconds": 9.2
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-29.mp3",
+       "seconds": 7.7
+      }
+     }
+    },
+    {
+     "kind": "speak",
+     "step": "Close",
+     "text": "Our Father, who art in heaven, hallowed be thy name. Thy kingdom come, thy will be done, on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us. And lead us not into temptation, but deliver us from evil. Amen.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "The traditional English text, broken into short sentences so it can be spoken slowly and prayed along with.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-30.mp3",
+       "seconds": 21.6
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-30.mp3",
+       "seconds": 19.4
+      }
+     }
+    },
+    {
+     "kind": "speak",
+     "step": "Close",
+     "text": "Thank you for this day, and for this time. May God, who has been with you in every hour of it, keep watch over you through the night. Rest now, held and forgiven, and sleep in peace.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "A brief blessing for sleep that ends in stillness, with nothing further to do.",
+     "audio": {
+      "standard": {
+       "file": "practice/standard/examen-31.mp3",
+       "seconds": 13.0
+      },
+      "deluxe": {
+       "file": "practice/deluxe/examen-31.mp3",
+       "seconds": 11.3
+      }
+     }
+    }
+   ],
+   "voices": {
+    "standard": "Ryan, Microsoft (free)",
+    "deluxe": "George, ElevenLabs"
+   }
   }
  ],
  "model": "anthropic/claude-opus-5.5",
@@ -796,12 +1286,17 @@
   "elevenlabs_credits_used": 0
  },
  "script_usd": {
-  "dossier": 0.1823
+  "dossier": 0.1823,
+  "examen": 0.1377
  },
  "recordings": [
   {
    "characters": 7071,
    "elevenlabs_credits_used": 160
+  },
+  {
+   "characters": 12054,
+   "elevenlabs_credits_used": 2044
   }
  ]
 }

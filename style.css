@@ -716,3 +716,44 @@ body.praying { overflow: hidden; }
 .practice-week p { margin: 2px 0 0; white-space: pre-wrap; }
 .practice-controls { display: flex; gap: 10px; justify-content: center; margin: 22px 0 8px; }
 @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.my-examen { margin: 22px 0; display: grid; gap: 10px; }
+.my-examen h2 { margin: 0; }
+.my-examen #my-examen-form { display: grid; gap: 10px; }
+.my-examen textarea { width: 100%; }
+.my-examen .practice-card { background: var(--bg); }
+/* The Examen's stage: a painting drifting slowly, with a candle */
+.practice-stage { position: relative; height: min(46vh, 440px); overflow: hidden; border-radius: 3px; background: #0e0b08; margin-bottom: 6px; box-shadow: 0 18px 40px rgb(20 12 4 / .25); transition: height .8s ease; }
+.practice-stage.compact { height: 150px; }
+.practice-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 2.4s ease; animation: stage-drift 48s ease-in-out infinite alternate; }
+.practice-stage img.shown { opacity: .92; }
+.practice-stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgb(10 6 2 / .55)); }
+@keyframes stage-drift { from { transform: scale(1.02); } to { transform: scale(1.14); } }
+.candle { position: absolute; z-index: 1; left: 50%; bottom: 0; width: 46px; transform: translateX(-50%); filter: drop-shadow(0 0 12px rgb(255 200 120 / .35)); }
+.practice-stage.mode-painting .candle { left: auto; right: 18px; transform: none; width: 34px; }
+.practice-stage.mode-candle .candle { width: 70px; bottom: -20px; }
+.practice-stage.compact.mode-candle .candle { width: 40px; }
+.candle svg { display: block; width: 100%; overflow: visible; }
+.candle .flame { transform-origin: 40px 80px; animation: flicker 2.8s ease-in-out infinite; }
+.candle .flame.core { animation-duration: 3.4s; }
+.candle .glow { transform-origin: 40px 60px; animation: glow 4s ease-in-out infinite; }
+@keyframes flicker { 0%, 100% { transform: scale(1, 1) skewX(0); } 22% { transform: scale(.96, 1.05) skewX(1.5deg); } 48% { transform: scale(1.03, .96) skewX(-1deg); } 71% { transform: scale(.98, 1.03) skewX(.8deg); } }
+@keyframes glow { 0%, 100% { opacity: .85; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+.art-caption { font-style: italic; font-size: .85rem; color: var(--muted); margin: 0 0 14px; }
+.practice-foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+@media (prefers-reduced-motion: reduce) { .practice-stage img, .candle .flame, .candle .glow { animation: none; } }
+.practice-advanced { margin: 14px 0; display: grid; gap: 8px; } .practice-advanced label { display: grid; gap: 4px; max-width: 360px; }
+/* While the server wakes up */
+.waking { min-height: 60vh; display: grid; place-content: center; justify-items: center; text-align: center; gap: 6px; padding: 24px; animation: rise .8s ease both; }
+.waking p { margin: 0; max-width: 34ch; }
+#waking-phrase { font-family: var(--display, var(--serif)); font-size: 1.35rem; }
+.breath-circle { width: 150px; height: 150px; margin-bottom: 18px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display, var(--serif)); font-style: italic; font-size: 1.05rem; color: #6b4a14;
+  background: radial-gradient(circle, #fff4c8 0%, #f3d98f 55%, #e2b85a 100%); box-shadow: 0 0 40px 12px rgb(233 196 120 / .35); animation: breathe 10s ease-in-out infinite; }
+@keyframes breathe { 0% { transform: scale(.62); } 40% { transform: scale(1); } 100% { transform: scale(.62); } }
+.waking-time { font-variant-numeric: tabular-nums; }
+.paste-link { margin-top: 14px; }
+.paste-link summary { cursor: pointer; color: var(--accent, #a32a1c); }
+.topnav a { white-space: nowrap; }
+/* Keep the controls in reach under the painting */
+.practice-stage { height: min(34vh, 440px); }
+.practice-stage:not([hidden]) ~ .practice-body .practice-clock { width: 96px; height: 96px; font-size: 1.5rem; margin: 10px auto; }
+.practice-controls { position: sticky; bottom: 0; z-index: 2; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); margin-bottom: 0; background: linear-gradient(to top, var(--bg) 70%, transparent); }
