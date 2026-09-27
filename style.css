@@ -117,7 +117,7 @@ form { display: grid; gap: 14px; }
 label { display: grid; gap: 5px; font-weight: 500; font-size: 1rem; }
 label.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; }
 label.check input { margin-top: 5px; width: 18px; height: 18px; flex: none; accent-color: var(--rubric); }
-input[type="email"], input[type="text"], input[type="date"], select, textarea {
+input[type="email"], input[type="url"], input[type="text"], input[type="date"], select, textarea {
   font: inherit; font-weight: 400; padding: 10px 12px; border: 1px solid var(--line); border-radius: 2px;
   background: var(--field); color: var(--ink); width: 100%; max-width: 100%; min-height: 44px;
   transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
@@ -765,3 +765,5 @@ body.praying { overflow: hidden; }
 .idea-row label { display: grid; gap: 4px; }
 .idea-photo input { max-width: 100%; }
 .practice-body { padding-bottom: 24px; }
+.paste-step { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); animation: rise .5s ease both; }
+.paste-step h3 { margin: 0 0 4px; }

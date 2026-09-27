@@ -11,13 +11,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=54">
-  <link rel="icon" href="icons/icon-192.png?v=54" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=54">
+  <link rel="manifest" href="manifest.webmanifest?v=56">
+  <link rel="icon" href="icons/icon-192.png?v=56" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=56">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=54">
+  <link rel="stylesheet" href="style.css?v=56">
 </head>
 <body>
   <header class="topbar">
@@ -56,15 +56,16 @@
           <button type="submit" id="signin-button">Email me a sign-in link</button>
         </form>
         <p id="signin-note" class="hint" hidden></p>
-        <details class="paste-link">
-          <summary>Using it from your Home Screen? Paste the link</summary>
-          <p class="hint">On an iPhone, the link in the email opens in Safari, not in the app on your Home Screen. So: in the email, press and hold the sign-in link, choose <strong>Copy Link</strong>, then paste it here.</p>
+        <div id="paste-step" class="paste-step" hidden>
+          <h3>Then paste the link here</h3>
+          <p class="hint">Open the email on this phone, <strong>press and hold</strong> the sign-in link, choose <strong>Copy Link</strong>, and paste it below. (On a computer you can simply click the link instead.)</p>
           <form id="paste-link-form" class="inline-form">
             <input id="paste-link" type="url" placeholder="Paste the sign-in link" aria-label="Sign-in link" required>
-            <button type="submit" class="secondary">Sign in</button>
+            <button type="submit">Sign in</button>
           </form>
           <p id="paste-link-note" class="hint" role="status"></p>
-        </details>
+        </div>
+        <p><button type="button" id="have-link" class="link">Already have a sign-in link? Paste it</button></p>
         <div id="guest-box" class="guest-box" hidden>
           <p class="hint">Just want to try it? A guest session uses free models and free voices, and stays in this browser.</p>
           <button type="button" id="guest-button" class="secondary">Try it without an account</button>
@@ -83,6 +84,8 @@
           <button type="submit">Add my email</button>
         </form>
         <p id="upgrade-note" class="hint" hidden></p>
+        <p id="upgrade-signin" hidden><button type="button" id="upgrade-signin-button" class="secondary">Sign in to that account instead</button></p>
+        <p class="hint"><button type="button" id="guest-signin" class="link">I already have an account: sign in</button></p>
       </div>
 
       <div id="continue" class="today-card" hidden></div>
@@ -735,22 +738,22 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=54"></script>
+  <script src="config.js?v=56"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=54"></script>
-  <script src="js/look.js?v=54"></script>
-  <script src="js/settings.js?v=54"></script>
-  <script src="js/router.js?v=54"></script>
-  <script src="js/library.js?v=54"></script>
-  <script src="js/new-retreat.js?v=54"></script>
-  <script src="js/retreat.js?v=54"></script>
-  <script src="js/build-log.js?v=54"></script>
-  <script src="js/research.js?v=54"></script>
-  <script src="js/pray.js?v=54"></script>
-  <script src="js/about-me.js?v=54"></script>
-  <script src="js/talk.js?v=54"></script>
-  <script src="js/costs.js?v=54"></script>
-  <script src="js/practice.js?v=54"></script>
-  <script src="js/start.js?v=54"></script>
+  <script src="js/core.js?v=56"></script>
+  <script src="js/look.js?v=56"></script>
+  <script src="js/settings.js?v=56"></script>
+  <script src="js/router.js?v=56"></script>
+  <script src="js/library.js?v=56"></script>
+  <script src="js/new-retreat.js?v=56"></script>
+  <script src="js/retreat.js?v=56"></script>
+  <script src="js/build-log.js?v=56"></script>
+  <script src="js/research.js?v=56"></script>
+  <script src="js/pray.js?v=56"></script>
+  <script src="js/about-me.js?v=56"></script>
+  <script src="js/talk.js?v=56"></script>
+  <script src="js/costs.js?v=56"></script>
+  <script src="js/practice.js?v=56"></script>
+  <script src="js/start.js?v=56"></script>
 </body>
 </html>

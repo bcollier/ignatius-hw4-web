@@ -64,7 +64,13 @@ const signedIn = () => authReady && (!sb || !!session);
 
 async function sendSignInLink(event) {
   event.preventDefault();
-  const email = $("email").value.trim();
+  await sendLinkTo($("email").value.trim());
+}
+
+// Step one: email the link. Step two: the box to paste it into, shown straight away,
+// since on an iPhone the link opens in Safari rather than in a Home Screen app.
+async function sendLinkTo(email) {
+  $("email").value = email;
   $("signin-button").disabled = true;
   const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } });
   $("signin-button").disabled = false;
@@ -72,7 +78,14 @@ async function sendSignInLink(event) {
   const limited = error && /rate limit|too many/i.test(error.message);
   $("signin-note").textContent = limited
     ? "Too many sign-in emails have gone out in the last hour, so no more can be sent just now. Try again in a little while, or try it without an account below."
-    : error ? `Couldn't send the link: ${error.message}` : `Check ${email} for a sign-in link, and open it on the device you want to use.`;
+    : error ? `Couldn't send the link: ${error.message}` : `A sign-in link is on its way to ${email}.`;
+  if (!error) showPasteStep();
+}
+
+function showPasteStep() {
+  $("paste-step").hidden = false;
+  $("have-link").hidden = true;
+  $("paste-link").focus({ preventScroll: true });
 }
 
 // Sign-in links open in Safari, but an app added to the Home Screen keeps its own

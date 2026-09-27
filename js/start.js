@@ -29,6 +29,9 @@ function wireForms() {
 function wireSignIn() {
   $("signin-form").addEventListener("submit", sendSignInLink);
   $("paste-link-form").addEventListener("submit", signInWithPastedLink);
+  $("have-link").onclick = showPasteStep;
+  $("upgrade-signin-button").onclick = () => guestToSignIn($("upgrade-email").value.trim());
+  $("guest-signin").onclick = () => guestToSignIn("");
   $("upgrade-form").addEventListener("submit", upgradeGuest);
   $("guest-button").onclick = async () => {
     $("guest-button").disabled = true;
