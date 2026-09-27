@@ -791,3 +791,4 @@ body.praying { overflow: hidden; }
 #view-pray { overflow-x: hidden; }
 /* iPhone browsers zoom into a text box whose text is under 16px, and may stay zoomed. */
 input, select, textarea { font-size: max(16px, 1em); }
+.debug-badge { border: 1px solid currentColor; border-radius: 3px; padding: 0 6px; font-size: .85em; }

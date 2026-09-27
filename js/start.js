@@ -162,6 +162,7 @@ async function start() {
   setPlayIcon(false);
   readDebugFlag();
   document.documentElement.classList.toggle("debug", debugMode());
+  $("debug-badge").hidden = !debugMode();
   // The server sleeps after a quiet spell and can take up to a minute to wake. Say so
   // rather than leave the page blank, and start from the last known options if there
   // are any (the sign-in settings rarely change), checking the server alongside.
