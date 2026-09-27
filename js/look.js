@@ -20,6 +20,7 @@ const ICON_PATHS = {
   both: '<rect x="3.5" y="4" width="17" height="8" rx="1.5"/><path d="M5 15.5h14M5 19h10"/>',
   check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
   upload: '<path d="M4 5h7a3 3 0 013 3v12a2 2 0 00-2-2H4z"/><path d="M20 5h-4a3 3 0 00-3 3"/><path d="M17 12.5v-4M15 10.5l2-2 2 2"/>',
+  talk: '<path d="M6 10v4M10 7v10M14 9v6M18 11v2"/>',
   speaker: '<path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path d="M15.5 9a4 4 0 010 6M18 6.5a7.5 7.5 0 010 11"/>',
   bell: '<path d="M6 16c0-6 2-10 6-10s6 4 6 10l2 2H4z"/><path d="M10 20a2 2 0 004 0"/>',
   fleuron: '<path d="M12 7.5l3.2 4.5-3.2 4.5-3.2-4.5z" fill="currentColor" stroke="none"/><circle cx="5" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.3" fill="currentColor" stroke="none"/>',

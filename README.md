@@ -297,6 +297,8 @@ These are Microsoft's neural voices, reached through the Edge browser's "Read al
 
 ## 8. Talk it over: the live conversation
 
+**Talk now**, the first button on the home page, is the one-tap way in: it opens the conversation on today's retreat and starts it at once (the audio is unlocked by that same tap, which iPhone requires). The companion is told the time where you are when you pressed it and how long ago you last talked, and picks up from there.
+
 A spoken conversation, in real time, about the retreat. The companion knows the retreat's days, which ones you've prayed, listened to or missed, what you noted after praying, what you've told the app about yourself, your past conversations (the recent ones in full, older ones as a summary), how long it has been since you last talked, and the time of day where you are, so it can say "It's late; how was today's prayer?" and mean it. It mostly asks questions, gently probes, helps you notice where God may be at work, and gives very little advice, following how spiritual directors are taught to listen. It is not spiritual direction and says so.
 
 <table>
@@ -391,6 +393,22 @@ By default the app uses **All services, combined**: the three searches go to eve
 Claude is reached through **OpenRouter's Anthropic-compatible endpoint** with the official Anthropic SDK, which keeps Claude's own tools (web search, structured JSON output, prompt caching) while billing to OpenRouter credits. Prices are fetched live from OpenRouter and shown in the model menu with an estimate for the whole retreat.
 
 Every call to every model starts with the same **background**: the Exercises and their weeks, asking for a grace, imaginative contemplation, colloquy, consolation and desolation, the Examen, Annotations 15 and 19, lectio divina (Guigo II, *Verbum Domini*) and how a day is prayed in this app. Then comes what the person has written in About me, with an instruction to let it shape examples and tone without quoting it back.
+
+### Changing how the agents behave
+
+Every prompt the app sends to a model lives in one folder in the backend, **[`app/agent_prompts/`](https://github.com/bcollier/ignatius-hw4-api/tree/main/app/agent_prompts)**. Its [README](https://github.com/bcollier/ignatius-hw4-api/blob/main/app/agent_prompts/README.md) is the index.
+
+| Agent | File | Also editable in the app |
+| --- | --- | --- |
+| The live companion (Talk now, Talk it over) | `companion.md` | Talk it over → "The companion's instructions (advanced)", per account |
+| The reflection for the heart | `heart_companion.md` or `heart_christ.md` (Jesus speaking) | New retreat → Advanced → "The reflection for the heart" |
+| The deep dive (the book study) | `deep_dive.md`, `research.md` | New retreat → Advanced → "The deep dive" |
+| The planner | `plan.md` | New retreat → Advanced → "How the retreat is planned" |
+| The spoken guidance | `guide_lines.md`, `guide_tailor.md` | New retreat → Advanced → "The spoken guidance" |
+| Your own Examen | `my_examen.md` | No |
+| Shared background and house style | `background.md`, `house_style.md` | Shown read only under Advanced |
+
+For each file, the index also says when the agent runs, what it's given and which model runs it. Edits to a file apply to everyone after the next deploy. Edits in the app apply only to that person, or to that retreat.
 
 ---
 

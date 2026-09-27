@@ -73,6 +73,7 @@ function seriesGroups() {
 function renderLibrary() {
   $("library-empty").hidden = library.length > 0;
   renderContinueCard(); // first, so the covers below can avoid its painting
+  renderTalkNow();
   renderExamples();
   renderGroups();
   fillSeriesList();
@@ -84,6 +85,17 @@ const touched = (r) => (r.day_states || []).some((d) => d.started || d.prayed_at
 // The card at the top ("Today"): the one day most worth praying next, with its painting,
 // or else a retreat being made.
 let todayPick = null; // { id, day }: the retreat and day in the Today card
+
+// One tap to talk with the companion about the retreat you're praying: the Talk page
+// opens and the conversation starts at once (the tap also unlocks sound on a phone).
+function renderTalkNow() {
+  $("talk-now-box").hidden = !options?.talk?.enabled;
+  $("talk-now").onclick = () => {
+    unlockTalkAudio();
+    const r = todayPick?.id || library[0]?.id;
+    go(`?talk${r ? `&r=${r}` : ""}&now=1`);
+  };
+}
 
 function renderContinueCard() {
   todayPick = null;

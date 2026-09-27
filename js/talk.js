@@ -6,6 +6,18 @@
 // server, and a free voice, sentence by sentence (see "taking turns" below).
 
 let talkState = null;
+let talkUnlocked = null; // sound unlocked by a tap on "Talk now", used when the conversation starts
+
+// Made during a tap, so a phone lets them play later, after the page has changed.
+function unlockTalkAudio() {
+  try {
+    const player = new Audio("sounds/quiet1_5.mp3");
+    player.play().catch(() => {});
+    talkUnlocked = { player, ctx: new (window.AudioContext || window.webkitAudioContext)() };
+  } catch {
+    talkUnlocked = null;
+  }
+}
 
 // ---------------------------------------------------------------- choosing the voice
 
@@ -146,6 +158,12 @@ async function openTalk(retreatId) {
     : `Free accounts can talk for ${t.free_seconds} seconds a day. Premium accounts can talk for up to ${Math.round(t.max_seconds / 60)} minutes at a time.`;
   resetTalkControls(t, r);
   loadTalkHistory();
+  if (params().has("now")) {  // from "Talk now" on the home page: start straight away
+    const url = new URL(location.href);
+    url.searchParams.delete("now");
+    history.replaceState(null, "", url);
+    $("talk-start").click();
+  }
 }
 
 function talkContextLine(r) {
@@ -232,7 +250,8 @@ async function startTalk(provider, voice, retreatId) {
   $("talk-start").disabled = true;
   try {
     // Made during the tap, so the browser lets it run: it drives the orb (and plays Grok's voice).
-    const audioCtx = new AudioContext(provider === "xai" ? { sampleRate: 24000 } : {});
+    const audioCtx = provider !== "xai" && talkUnlocked?.ctx ? talkUnlocked.ctx : new AudioContext(provider === "xai" ? { sampleRate: 24000 } : {});
+    talkUnlocked = null;
     const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
     talkState = { provider, stream, transcriptParts: [], audioCtx };
     status.textContent = "Connecting…";
@@ -501,10 +520,11 @@ const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 async function startTurns(voice, brain, retreatId) {
   const status = $("talk-status");
-  // Started during the tap, so the phone lets this player speak every reply later.
-  const player = new Audio("sounds/quiet1_5.mp3");
-  player.play().catch(() => {});
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  // Started during the tap (here, or on "Talk now"), so the phone lets this player speak every reply later.
+  const player = talkUnlocked?.player || new Audio("sounds/quiet1_5.mp3");
+  if (!talkUnlocked) player.play().catch(() => {});
+  const audioCtx = talkUnlocked?.ctx || new (window.AudioContext || window.webkitAudioContext)();
+  talkUnlocked = null;
   talkState = { provider: "turns", player, audioCtx, speaking: 0 };
   const t = talkState;
   try {
