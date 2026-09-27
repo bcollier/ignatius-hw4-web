@@ -38,8 +38,8 @@ async function saveMe(event) {
 }
 
 // A Google Doc by its link (on a phone, Google Docs can't be picked as files).
-async function aboutMeFromGoogleDoc(event) {
-  event.preventDefault();
+async function aboutMeFromGoogleDoc() {
+  if (!$("me-gdoc").value.trim()) return showMessage("Paste the Google Doc's link first.");
   $("me-status").textContent = "Reading your Google Doc…";
   try {
     const p = await postJson("/api/profile/google-doc", { link: $("me-gdoc").value.trim() });

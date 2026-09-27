@@ -18,12 +18,14 @@ async function checkServer() {
 // Buttons and forms that exist from the start, grouped by view. (Views that draw
 // their own buttons wire them as they draw.)
 function wireForms() {
-  wireSignIn();
-  wireNewRetreat();
-  wireRetreatPage();
-  wireAboutMeAndTalk();
-  wireCompanionPrompt();
-  wirePlayer();
+  // Each group on its own, so one missing element can't stop the app from starting.
+  for (const wire of [wireSignIn, wireNewRetreat, wireRetreatPage, wireAboutMeAndTalk, wireCompanionPrompt, wirePlayer]) {
+    try {
+      wire();
+    } catch (err) {
+      console.error(`couldn't wire ${wire.name}:`, err);
+    }
+  }
 }
 
 function wireSignIn() {
@@ -96,7 +98,7 @@ function wireRetreatPage() {
 function wireAboutMeAndTalk() {
   $("me-form").addEventListener("submit", saveMe);
   $("me-file").onchange = uploadMe;
-  $("me-gdoc-form").addEventListener("submit", aboutMeFromGoogleDoc);
+  $("me-gdoc-button").onclick = aboutMeFromGoogleDoc;
   const forget = $("talk-forget");
   confirmTwice(forget, "Click again to forget everything", async () => {
     await api("/api/talk/history", { method: "DELETE" });
@@ -143,7 +145,11 @@ function hideWaking() {
 }
 
 async function start() {
-  if (typeof wirePractice === "function") wirePractice();
+  try {
+    if (typeof wirePractice === "function") wirePractice();
+  } catch (err) {
+    console.error("couldn't wire the practice page:", err);
+  }
   drawIcons();
   setPlayIcon(false);
   readDebugFlag();

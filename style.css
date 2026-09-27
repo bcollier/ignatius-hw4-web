@@ -746,7 +746,9 @@ body.praying { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .stage-painting, .candle .flame, .candle .glow { animation: none; } }
 .practice-advanced { margin: 14px 0; display: grid; gap: 8px; } .practice-advanced label { display: grid; gap: 4px; max-width: 360px; }
 /* While the server wakes up */
-.waking { min-height: 60vh; display: grid; place-content: center; justify-items: center; text-align: center; gap: 6px; padding: 24px; animation: rise .8s ease both; }
+.waking { min-height: 60vh; display: grid; place-content: center; justify-items: center; text-align: center; gap: 6px; padding: 24px; animation: waking-in .8s ease 1.2s both; }
+@keyframes waking-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.waking-stuck { opacity: 0; animation: waking-in .8s ease 20s both; }
 .waking p { margin: 0; max-width: 34ch; }
 #waking-phrase { font-family: var(--display, var(--serif)); font-size: 1.35rem; }
 .breath-circle { width: 150px; height: 150px; margin-bottom: 18px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display, var(--serif)); font-style: italic; font-size: 1.05rem; color: #6b4a14;
@@ -768,3 +770,6 @@ body.praying { overflow: hidden; }
 .paste-step { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); animation: rise .5s ease both; }
 .paste-step h3 { margin: 0 0 4px; }
 .me-gdoc { margin: 10px 0 16px; } .me-gdoc label { flex-basis: 100%; }
+/* The live "what's happening now" line while a retreat is made */
+.build-now { margin: 10px 0 2px; font-family: var(--display, var(--serif)); font-style: italic; font-size: 1.2rem; min-height: 1.5em; }
+.build-now.changed { animation: rise .6s ease both; }

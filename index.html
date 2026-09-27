@@ -11,13 +11,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=57">
-  <link rel="icon" href="icons/icon-192.png?v=57" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=57">
+  <link rel="manifest" href="manifest.webmanifest?v=60">
+  <link rel="icon" href="icons/icon-192.png?v=60" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=60">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=57">
+  <link rel="stylesheet" href="style.css?v=60">
 </head>
 <body>
   <header class="topbar">
@@ -36,11 +36,13 @@
   <p id="message" class="banner bad" role="alert" hidden></p>
 
   <main>
-    <div id="waking" class="waking" role="status" hidden>
+    <!-- Shown from the first moment (no script needed), so a slow start is never a blank page. -->
+    <div id="waking" class="waking" role="status">
       <div class="breath-circle" aria-hidden="true"><span id="breath-cue">Breathe in</span></div>
       <p id="waking-phrase">The candles are being lit…</p>
       <p class="hint">Ignatius runs on modest hardware that rests when no one is praying, and takes a moment to warm back up (up to a minute). While you wait, breathe slowly, low in your belly.</p>
       <p class="hint waking-time" id="waking-time"></p>
+      <p class="hint waking-stuck">Still loading? Close the app and open it again.</p>
     </div>
     <!-- ============================================================ sign in -->
     <section id="view-signin" class="view" hidden>
@@ -311,6 +313,7 @@
         <h2 id="progress-title">Making your retreat</h2>
         <p id="progress-lede" class="hint"></p>
         <div id="build-bar" class="build-bar" role="progressbar" aria-label="How far along the retreat is" aria-valuemin="0" aria-valuemax="100"></div>
+        <p id="build-now" class="build-now" aria-live="polite"></p>
         <p id="build-step" class="build-step"></p>
         <ol id="progress-days" class="progress-days"></ol>
         <p class="hint">It's fine to close this page; your retreat keeps being made and will be here when you come back.</p>
@@ -418,11 +421,11 @@
           <span class="drop-title">Or upload a text, Word or PDF file about yourself</span>
           <span class="hint">It replaces what's above. Long documents are condensed to about 6,000 characters.</span>
         </label>
-        <form id="me-gdoc-form" class="inline-form me-gdoc">
+        <div id="me-gdoc-form" class="inline-form me-gdoc"> <!-- not a <form>: it sits inside the About me form -->
           <label for="me-gdoc" class="meta">Or a Google Doc: in Google Docs choose Share, set it to "Anyone with the link can view", copy the link and paste it here.</label>
-          <input id="me-gdoc" type="url" placeholder="https://docs.google.com/document/d/…" required aria-label="Google Doc link">
-          <button type="submit" class="secondary">Use this Google Doc</button>
-        </form>
+          <input id="me-gdoc" type="url" placeholder="https://docs.google.com/document/d/…" aria-label="Google Doc link">
+          <button type="button" id="me-gdoc-button" class="secondary">Use this Google Doc</button>
+        </div>
         <label>What I'm looking for in the conversation companion
           <textarea id="me-notes" rows="5" spellcheck="true" placeholder="For example: ask me about my family; help me notice consolation; don't give advice unless I ask; keep it short."></textarea>
         </label>
@@ -742,23 +745,23 @@
     </form>
   </dialog>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=57"></script>
+  <script src="vendor/supabase.js?v=2.117.2"></script> <!-- supabase-js 2.117.2, served with the app -->
+  <script src="config.js?v=60"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=57"></script>
-  <script src="js/look.js?v=57"></script>
-  <script src="js/settings.js?v=57"></script>
-  <script src="js/router.js?v=57"></script>
-  <script src="js/library.js?v=57"></script>
-  <script src="js/new-retreat.js?v=57"></script>
-  <script src="js/retreat.js?v=57"></script>
-  <script src="js/build-log.js?v=57"></script>
-  <script src="js/research.js?v=57"></script>
-  <script src="js/pray.js?v=57"></script>
-  <script src="js/about-me.js?v=57"></script>
-  <script src="js/talk.js?v=57"></script>
-  <script src="js/costs.js?v=57"></script>
-  <script src="js/practice.js?v=57"></script>
-  <script src="js/start.js?v=57"></script>
+  <script src="js/core.js?v=60"></script>
+  <script src="js/look.js?v=60"></script>
+  <script src="js/settings.js?v=60"></script>
+  <script src="js/router.js?v=60"></script>
+  <script src="js/library.js?v=60"></script>
+  <script src="js/new-retreat.js?v=60"></script>
+  <script src="js/retreat.js?v=60"></script>
+  <script src="js/build-log.js?v=60"></script>
+  <script src="js/research.js?v=60"></script>
+  <script src="js/pray.js?v=60"></script>
+  <script src="js/about-me.js?v=60"></script>
+  <script src="js/talk.js?v=60"></script>
+  <script src="js/costs.js?v=60"></script>
+  <script src="js/practice.js?v=60"></script>
+  <script src="js/start.js?v=60"></script>
 </body>
 </html>

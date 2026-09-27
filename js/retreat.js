@@ -556,7 +556,42 @@ function drawBuildBar(bar, segments) {
   });
 }
 
+// What's happening right now, in a line: the server's live activity ("Planning day 4:
+// The Lost Sheep", "Day 2: turning the deep dive into voice"). While a model plans in one
+// long reply that can't be followed, the stages of planning take turns instead.
+const PLANNING_STAGES = [
+  "Reading your document",
+  "Finding where each day begins",
+  "Copying each day's passage, word for word",
+  "Choosing a grace to ask for on each day",
+  "Finding a focus for each day's prayer",
+  "Matching the paintings to the days",
+  "Writing a short summary of the retreat",
+];
+const GENERIC_PLANNING = /^(Reading your document|Deciding how the days will go)$/;
+
+function buildNowLine(r) {
+  const a = r.activity;
+  const fresh = a && Date.now() / 1000 - a.at < 120;
+  if (r.status === "planning" && (!fresh || GENERIC_PLANNING.test(a.text))) {
+    const turn = Math.floor((Date.now() / 1000 - (r.created_at || 0)) / 7);
+    return PLANNING_STAGES[turn % PLANNING_STAGES.length] + "…";
+  }
+  return fresh ? `${a.text}…` : "";
+}
+
+function renderBuildNow() {
+  const line = $("build-now");
+  const text = buildNowLine(retreat);
+  if (line.textContent === text) return;
+  line.textContent = text;
+  line.classList.remove("changed");
+  void line.offsetWidth; // restart the fade
+  line.classList.add("changed");
+}
+
 function renderBuildBar() {
+  renderBuildNow();
   const p = buildProgressOf(retreat);
   drawBuildBar($("build-bar"), p.segments);
   $("build-bar").setAttribute("aria-valuenow", String(p.percent));
