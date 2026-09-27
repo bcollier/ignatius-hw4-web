@@ -84,15 +84,15 @@ async function sendLinkTo(email) {
   if (!error) showPasteStep();
 }
 
-// Step two: in a Home Screen app, the code from Safari (the link opens there); in a
-// browser, just click the link. Pasting the link stays as a fallback either way.
+// Step two: the six-digit code from the email, on any device (a Home Screen app never
+// receives the email's link; elsewhere clicking the link works too). Pasting the link
+// stays as a last resort, folded away.
 function showPasteStep() {
-  const homeScreen = inHomeScreenApp();
   $("paste-step").hidden = false;
   $("have-link").hidden = true;
-  $("code-step").hidden = !homeScreen && !isIPhone();
-  $("link-step-note").hidden = homeScreen || isIPhone();
-  if (!$("code-step").hidden) $("signin-code").focus({ preventScroll: true });
+  $("code-step").hidden = false;
+  $("link-step-note").hidden = true;
+  $("signin-code").focus({ preventScroll: true });
 }
 
 const isIPhone = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);

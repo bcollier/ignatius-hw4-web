@@ -63,13 +63,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=66">
-  <link rel="icon" href="icons/icon-192.png?v=66" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=66">
+  <link rel="manifest" href="manifest.webmanifest?v=67">
+  <link rel="icon" href="icons/icon-192.png?v=67" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=67">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=66">
+  <link rel="stylesheet" href="style.css?v=67">
 </head>
 <body>
   <header class="topbar">
@@ -113,8 +113,8 @@
         <p id="signin-note" class="hint" hidden></p>
         <div id="paste-step" class="paste-step" hidden>
           <div id="code-step">
-            <h3>Then enter the code</h3>
-            <p class="hint">On an iPhone, the link in the email opens in your browser, not in this app, so type a code here instead: the <strong>6-digit code</strong> in the email, or, if the email has no code, <strong>tap the link</strong>, and type the <strong>8-digit code</strong> your browser (Safari or Chrome) then shows.</p>
+            <h3>Then enter the code from the email</h3>
+            <p class="hint">Type the <strong>6-digit code</strong> from the email here, or just click the link in the email. (In an app on an iPhone's Home Screen, use the code: the link opens in the browser instead.)</p>
             <form id="code-form" class="inline-form">
               <input id="signin-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="9" placeholder="Code" aria-label="Sign-in code" required>
               <button type="submit">Sign in</button>
@@ -123,7 +123,7 @@
           </div>
           <p id="link-step-note" class="hint" hidden>Open the email and click the link; this page signs you in.</p>
           <details class="paste-link">
-            <summary>Or paste the link instead</summary>
+            <summary>Trouble? Paste the link instead</summary>
             <p class="hint">Press and hold the link in the email, choose <strong>Copy Link</strong> (don't open it), and paste it here. A link works only once.</p>
             <form id="paste-link-form" class="inline-form">
               <input id="paste-link" type="url" placeholder="Paste the sign-in link" aria-label="Sign-in link" required>
@@ -821,23 +821,23 @@
   </dialog>
 
   <script src="vendor/supabase.js?v=2.117.2"></script> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=66"></script>
+  <script src="config.js?v=67"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=66"></script>
-  <script src="js/look.js?v=66"></script>
-  <script src="js/settings.js?v=66"></script>
-  <script src="js/router.js?v=66"></script>
-  <script src="js/library.js?v=66"></script>
-  <script src="js/new-retreat.js?v=66"></script>
-  <script src="js/retreat.js?v=66"></script>
-  <script src="js/build-log.js?v=66"></script>
-  <script src="js/research.js?v=66"></script>
-  <script src="js/pray.js?v=66"></script>
-  <script src="js/about-me.js?v=66"></script>
-  <script src="js/talk.js?v=66"></script>
-  <script src="js/costs.js?v=66"></script>
-  <script src="js/practice.js?v=66"></script>
-  <script src="js/quotes.js?v=66"></script>
-  <script src="js/start.js?v=66"></script>
+  <script src="js/core.js?v=67"></script>
+  <script src="js/look.js?v=67"></script>
+  <script src="js/settings.js?v=67"></script>
+  <script src="js/router.js?v=67"></script>
+  <script src="js/library.js?v=67"></script>
+  <script src="js/new-retreat.js?v=67"></script>
+  <script src="js/retreat.js?v=67"></script>
+  <script src="js/build-log.js?v=67"></script>
+  <script src="js/research.js?v=67"></script>
+  <script src="js/pray.js?v=67"></script>
+  <script src="js/about-me.js?v=67"></script>
+  <script src="js/talk.js?v=67"></script>
+  <script src="js/costs.js?v=67"></script>
+  <script src="js/practice.js?v=67"></script>
+  <script src="js/quotes.js?v=67"></script>
+  <script src="js/start.js?v=67"></script>
 </body>
 </html>
