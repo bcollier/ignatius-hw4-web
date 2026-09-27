@@ -21,6 +21,7 @@ window.addEventListener("popstate", () => route());
 
 const VIEWS = ["signin", "library", "new", "retreat", "research", "talk", "me", "about", "costs", "practice"];
 function show(view) {
+  window.__appStarted = true; // for the start-up guard in index.html
   if (typeof hideWaking === "function") hideWaking();
   const swap = () => {
     for (const v of VIEWS) $(`view-${v}`).hidden = v !== view;

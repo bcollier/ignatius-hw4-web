@@ -2,6 +2,58 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script>
+    // Start-up guard, written into the page so it works even when the app's own scripts
+    // fail or are stale: any error while starting is shown with a Reload button and
+    // reported to the server (so it can be fixed), and a page that hasn't started after
+    // eight seconds checks for a newer version and reloads into it.
+    (function () {
+      var local = ["localhost", "127.0.0.1"].indexOf(location.hostname) >= 0;
+      var api = local ? (function () { try { return JSON.parse(localStorage.getItem("apiBase")) || "http://localhost:8000"; } catch (e) { return "http://localhost:8000"; } })()
+        : "https://ignatius-hw4-api.onrender.com";
+      var sent = 0;
+      function version() { var s = document.querySelector('script[src*="js/core.js"]'); return s ? (s.src.split("v=")[1] || "") : ""; }
+      function report(message, where) {
+        if (sent++ >= 3) return;
+        try {
+          fetch(api + "/api/client-error", { method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true,
+            body: JSON.stringify({ message: String(message).slice(0, 1000), where: String(where || "").slice(0, 300), version: version(),
+              page: location.search.slice(0, 200), agent: navigator.userAgent.slice(0, 300), standalone: !!navigator.standalone }) });
+        } catch (e) {}
+      }
+      function show(message) {
+        if (window.__appStarted || document.getElementById("startup-error")) return;
+        var box = document.createElement("div");
+        box.id = "startup-error";
+        box.setAttribute("role", "alert");
+        box.style.cssText = "position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:9999;padding:14px 16px;border-radius:6px;background:#2a1712;color:#f6e7dc;border:1px solid #a3452c;font:16px/1.4 Georgia,serif";
+        box.textContent = "Something went wrong while opening the app (" + message + "). ";
+        var again = document.createElement("button");
+        again.textContent = "Reload";
+        again.style.cssText = "margin-left:6px;padding:6px 14px;font:inherit";
+        again.onclick = function () { location.reload(); };
+        box.appendChild(again);
+        (document.body || document.documentElement).appendChild(box);
+      }
+      window.addEventListener("error", function (e) {
+        var where = (e.filename || "").split("/").pop() + ":" + (e.lineno || "");
+        report(e.message, where);
+        if (!window.__appStarted) document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", function () { show(e.message); }) : show(e.message);
+      });
+      window.addEventListener("unhandledrejection", function (e) { report("unhandled: " + ((e.reason && e.reason.message) || e.reason), ""); });
+      setTimeout(function () {
+        if (window.__appStarted) return;
+        report("not started after 8 seconds", "");
+        fetch("./?check=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.text(); }).then(function (html) {
+          var latest = (html.match(/js\/core\.js\?v=(\d+)/) || [])[1];
+          if (latest && latest !== version() && !sessionStorage.getItem("reloadedFor" + latest)) {
+            sessionStorage.setItem("reloadedFor" + latest, "1");
+            location.reload();
+          }
+        }).catch(function () {});
+      }, 8000);
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Ignatius at Home</title>
   <meta name="description" content="Make a guided audio retreat from your own prayer material, and pray it day by day.">
@@ -11,13 +63,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=61">
-  <link rel="icon" href="icons/icon-192.png?v=61" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=61">
+  <link rel="manifest" href="manifest.webmanifest?v=62">
+  <link rel="icon" href="icons/icon-192.png?v=62" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=62">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=61">
+  <link rel="stylesheet" href="style.css?v=62">
 </head>
 <body>
   <header class="topbar">
@@ -751,23 +803,23 @@
   </dialog>
 
   <script src="vendor/supabase.js?v=2.117.2"></script> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=61"></script>
+  <script src="config.js?v=62"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=61"></script>
-  <script src="js/look.js?v=61"></script>
-  <script src="js/settings.js?v=61"></script>
-  <script src="js/router.js?v=61"></script>
-  <script src="js/library.js?v=61"></script>
-  <script src="js/new-retreat.js?v=61"></script>
-  <script src="js/retreat.js?v=61"></script>
-  <script src="js/build-log.js?v=61"></script>
-  <script src="js/research.js?v=61"></script>
-  <script src="js/pray.js?v=61"></script>
-  <script src="js/about-me.js?v=61"></script>
-  <script src="js/talk.js?v=61"></script>
-  <script src="js/costs.js?v=61"></script>
-  <script src="js/practice.js?v=61"></script>
-  <script src="js/quotes.js?v=61"></script>
-  <script src="js/start.js?v=61"></script>
+  <script src="js/core.js?v=62"></script>
+  <script src="js/look.js?v=62"></script>
+  <script src="js/settings.js?v=62"></script>
+  <script src="js/router.js?v=62"></script>
+  <script src="js/library.js?v=62"></script>
+  <script src="js/new-retreat.js?v=62"></script>
+  <script src="js/retreat.js?v=62"></script>
+  <script src="js/build-log.js?v=62"></script>
+  <script src="js/research.js?v=62"></script>
+  <script src="js/pray.js?v=62"></script>
+  <script src="js/about-me.js?v=62"></script>
+  <script src="js/talk.js?v=62"></script>
+  <script src="js/costs.js?v=62"></script>
+  <script src="js/practice.js?v=62"></script>
+  <script src="js/quotes.js?v=62"></script>
+  <script src="js/start.js?v=62"></script>
 </body>
 </html>
