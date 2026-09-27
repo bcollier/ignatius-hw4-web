@@ -72,7 +72,7 @@ async function sendSignInLink(event) {
 // since on an iPhone the link opens in Safari rather than in a Home Screen app.
 async function sendLinkTo(email) {
   $("email").value = email;
-  store.set("signin.email", email); // the six-digit code is checked with the address it went to
+  store.set("signin.email", email); // the email's code is checked with the address it went to
   $("signin-button").disabled = true;
   const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } });
   $("signin-button").disabled = false;
@@ -84,7 +84,7 @@ async function sendLinkTo(email) {
   if (!error) showPasteStep();
 }
 
-// Step two: the six-digit code from the email, on any device (a Home Screen app never
+// Step two: the code from the email, on any device (a Home Screen app never
 // receives the email's link; elsewhere clicking the link works too). Pasting the link
 // stays as a last resort, folded away.
 function showPasteStep() {
@@ -100,27 +100,36 @@ const inHomeScreenApp = () => navigator.standalone === true || matchMedia("(disp
 
 // A code from a device that's signed in (see /api/handoff): exchanged for a one-time
 // sign-in token, which Supabase then turns into a session here.
-// Two kinds of code: the six digits in the sign-in email (checked by Supabase with the
-// email address), or the eight digits a signed-in browser shows (see /api/handoff).
+// Two kinds of code: the one in the sign-in email (six to ten digits, as the Supabase
+// project is set up; checked by Supabase with the email address it went to), or the
+// eight digits a signed-in browser shows (see /api/handoff). Both can be eight digits,
+// so a code is tried as the email's first and as a browser code if that fails.
 async function signInWithCode(event) {
   event.preventDefault();
   const note = $("code-note");
   const code = $("signin-code").value.replace(/\D/g, "");
   const email = $("email").value.trim() || store.get("signin.email", "");
+  if (code.length < 6) return (note.textContent = "Type the whole code from the email.");
   note.textContent = "Signing in…";
-  try {
-    let result;
-    if (code.length === 6) {
-      if (!email) return (note.textContent = "Type your email address above first, the one the code was sent to.");
-      result = await sb.auth.verifyOtp({ email, token: code, type: "email" });
-    } else {
-      const { token_hash, type } = await postJson("/api/handoff/redeem", { code });
-      result = await sb.auth.verifyOtp({ token_hash, type });
-    }
-    note.textContent = result.error ? `Couldn't sign in: ${result.error.message}` : "Signed in.";
-  } catch (err) {
-    note.textContent = err.message;
+  let failed = null;
+  if (email) {
+    const { error } = await sb.auth.verifyOtp({ email, token: code, type: "email" });
+    if (!error) return (note.textContent = "Signed in.");
+    failed = error.message;
   }
+  if (code.length === 8) {
+    try {
+      const { token_hash, type } = await postJson("/api/handoff/redeem", { code });
+      const { error } = await sb.auth.verifyOtp({ token_hash, type });
+      if (!error) return (note.textContent = "Signed in.");
+      failed = error.message;
+    } catch (err) {
+      failed = failed || err.message;
+    }
+  }
+  note.textContent = !email
+    ? "Type your email address above first, the one the code was sent to."
+    : `That code didn't work (${failed}). Each code works once and expires within an hour; send a new email and use the newest code.`;
 }
 
 // In the browser on an iPhone, straight from the email's link: offer the code for the Home
