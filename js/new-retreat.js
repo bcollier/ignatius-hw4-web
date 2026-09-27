@@ -2,6 +2,7 @@
 
 function openNew() {
   show("new");
+  fillIdeaDays();
   document.title = "New retreat · Ignatius at Home";
   if ($("advanced").parentElement !== $("panel-advanced")) $("panel-advanced").append($("advanced"));
   setTab(store.get("tab", "simple"));
@@ -117,13 +118,19 @@ async function makeRetreat(event) {
 
 // The request, from what's on the form. Throws an Error with a message to show.
 function newRetreatForm() {
-  const file = chosenSourceFile();
-  if (!file && !chosenExample) throw new Error("Choose a file, paste some text, or pick an example first.");
-  if (file && !/\.(pdf|docx|txt|md)$/i.test(file.name)) throw new Error("PDF, Word (.docx) and text (.txt) files are supported.");
+  const idea = $("idea-text").value.trim();
+  const ideaPhoto = $("idea-photo").files[0];
+  const file = idea || ideaPhoto ? null : chosenSourceFile();
+  if (!file && !chosenExample && !idea && !ideaPhoto) throw new Error("Choose a file, paste some text, describe an idea, or pick an example first.");
+  if (file && !/\.(pdf|docx|txt|md|jpe?g|png)$/i.test(file.name)) throw new Error("PDF, Word (.docx), text (.txt) and photo (.jpg, .png) files are supported.");
   const maxMb = options?.limits?.max_upload_mb ?? DEFAULT_MAX_UPLOAD_MB;
   if (file && file.size > maxMb * 1024 * 1024) throw new Error(`That file is larger than ${maxMb} MB.`);
   const form = new FormData();
-  if (file) form.append("file", file);
+  if (idea || ideaPhoto) {
+    form.append("idea", idea);
+    form.append("idea_days", $("idea-days").value);
+    if (ideaPhoto) form.append("photo", ideaPhoto);
+  } else if (file) form.append("file", file);
   else form.append("example", chosenExample);
   form.append("model", $("plan-model").value);
   form.append("start_date", $("start-date").value || localToday());
@@ -144,6 +151,15 @@ function chosenSourceFile() {
   const pasted = $("paste-text").value.trim();
   if (!file && pasted) return new File([pasted], "Pasted text.txt", { type: "text/plain" });
   return file;
+}
+
+// Days for a retreat from an idea: one to the most a retreat can have, a week by default.
+function fillIdeaDays() {
+  const select = $("idea-days");
+  if (select.options.length) return;
+  const most = options?.limits?.max_days || 14;
+  for (let n = 1; n <= most; n++) select.append(el("option", { value: n, text: n === 1 ? "1 day" : `${n} days` }));
+  select.value = "7";
 }
 
 function resetNewForm() {

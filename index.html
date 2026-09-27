@@ -11,13 +11,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=50">
-  <link rel="icon" href="icons/icon-192.png?v=50" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=50">
+  <link rel="manifest" href="manifest.webmanifest?v=51">
+  <link rel="icon" href="icons/icon-192.png?v=51" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=51">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=50">
+  <link rel="stylesheet" href="style.css?v=51">
 </head>
 <body>
   <header class="topbar">
@@ -116,15 +116,29 @@
       </div>
       <form id="new-form" class="card">
         <label class="drop" id="drop">
-          <input id="file" type="file" accept=".pdf,.docx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown">
+          <input id="file" type="file" accept=".pdf,.docx,.txt,.md,.jpg,.jpeg,.png,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown,image/jpeg,image/png">
           <span class="drop-icon" data-icon="upload" data-size="30"></span>
-          <span class="drop-title" id="drop-title">Choose a PDF, Word or text file</span>
-          <span class="hint" id="drop-hint">A retreat handout, some scripture passages, a reading. Images in it are used too. Use material you have the right to use.</span>
+          <span class="drop-title" id="drop-title">Choose a PDF, Word or text file, or a photo</span>
+          <span class="hint" id="drop-hint">A retreat handout, some scripture passages, a reading, or a photo of a page. Images in it are used too. Use material you have the right to use.</span>
         </label>
 
         <details id="paste-box" class="paste-box">
           <summary>or paste text instead</summary>
           <textarea id="paste-text" rows="10" spellcheck="true" placeholder="Paste scripture passages, a reading, or a whole retreat handout. Mark days if you like (Day 1, Day 2…), or let the planner divide it."></textarea>
+        </details>
+
+        <details id="idea-box" class="paste-box idea-box">
+          <summary>or start from an idea or a photo</summary>
+          <p class="hint">No handout? Say what you'd like to pray with, and the passages are chosen for you, one a day, with the scripture from the World English Bible. Or add a photo: a page of a book with verses on it, a prayer card, a painting, a place that moved you. Verses in the photo are used just as printed.</p>
+          <textarea id="idea-text" rows="3" maxlength="4000" spellcheck="true" placeholder="The parables of Jesus · the women who met Jesus · trusting God with a new job · grief · Advent"></textarea>
+          <div class="idea-row">
+            <label>Days
+              <select id="idea-days"></select>
+            </label>
+            <label class="idea-photo">Photo <span class="meta">(optional)</span>
+              <input id="idea-photo" type="file" accept="image/jpeg,image/png,image/*">
+            </label>
+          </div>
         </details>
 
         <div id="example-picker" class="example-picker" hidden>
@@ -561,7 +575,7 @@
             </select>
           </label>
           <label>Volume <input type="range" id="practice-music-volume" min="0.05" max="1" step="0.05"></label>
-          <p><button type="button" id="practice-music-sample" class="secondary">Play or stop a sample</button></p>
+          <p><button type="button" id="practice-music-sample" class="secondary">Play a sample</button></p>
           <p class="meta small">Chant, from Wikimedia Commons: Veni Sancte Spiritus (public domain, Membeth); Rorate Caeli (Inritter, CC BY-SA 4.0); Ave Maria (Schola Gregoriana, CC BY-SA 3.0); “Gregorian Chant” (Kevin MacLeod, incompetech.com, CC BY 3.0); Salve Regina by Hermann Contract (Les Petits Chanteurs de Passy, CC BY-SA 3.0). The instrumental was made for this app with ElevenLabs Music.</p>
         </details>
         <section id="my-examen" class="my-examen card" hidden>
@@ -721,22 +735,22 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=50"></script>
+  <script src="config.js?v=51"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=50"></script>
-  <script src="js/look.js?v=50"></script>
-  <script src="js/settings.js?v=50"></script>
-  <script src="js/router.js?v=50"></script>
-  <script src="js/library.js?v=50"></script>
-  <script src="js/new-retreat.js?v=50"></script>
-  <script src="js/retreat.js?v=50"></script>
-  <script src="js/build-log.js?v=50"></script>
-  <script src="js/research.js?v=50"></script>
-  <script src="js/pray.js?v=50"></script>
-  <script src="js/about-me.js?v=50"></script>
-  <script src="js/talk.js?v=50"></script>
-  <script src="js/costs.js?v=50"></script>
-  <script src="js/practice.js?v=50"></script>
-  <script src="js/start.js?v=50"></script>
+  <script src="js/core.js?v=51"></script>
+  <script src="js/look.js?v=51"></script>
+  <script src="js/settings.js?v=51"></script>
+  <script src="js/router.js?v=51"></script>
+  <script src="js/library.js?v=51"></script>
+  <script src="js/new-retreat.js?v=51"></script>
+  <script src="js/retreat.js?v=51"></script>
+  <script src="js/build-log.js?v=51"></script>
+  <script src="js/research.js?v=51"></script>
+  <script src="js/pray.js?v=51"></script>
+  <script src="js/about-me.js?v=51"></script>
+  <script src="js/talk.js?v=51"></script>
+  <script src="js/costs.js?v=51"></script>
+  <script src="js/practice.js?v=51"></script>
+  <script src="js/start.js?v=51"></script>
 </body>
 </html>

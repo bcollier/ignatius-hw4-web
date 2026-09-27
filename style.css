@@ -757,3 +757,7 @@ body.praying { overflow: hidden; }
 .practice-stage { height: min(34vh, 440px); }
 .practice-stage:not([hidden]) ~ .practice-body .practice-clock { width: 96px; height: 96px; font-size: 1.5rem; margin: 10px auto; }
 .practice-controls { position: sticky; bottom: 0; z-index: 2; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); margin-bottom: 0; background: linear-gradient(to top, var(--bg) 70%, transparent); }
+.idea-box textarea { width: 100%; }
+.idea-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: end; margin-top: 8px; }
+.idea-row label { display: grid; gap: 4px; }
+.idea-photo input { max-width: 100%; }

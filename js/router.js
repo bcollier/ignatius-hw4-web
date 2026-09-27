@@ -46,7 +46,10 @@ async function route() {
   if (p.has("new")) return openNew();
   if (p.has("me")) return openMe();
   if (p.has("costs")) return openCosts();
-  if (!p.has("practice") && typeof stopPractice === "function") stopPractice();
+  if (!p.has("practice") && typeof stopPractice === "function") {
+    stopPractice();
+    stopMusic();
+  }
   if (p.has("practice")) return openPractice(p.get("practice"));
   if (p.has("talk")) return openTalk(p.get("r"));
   if (p.has("research") && p.get("r")) return openResearch(p.get("r"));

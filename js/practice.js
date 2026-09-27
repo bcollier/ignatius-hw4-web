@@ -220,8 +220,7 @@ function fadeMusic(target, ms = 1500) {
   if (target === 0) musicFade = setTimeout(() => backgroundMusic.pause(), ms);
 }
 
-function startMusic() {
-  const choice = store.get("practice.music", "none");
+function startMusic(choice = store.get("practice.music", "none")) {
   if (!MUSIC[choice]) return;
   musicList = [...MUSIC[choice]];
   const playNext = () => {
@@ -250,15 +249,28 @@ function wireMusic() {
   const volume = $("practice-music-volume");
   choice.value = store.get("practice.music", "none");
   volume.value = musicLevel();
-  choice.onchange = () => store.set("practice.music", choice.value);
   volume.oninput = () => {
     store.set("practice.music.volume", volume.value);
     duckMusic(practiceRun?.session.segments[practiceRun.index]?.kind === "speak");
   };
-  $("practice-music-sample").onclick = () => {
-    if (!backgroundMusic.paused) return stopMusic();
-    startMusic();
-    duckMusic(false);
+  // The sample plays the chosen music, or the chant when None is chosen.
+  const sample = $("practice-music-sample");
+  sample.onclick = () => {
+    if (!backgroundMusic.paused) {
+      stopMusic();
+      sample.textContent = "Play a sample";
+      return;
+    }
+    startMusic(MUSIC[choice.value] ? choice.value : "chant");
+    fadeMusic(musicLevel(), 1500);
+    sample.textContent = "Stop the sample";
+  };
+  choice.onchange = () => {
+    store.set("practice.music", choice.value);
+    if (!backgroundMusic.paused && !practiceRun) {  // switch what the sample is playing
+      if (MUSIC[choice.value]) startMusic(choice.value), fadeMusic(musicLevel(), 1500);
+      else stopMusic(), (sample.textContent = "Play a sample");
+    }
   };
 }
 
