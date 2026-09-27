@@ -135,6 +135,37 @@ async function signInWithCode(event) {
     : `That code didn't work (${failed}). Each code works once and expires within an hour; send a new email and use the newest code.`;
 }
 
+// The QR code is a link to this app with the code in it (?code=…); scanning it on a
+// phone opens the app there and signs in (signInFromLinkCode).
+function drawSignInQr(code) {
+  const box = $("handoff-qr");
+  box.innerHTML = "";
+  if (typeof qrcode !== "function") return (box.hidden = true);
+  const qr = qrcode(0, "M");
+  qr.addData(`${location.origin}${location.pathname}?code=${code}`);
+  qr.make();
+  box.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 2, scalable: true });
+  box.hidden = false;
+}
+
+// Opened from a sign-in QR code: use the code in the address, then take it out.
+async function signInFromLinkCode() {
+  const code = new URLSearchParams(location.search).get("code");
+  if (!code || !/^\d{8}$/.test(code)) return false;
+  const url = new URL(location.href);
+  url.searchParams.delete("code");
+  history.replaceState(null, "", url);
+  try {
+    const { token_hash, type } = await postJson("/api/handoff/redeem", { code });
+    const { error } = await sb.auth.verifyOtp({ token_hash, type });
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    showMessage(`That sign-in code didn't work: ${err.message}. Get a new one on the device where you're signed in.`);
+    return false;
+  }
+}
+
 // In the browser on an iPhone, straight from the email's link: offer the code for the Home
 // Screen app. (Anyone signed in can also get one from About me.)
 async function offerHandoff(always = false) {
@@ -143,6 +174,7 @@ async function offerHandoff(always = false) {
   try {
     const { code } = await postJson("/api/handoff", {});
     $("handoff-code").textContent = `${code.slice(0, 4)} ${code.slice(4)}`;
+    drawSignInQr(code);
     $("handoff-box").hidden = false;
   } catch (err) {
     showMessage(err.message);

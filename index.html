@@ -63,13 +63,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=77">
-  <link rel="icon" href="icons/icon-192.png?v=77" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=77">
+  <link rel="manifest" href="manifest.webmanifest?v=80">
+  <link rel="icon" href="icons/icon-192.png?v=80" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=80">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=77">
+  <link rel="stylesheet" href="style.css?v=80">
 </head>
 <body>
   <header class="topbar">
@@ -81,6 +81,7 @@
       <a href="./?debug=false" id="debug-badge" class="debug-badge" hidden title="Debug mode is on: the build log and costs are shown. Click to turn it off.">Debug</a>
       <span id="account" hidden>
         <span id="account-email" class="meta"></span>
+        <button type="button" id="phone-signin" class="link" title="A QR code that signs you in on your phone">On your phone</button>
         <button type="button" id="signout" class="link">Sign out</button>
       </span>
     </nav>
@@ -145,9 +146,15 @@
     <section id="view-library" class="view" hidden>
       <p id="free-banner" class="quiet-note" hidden></p>
       <div id="handoff-box" class="card handoff" hidden>
-        <h2>You're signed in, here in your browser</h2>
-        <p class="hint">Using Ignatius from your Home Screen? Open it and type this code there. It works once, for ten minutes.</p>
-        <p id="handoff-code" class="handoff-code"></p>
+        <h2>Sign in on your phone</h2>
+        <div class="handoff-row">
+          <div id="handoff-qr" class="handoff-qr" aria-label="QR code that signs you in on your phone"></div>
+          <div>
+            <p class="hint"><strong>Scan this with your phone's camera</strong> to sign in there at once. Using the app from your iPhone's Home Screen instead? Open it and type this code:</p>
+            <p id="handoff-code" class="handoff-code"></p>
+            <p class="hint">The code and the QR code work once, for ten minutes.</p>
+          </div>
+        </div>
         <p><button type="button" id="handoff-new" class="link">Get a new code</button> · <button type="button" id="handoff-close" class="link">Done</button></p>
       </div>
       <div id="upgrade-box" class="card" hidden>
@@ -202,6 +209,22 @@
         <details id="paste-box" class="paste-box">
           <summary>or paste text instead</summary>
           <textarea id="paste-text" rows="10" spellcheck="true" placeholder="Paste scripture passages, a reading, or a whole retreat handout. Mark days if you like (Day 1, Day 2…), or let the planner divide it."></textarea>
+        </details>
+
+        <details id="gdoc-box" class="paste-box">
+          <summary>or use a Google Doc</summary>
+          <p class="hint">In Google Docs choose <strong>Share</strong>, set General access to <strong>Anyone with the link</strong> (Viewer), copy the link and paste it here.</p>
+          <input id="retreat-gdoc" type="url" placeholder="https://docs.google.com/document/d/…" aria-label="Google Doc link">
+          <details class="gdoc-examples">
+            <summary>See an example</summary>
+            <p class="hint">Google Docs set up for a retreat, from short to long. Open one to see how to lay out your own, or paste its link above to try it.</p>
+            <ul>
+              <li><a href="https://docs.google.com/document/d/1z0__XjNQttLeSLmMntNEAxGxEcnNgHgHqnQ1Faqzecs/view" target="_blank" rel="noopener">Short: three days, just the passages</a></li>
+              <li><a href="https://docs.google.com/document/d/1cmknmvBDReIGqtGtHWaHRya4vpPi9WxVP6Upwy9YaPc/view" target="_blank" rel="noopener">Loose passages, no days: the app plans them</a></li>
+              <li><a href="https://docs.google.com/document/d/1AtoP8dj3JJ1yasZ88oAFK9IcvW7PP3HYyYcfF7vS0mw/view" target="_blank" rel="noopener">Five days, with a grace and focus for each</a></li>
+              <li><a href="https://docs.google.com/document/d/1TAoSs9ZOTxc6VBl4i-uYrOj_p7wP7DiMStvlPB6xO_g/view" target="_blank" rel="noopener">Six days, a longer handout</a></li>
+            </ul>
+          </details>
         </details>
 
         <details id="idea-box" class="paste-box idea-box">
@@ -522,6 +545,7 @@
         <label>What I'm looking for in the conversation companion
           <textarea id="me-notes" rows="5" spellcheck="true" placeholder="For example: ask me about my family; help me notice consolation; don't give advice unless I ask; keep it short."></textarea>
         </label>
+        <p class="hint"><a href="https://docs.google.com/document/d/1WW5NMW2vOTzQF99wDJ2ckwo_tq7Ejdfq8_WKbn4KyHg/view" target="_blank" rel="noopener">See an example</a> of what someone wrote here.</p>
         <div class="row-buttons">
           <button type="submit" id="me-save">Save</button>
           <span id="me-status" class="meta" role="status"></span>
@@ -852,24 +876,25 @@
     </form>
   </dialog>
 
-  <script src="vendor/supabase.js?v=2.117.2"></script> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=77"></script>
+  <script src="vendor/supabase.js?v=2.117.2"></script>
+  <script src="vendor/qrcode.js?v=2.0.4"></script> <!-- qrcode-generator 2.0.4 (MIT), for the sign-in QR code --> <!-- supabase-js 2.117.2, served with the app -->
+  <script src="config.js?v=80"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=77"></script>
-  <script src="js/look.js?v=77"></script>
-  <script src="js/settings.js?v=77"></script>
-  <script src="js/router.js?v=77"></script>
-  <script src="js/library.js?v=77"></script>
-  <script src="js/new-retreat.js?v=77"></script>
-  <script src="js/retreat.js?v=77"></script>
-  <script src="js/build-log.js?v=77"></script>
-  <script src="js/research.js?v=77"></script>
-  <script src="js/pray.js?v=77"></script>
-  <script src="js/about-me.js?v=77"></script>
-  <script src="js/talk.js?v=77"></script>
-  <script src="js/costs.js?v=77"></script>
-  <script src="js/practice.js?v=77"></script>
-  <script src="js/quotes.js?v=77"></script>
-  <script src="js/start.js?v=77"></script>
+  <script src="js/core.js?v=80"></script>
+  <script src="js/look.js?v=80"></script>
+  <script src="js/settings.js?v=80"></script>
+  <script src="js/router.js?v=80"></script>
+  <script src="js/library.js?v=80"></script>
+  <script src="js/new-retreat.js?v=80"></script>
+  <script src="js/retreat.js?v=80"></script>
+  <script src="js/build-log.js?v=80"></script>
+  <script src="js/research.js?v=80"></script>
+  <script src="js/pray.js?v=80"></script>
+  <script src="js/about-me.js?v=80"></script>
+  <script src="js/talk.js?v=80"></script>
+  <script src="js/costs.js?v=80"></script>
+  <script src="js/practice.js?v=80"></script>
+  <script src="js/quotes.js?v=80"></script>
+  <script src="js/start.js?v=80"></script>
 </body>
 </html>

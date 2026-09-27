@@ -34,6 +34,11 @@ function wireSignIn() {
   $("have-link").onclick = showPasteStep;
   $("code-form").addEventListener("submit", signInWithCode);
   $("handoff-new").onclick = () => offerHandoff(true);
+  $("phone-signin").onclick = async () => {
+    await offerHandoff(true);
+    if (params().toString()) go("./");
+    window.scrollTo(0, 0);
+  };
   $("handoff-close").onclick = () => ($("handoff-box").hidden = true);
   $("upgrade-signin-button").onclick = () => guestToSignIn($("upgrade-email").value.trim());
   $("guest-signin").onclick = () => guestToSignIn("");
@@ -187,7 +192,7 @@ async function start() {
     });
     $("guest-box").hidden = !options.free_mode?.enabled;
     if (data.session) await signedInAs(data.session);
-    else showSignedOut();
+    else if (!(await signInFromLinkCode())) showSignedOut(); // a sign-in QR code signs in by itself
   } else {
     authReady = true;
     await signedInAs(null); // local development: no sign-in

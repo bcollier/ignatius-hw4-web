@@ -121,13 +121,16 @@ async function makeRetreat(event) {
 function newRetreatForm() {
   const idea = $("idea-text").value.trim();
   const ideaPhoto = $("idea-photo").files[0];
-  const file = idea || ideaPhoto ? null : chosenSourceFile();
-  if (!file && !chosenExample && !idea && !ideaPhoto) throw new Error("Choose a file, paste some text, describe an idea, or pick an example first.");
+  const gdoc = $("retreat-gdoc").value.trim();
+  if (gdoc && !/docs\.google\.com\/document\/d\//.test(gdoc)) throw new Error("That doesn't look like a Google Doc link. It should start with https://docs.google.com/document/d/");
+  const file = idea || ideaPhoto || gdoc ? null : chosenSourceFile();
+  if (!file && !chosenExample && !idea && !ideaPhoto && !gdoc) throw new Error("Choose a file, paste some text, link a Google Doc, describe an idea, or pick an example first.");
   if (file && !/\.(pdf|docx|txt|md|jpe?g|png)$/i.test(file.name)) throw new Error("PDF, Word (.docx), text (.txt) and photo (.jpg, .png) files are supported.");
   const maxMb = options?.limits?.max_upload_mb ?? DEFAULT_MAX_UPLOAD_MB;
   if (file && file.size > maxMb * 1024 * 1024) throw new Error(`That file is larger than ${maxMb} MB.`);
   const form = new FormData();
-  if (idea || ideaPhoto) {
+  if (gdoc && !idea && !ideaPhoto) form.append("google_doc", gdoc);
+  else if (idea || ideaPhoto) {
     form.append("idea", idea);
     form.append("idea_days", $("idea-days").value);
     if (ideaPhoto) form.append("photo", ideaPhoto);

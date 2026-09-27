@@ -89,6 +89,6 @@ function showAccount() {
   if (box.hidden) return;
   box.append(el("span", { text: `Signed in as ${who}` }),
     el("button", { type: "button", class: "link", text: "Sign out", onclick: () => $("signout").click() }));
-  if (!me?.anonymous) box.append(el("button", { type: "button", class: "link", text: "Sign in on another device (a code)",
+  if (!me?.anonymous) box.append(el("button", { type: "button", class: "link", text: "Sign in on your phone (QR code)",
     onclick: async () => { await offerHandoff(true); go("?"); } }));
 }
