@@ -72,6 +72,7 @@ async function sendSignInLink(event) {
 // since on an iPhone the link opens in Safari rather than in a Home Screen app.
 async function sendLinkTo(email) {
   $("email").value = email;
+  store.set("signin.email", email); // the six-digit code is checked with the address it went to
   $("signin-button").disabled = true;
   const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } });
   $("signin-button").disabled = false;
@@ -99,14 +100,24 @@ const inHomeScreenApp = () => navigator.standalone === true || matchMedia("(disp
 
 // A code from a device that's signed in (see /api/handoff): exchanged for a one-time
 // sign-in token, which Supabase then turns into a session here.
+// Two kinds of code: the six digits in the sign-in email (checked by Supabase with the
+// email address), or the eight digits a signed-in browser shows (see /api/handoff).
 async function signInWithCode(event) {
   event.preventDefault();
   const note = $("code-note");
+  const code = $("signin-code").value.replace(/\D/g, "");
+  const email = $("email").value.trim() || store.get("signin.email", "");
   note.textContent = "Signing in…";
   try {
-    const { token_hash, type } = await postJson("/api/handoff/redeem", { code: $("signin-code").value });
-    const { error } = await sb.auth.verifyOtp({ token_hash, type });
-    note.textContent = error ? `Couldn't sign in: ${error.message}` : "Signed in.";
+    let result;
+    if (code.length === 6) {
+      if (!email) return (note.textContent = "Type your email address above first, the one the code was sent to.");
+      result = await sb.auth.verifyOtp({ email, token: code, type: "email" });
+    } else {
+      const { token_hash, type } = await postJson("/api/handoff/redeem", { code });
+      result = await sb.auth.verifyOtp({ token_hash, type });
+    }
+    note.textContent = result.error ? `Couldn't sign in: ${result.error.message}` : "Signed in.";
   } catch (err) {
     note.textContent = err.message;
   }
