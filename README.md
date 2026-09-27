@@ -189,7 +189,7 @@ All screenshots are of the example retreat "Come and See," taken at iPhone size 
   <tr>
     <td align="center"><img src="docs/screenshots/iphone-first-login.png" width="250" alt="First sign-in: the examples come first"><br><sub><b>First sign-in.</b> With nothing of your own yet, the examples come first.</sub></td>
     <td align="center"><img src="docs/screenshots/iphone-praying-2.png" width="250" alt="Praying Day 2 with Caravaggio's Calling of Saint Matthew"><br><sub><b>Day 2.</b> Caravaggio's <i>Calling of Saint Matthew</i>.</sub></td>
-    <td></td>
+    <td align="center"><img src="docs/screenshots/iphone-talk.png" width="250" alt="Talk it over during a conversation: the gold orb glowing while the companion speaks, above the transcript"><br><sub><b>Talk it over.</b> A live spoken conversation; the orb glows as the companion speaks (sample exchange).</sub></td>
   </tr>
 </table>
 
@@ -203,6 +203,10 @@ All screenshots are of the example retreat "Come and See," taken at iPhone size 
   <tr>
     <td align="center"><img src="docs/screenshots/desktop-retreat.png" alt="The retreat view on a wide screen"><br><sub><b>A retreat.</b> Day strip, the day's painting, passage and parts.</sub></td>
     <td align="center"><img src="docs/screenshots/desktop-research.png" alt="The research page listing searches, results and cited sources"><br><sub><b>Research.</b> Every search and result behind each day's deep dive.</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/desktop-talk.png" alt="Talk it over before a conversation: what the companion knows about the retreat, the voice, and Start talking"><br><sub><b>Talk it over.</b> What the companion knows, the voice, and Start talking.</sub></td>
+    <td></td>
   </tr>
 </table>
 
@@ -294,6 +298,13 @@ These are Microsoft's neural voices, reached through the Edge browser's "Read al
 ## 8. Talk it over: the live conversation
 
 A spoken conversation, in real time, about the retreat. The companion knows the retreat's days, which ones you've prayed, listened to or missed, what you noted after praying, what you've told the app about yourself, your past conversations (the recent ones in full, older ones as a summary), how long it has been since you last talked, and the time of day where you are, so it can say "It's late; how was today's prayer?" and mean it. It mostly asks questions, gently probes, helps you notice where God may be at work, and gives very little advice, following how spiritual directors are taught to listen. It is not spiritual direction and says so.
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/desktop-talk.png" alt="Talk it over before a conversation on a laptop"><br><sub><b>Before.</b> What it knows about the retreat (here, that five of seven days were listened to), the voice, the companion's instructions under Advanced, and Start talking.</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/iphone-talk.png" width="250" alt="Talk it over during a conversation on an iPhone"><br><sub><b>During.</b> The orb glows and swells with the companion's voice (and with yours while it listens); the transcript builds below. The exchange shown is a sample.</sub></td>
+  </tr>
+</table>
 
 | Provider | How it connects | Voices | Cost |
 | --- | --- | --- | --- |
