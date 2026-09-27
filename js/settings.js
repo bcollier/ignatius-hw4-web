@@ -88,13 +88,21 @@ function fillPlaybackFields() {
 }
 
 // A prompt equal to the default isn't saved, so a later change to the default applies.
+// The reflection's voice is saved by name ("companion" or "christ"), not as text, for
+// the same reason; only a prompt the person has edited by hand is saved as text.
 function fillPromptFields() {
   $("background-prompt").value = options.prompts.background || "";
   $("house-style-prompt").value = options.prompts.house_style || "";
+  forgetOldHeartText();
   for (const [key, id] of Object.entries(PROMPT_FIELDS)) {
     $(id).value = store.get(`prompt.${key}`) || defaultPrompt(key);
     $(id).oninput = () => store.set(`prompt.${key}`, $(id).value.trim() === defaultPrompt(key).trim() ? null : $(id).value);
   }
+  if (!store.get("prompt.heart")) $("heart-prompt").value = options.prompts.heart[heartPreset()] || defaultPrompt("heart");
+  document.querySelectorAll('input[name="heart-voice"]').forEach((r) => {
+    r.checked = r.value === heartPreset();
+    r.onchange = () => r.checked && chooseHeartPreset(r.value);
+  });
   document.querySelectorAll("[data-reset]").forEach((b) => {
     b.onclick = () => {
       $(PROMPT_FIELDS[b.dataset.reset]).value = defaultPrompt(b.dataset.reset);
@@ -102,11 +110,27 @@ function fillPromptFields() {
     };
   });
   document.querySelectorAll("[data-preset]").forEach((b) => {
-    b.onclick = () => {
-      $("heart-prompt").value = options.prompts.heart[b.dataset.preset];
-      store.set("prompt.heart", b.dataset.preset === "companion" ? null : $("heart-prompt").value);
-    };
+    b.onclick = () => chooseHeartPreset(b.dataset.preset);
   });
+}
+
+const heartPreset = () => store.get("heart.preset", "companion");
+
+function chooseHeartPreset(name) {
+  store.set("heart.preset", name === "companion" ? null : name);
+  store.set("prompt.heart", null); // the chosen voice's current text, not a saved copy
+  $("heart-prompt").value = options.prompts.heart[name];
+  document.querySelectorAll('input[name="heart-voice"]').forEach((r) => (r.checked = r.value === name));
+}
+
+// Earlier versions saved the whole voice-of-Jesus prompt as text when it was chosen;
+// turn that back into the choice, so the person gets the current version of it.
+function forgetOldHeartText() {
+  const saved = store.get("prompt.heart");
+  if (saved && /^<your_part>\s*You write the reflection for the heart for one day of an Ignatius at Home retreat, and you write it in the voice of Jesus/.test(saved)) {
+    store.set("prompt.heart", null);
+    store.set("heart.preset", "christ");
+  }
 }
 
 function fillGuideFields() {

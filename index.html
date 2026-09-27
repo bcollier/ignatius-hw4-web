@@ -63,13 +63,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=72">
-  <link rel="icon" href="icons/icon-192.png?v=72" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=72">
+  <link rel="manifest" href="manifest.webmanifest?v=73">
+  <link rel="icon" href="icons/icon-192.png?v=73" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=73">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=72">
+  <link rel="stylesheet" href="style.css?v=73">
 </head>
 <body>
   <header class="topbar">
@@ -235,6 +235,11 @@
           <p class="hint">Each day you'll pray with the reading four times, lectio divina style, with the reflection and deep dive between the readings, a time of silence, and your own prayer at the end. Nothing is published; your retreats are private to your account.</p>
         </details>
 
+        <fieldset class="heart-voice" id="heart-voice">
+          <legend>The reflection for the heart</legend>
+          <label class="check"><input type="radio" name="heart-voice" value="companion" checked> <span><b>A companion's reflection</b>: a warm, wise voice helping you bring your life to the passage.</span></label>
+          <label class="check"><input type="radio" name="heart-voice" value="christ"> <span><b>Jesus speaking to you</b>, in the way of Ignatian imaginative prayer: he walks through the day's text with you and speaks to your life, directly and kindly.</span></label>
+        </fieldset>
         <label class="check" id="personal-label"><input id="personal" type="checkbox" checked> <span>Make it personal: shape the reflections with what I've told you in <a href="./?me" data-nav="me">About me</a>. Untick for a general retreat anyone could pray.</span></label>
         <p id="personal-hint" class="hint" hidden>You haven't written anything in About me yet, so for now it will be a general retreat.</p>
 
@@ -836,23 +841,23 @@
   </dialog>
 
   <script src="vendor/supabase.js?v=2.117.2"></script> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=72"></script>
+  <script src="config.js?v=73"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=72"></script>
-  <script src="js/look.js?v=72"></script>
-  <script src="js/settings.js?v=72"></script>
-  <script src="js/router.js?v=72"></script>
-  <script src="js/library.js?v=72"></script>
-  <script src="js/new-retreat.js?v=72"></script>
-  <script src="js/retreat.js?v=72"></script>
-  <script src="js/build-log.js?v=72"></script>
-  <script src="js/research.js?v=72"></script>
-  <script src="js/pray.js?v=72"></script>
-  <script src="js/about-me.js?v=72"></script>
-  <script src="js/talk.js?v=72"></script>
-  <script src="js/costs.js?v=72"></script>
-  <script src="js/practice.js?v=72"></script>
-  <script src="js/quotes.js?v=72"></script>
-  <script src="js/start.js?v=72"></script>
+  <script src="js/core.js?v=73"></script>
+  <script src="js/look.js?v=73"></script>
+  <script src="js/settings.js?v=73"></script>
+  <script src="js/router.js?v=73"></script>
+  <script src="js/library.js?v=73"></script>
+  <script src="js/new-retreat.js?v=73"></script>
+  <script src="js/retreat.js?v=73"></script>
+  <script src="js/build-log.js?v=73"></script>
+  <script src="js/research.js?v=73"></script>
+  <script src="js/pray.js?v=73"></script>
+  <script src="js/about-me.js?v=73"></script>
+  <script src="js/talk.js?v=73"></script>
+  <script src="js/costs.js?v=73"></script>
+  <script src="js/practice.js?v=73"></script>
+  <script src="js/quotes.js?v=73"></script>
+  <script src="js/start.js?v=73"></script>
 </body>
 </html>

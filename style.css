@@ -798,3 +798,4 @@ body.praying { overflow: hidden; }
 input, select, textarea { font-size: max(16px, 1em); }
 .debug-badge { border: 1px solid currentColor; border-radius: 3px; padding: 0 6px; font-size: .85em; }
 .practice-section { margin: 22px 0 6px; } .practice-section h2 { font-size: 1.45rem; margin-bottom: 4px; } .practice-section .practice-list { margin-top: 10px; }
+.heart-voice { border: 0; padding: 0; margin: 14px 0 6px; } .heart-voice legend { font-family: var(--display); font-size: 1.15rem; margin-bottom: 4px; } .heart-voice .check { margin: 4px 0; }
