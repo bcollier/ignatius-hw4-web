@@ -63,13 +63,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=70">
-  <link rel="icon" href="icons/icon-192.png?v=70" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=70">
+  <link rel="manifest" href="manifest.webmanifest?v=71">
+  <link rel="icon" href="icons/icon-192.png?v=71" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=71">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=70">
+  <link rel="stylesheet" href="style.css?v=71">
 </head>
 <body>
   <header class="topbar">
@@ -696,13 +696,16 @@
         <div id="practice-stage" class="practice-stage" hidden></div>
         <p id="practice-art-caption" class="art-caption" hidden></p>
         <div id="practice-body" class="practice-body"></div>
-        <div class="practice-controls">
-          <button type="button" id="practice-back" class="secondary">Back</button>
-          <button type="button" id="practice-pause" class="gold">Pause</button>
-          <button type="button" id="practice-next" class="secondary">Next</button>
+        <!-- Pinned to the bottom of the screen, so the controls are always within reach. -->
+        <div class="practice-dock">
+          <div class="practice-controls">
+            <button type="button" id="practice-back" class="secondary">Back</button>
+            <button type="button" id="practice-pause" class="gold">Pause</button>
+            <button type="button" id="practice-next" class="secondary">Next</button>
+          </div>
+          <p class="practice-foot"><button type="button" id="practice-stop" class="link">End the exercise</button>
+            <button type="button" id="practice-picture" class="link" hidden title="Change what's shown while you pray">Painting and candle</button></p>
         </div>
-        <p class="practice-foot"><button type="button" id="practice-stop" class="link">End the exercise</button>
-          <button type="button" id="practice-picture" class="link" hidden title="Change what's shown while you pray">Painting and candle</button></p>
       </div>
     </section>
 
@@ -822,23 +825,23 @@
   </dialog>
 
   <script src="vendor/supabase.js?v=2.117.2"></script> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=70"></script>
+  <script src="config.js?v=71"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=70"></script>
-  <script src="js/look.js?v=70"></script>
-  <script src="js/settings.js?v=70"></script>
-  <script src="js/router.js?v=70"></script>
-  <script src="js/library.js?v=70"></script>
-  <script src="js/new-retreat.js?v=70"></script>
-  <script src="js/retreat.js?v=70"></script>
-  <script src="js/build-log.js?v=70"></script>
-  <script src="js/research.js?v=70"></script>
-  <script src="js/pray.js?v=70"></script>
-  <script src="js/about-me.js?v=70"></script>
-  <script src="js/talk.js?v=70"></script>
-  <script src="js/costs.js?v=70"></script>
-  <script src="js/practice.js?v=70"></script>
-  <script src="js/quotes.js?v=70"></script>
-  <script src="js/start.js?v=70"></script>
+  <script src="js/core.js?v=71"></script>
+  <script src="js/look.js?v=71"></script>
+  <script src="js/settings.js?v=71"></script>
+  <script src="js/router.js?v=71"></script>
+  <script src="js/library.js?v=71"></script>
+  <script src="js/new-retreat.js?v=71"></script>
+  <script src="js/retreat.js?v=71"></script>
+  <script src="js/build-log.js?v=71"></script>
+  <script src="js/research.js?v=71"></script>
+  <script src="js/pray.js?v=71"></script>
+  <script src="js/about-me.js?v=71"></script>
+  <script src="js/talk.js?v=71"></script>
+  <script src="js/costs.js?v=71"></script>
+  <script src="js/practice.js?v=71"></script>
+  <script src="js/quotes.js?v=71"></script>
+  <script src="js/start.js?v=71"></script>
 </body>
 </html>

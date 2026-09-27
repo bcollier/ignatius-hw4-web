@@ -27,10 +27,13 @@ function show(view) {
     for (const v of VIEWS) $(`view-${v}`).hidden = v !== view;
     window.scrollTo(0, 0);
   };
-  // A soft cross-fade between views where the browser supports it.
+  // A soft cross-fade between views where the browser supports it. Not on iPhones and
+  // iPads: there WebKit can leave the page unable to scroll after a view transition
+  // (seen in the Home Screen app, the page stuck partway down until reopened).
   const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const appleTouch = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   const current = VIEWS.find((v) => !$(`view-${v}`).hidden);
-  if (document.startViewTransition && !calm && current && current !== view) document.startViewTransition(swap);
+  if (document.startViewTransition && !calm && !appleTouch && current && current !== view) document.startViewTransition(swap);
   else swap();
 }
 
