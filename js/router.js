@@ -2,12 +2,13 @@
 
 const params = () => new URLSearchParams(location.search);
 
-function go(query = "", replace = false) {
+function go(query = "", replace = false, hash = "") {
   const url = new URL(location.href);
   url.search = query;
-  url.hash = "";
+  url.hash = hash;
   history[replace ? "replaceState" : "pushState"](null, "", url);
   route();
+  if (hash) setTimeout(() => document.getElementById(hash.slice(1))?.scrollIntoView({ block: "start" }), 60); // after the view shows
 }
 
 document.addEventListener("click", (event) => {
@@ -15,7 +16,8 @@ document.addEventListener("click", (event) => {
   if (!link || event.metaKey || event.ctrlKey || event.shiftKey) return;
   event.preventDefault();
   if (link.dataset.nav === "back") return history.length > 1 ? history.back() : go("");
-  go(new URL(link.href).search);
+  const target = new URL(link.href);
+  go(target.search, false, target.hash);
 });
 window.addEventListener("popstate", () => route());
 

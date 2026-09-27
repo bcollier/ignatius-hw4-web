@@ -63,13 +63,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=86">
-  <link rel="icon" href="icons/icon-192.png?v=86" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=86">
+  <link rel="manifest" href="manifest.webmanifest?v=87">
+  <link rel="icon" href="icons/icon-192.png?v=87" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=87">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=86">
+  <link rel="stylesheet" href="style.css?v=87">
 </head>
 <body>
   <header class="topbar">
@@ -473,7 +473,7 @@
         <p id="talk-context" class="hint"></p>
         <p id="talk-limit" class="hint" hidden></p>
         <p class="talk-voice-row"><span id="talk-voice-line" class="meta"></span>
-          <button type="button" id="talk-voice-change" class="link">Change voice</button></p>
+          <button type="button" id="talk-voice-change" class="link">Change voice</button> · <a href="./?about#how-voices-talk" data-nav="about">How the voices differ</a></p>
         <div id="talk-fields" class="talk-fields" hidden>
           <div class="row">
             <label>Voice service <select id="talk-provider"></select></label>
@@ -580,6 +580,7 @@
       <a href="./?me" data-nav="me" class="back">← Settings</a>
       <h1>Agents</h1>
       <p class="lede">Each part of the app is written or spoken by an AI agent following a prompt: a set of instructions. Here are all of them. Read any prompt; make your own version to change how that agent behaves for you (it's saved to your account and used from the next time the agent runs); or go back to the default at any time. Where it makes sense, you can also choose a different model.</p>
+      <p><a href="https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/feature-flows/08-agents.png" target="_blank" rel="noopener">See a diagram of every agent and the tools it has</a></p>
       <div id="agents-list"></div>
       <h2>Always added (read only)</h2>
       <p class="hint">These go to the agents along with their prompts. The background and house style are shared by every agent; the format rules ask for exactly what the app reads back, so they can't be changed here.</p>
@@ -691,6 +692,46 @@
           <figure class="voice-sample"><figcaption><strong>Zagan</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-zagan.mp3"></audio></figure>
           <figure class="voice-sample"><figcaption><strong>Zenith</strong> <span class="meta">xAI Grok, male</span></figcaption><audio controls preload="none" src="samples/talk/xai-zenith.mp3"></audio></figure>
       </div>
+
+      <h2 id="how-voices-talk">How the companion talks: live voices and taking turns</h2>
+      <p>Talk it over can work in two quite different ways. The live voices (OpenAI GPT-Live and xAI Grok) are one model that hears and speaks. Taking turns chains three separate steps: your device turns speech into text, a text model (the "brain") writes a reply, and a synthetic voice reads it aloud. Each is better at something.</p>
+
+      <div class="pipelines" role="img" aria-label="Two diagrams. Live voice: your voice streams to one speech-to-speech model, which streams its voice back, and you can interrupt at any moment. Taking turns: your speech becomes text on your device, the brain writes a reply, and a text-to-speech voice reads it one sentence at a time.">
+        <div class="pipeline live">
+          <h3>Live voice <span>speech to speech</span></h3>
+          <div class="flow">
+            <span class="node you">Your voice</span><span class="link">⇄ audio, both ways, all the time</span>
+            <span class="node model">One model hears and speaks<small>GPT-Live · Grok voice</small></span>
+          </div>
+          <p class="meta">You can cut in at any moment; it stops and listens. Replies begin in a fraction of a second.</p>
+        </div>
+        <div class="pipeline turns">
+          <h3>Taking turns <span>speech → text → model → text → speech</span></h3>
+          <div class="flow">
+            <span class="node you">Your voice</span><span class="link">→</span>
+            <span class="node">Speech to text<small>your browser</small></span><span class="link">→</span>
+            <span class="node model">The brain writes a reply<small>Claude · GPT · Muse</small></span><span class="link">→</span>
+            <span class="node">Text to speech<small>Microsoft voice, a sentence at a time</small></span>
+          </div>
+          <p class="meta">You tap to talk; it answers when you've finished. Replies take two to twenty seconds, depending on the brain.</p>
+        </div>
+      </div>
+
+      <h3>Why the live voices feel so human</h3>
+      <p>A live voice model works on sound itself. Your voice is streamed to it continuously (over WebRTC for OpenAI, a WebSocket for Grok), cut into small pieces of audio the model reads much as a text model reads words, and it answers with pieces of audio, streamed straight back. Nothing in between turns your speech into words and back. So it hears more than your words (hesitation, a catch in the voice, a laugh), and it can answer with more than words: the small "mm" and "mhm" of someone listening, a breath before a hard sentence, a softer tone when you sound tired. None of that was written down; it comes from the model having learned from real speech.</p>
+      <p>It can be interrupted because it's always listening. The service watches the incoming sound for speech (voice activity detection). When you start talking while it's speaking, it stops, throws away the rest of what it was going to say, and listens; when you pause for a moment, it takes that as its turn. That is what makes it the most conversational way to talk with a model.</p>
+
+      <h3>What the live voices give up</h3>
+      <ul>
+        <li><strong>Depth of thought.</strong> A speech-to-speech model has to start answering almost at once, so it doesn't stop to think the way a reasoning text model can, and it is generally not as strong a writer or reasoner as the best text models. Long instructions, your notes and the whole retreat are harder for it to keep in view.</li>
+        <li><strong>Tools.</strong> The text models behind the rest of the app can be given tools, such as the web search the deep dive uses to check facts. The live voices here have none: they can only talk. (Their services can hand hard questions to a separate text model with tools, but that adds delay, and this app doesn't use it.)</li>
+        <li><strong>Exact words.</strong> The transcript is the service's own guess at what was said, and following written instructions to the letter is harder for it.</li>
+        <li><strong>Cost while quiet.</strong> A live conversation is billed for every second it's open, silence included: GPT-Live costs about five cents a minute whether or not anyone speaks.</li>
+      </ul>
+
+      <h3>What taking turns does better, and what it gives up</h3>
+      <p>Taking turns is how most AI assistants you type to become voice assistants: speech to text, the model, then text to speech. Because the middle step is an ordinary text model, you can choose the strongest writer (Claude Fable or Opus) or a free one; it reads the companion's full instructions, your notes and the retreat day by day, and can think before it answers; and it costs only for what it reads and writes, so silence is free. The price is the conversation's texture. It waits until you've finished; you can't cut in mid-sentence; your tone of voice is lost when your speech becomes text; and the reply is read by a synthetic voice, which pronounces words well but won't say "mm" unless the words say so.</p>
+      <p>A practical rule: for a flowing conversation, choose a live voice; for silence-heavy prayer, or for the most thoughtful replies, take turns. Choose under Change voice on Talk it over, or on the <a href="./?agents" data-nav="agents">Agents</a> page.</p>
 
       <h2 id="research">The research services</h2>
       <p>With the free open models, the deep dive is written from web research the server does first: the model proposes three searches, the services run them, and the model writes from what comes back, citing only pages that were actually returned. Claude models get the same results as a head start and then search the web themselves as much as they need. By default <strong>all services, combined</strong> are asked at once and their results are interleaved, one from each in turn, so no single index decides what the model reads. If a service runs out of monthly credits it's paused until next month and the others carry on; every query and result is logged. On a computer, the research behind each day is under "Research notes" on the retreat page.</p>
@@ -912,24 +953,24 @@
 
   <script src="vendor/supabase.js?v=2.117.2"></script>
   <script src="vendor/qrcode.js?v=2.0.4"></script> <!-- qrcode-generator 2.0.4 (MIT), for the sign-in QR code --> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=86"></script>
+  <script src="config.js?v=87"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=86"></script>
-  <script src="js/look.js?v=86"></script>
-  <script src="js/settings.js?v=86"></script>
-  <script src="js/router.js?v=86"></script>
-  <script src="js/library.js?v=86"></script>
-  <script src="js/new-retreat.js?v=86"></script>
-  <script src="js/retreat.js?v=86"></script>
-  <script src="js/build-log.js?v=86"></script>
-  <script src="js/research.js?v=86"></script>
-  <script src="js/pray.js?v=86"></script>
-  <script src="js/about-me.js?v=86"></script>
-  <script src="js/talk.js?v=86"></script>
-  <script src="js/agents.js?v=86"></script>
-  <script src="js/costs.js?v=86"></script>
-  <script src="js/practice.js?v=86"></script>
-  <script src="js/quotes.js?v=86"></script>
-  <script src="js/start.js?v=86"></script>
+  <script src="js/core.js?v=87"></script>
+  <script src="js/look.js?v=87"></script>
+  <script src="js/settings.js?v=87"></script>
+  <script src="js/router.js?v=87"></script>
+  <script src="js/library.js?v=87"></script>
+  <script src="js/new-retreat.js?v=87"></script>
+  <script src="js/retreat.js?v=87"></script>
+  <script src="js/build-log.js?v=87"></script>
+  <script src="js/research.js?v=87"></script>
+  <script src="js/pray.js?v=87"></script>
+  <script src="js/about-me.js?v=87"></script>
+  <script src="js/talk.js?v=87"></script>
+  <script src="js/agents.js?v=87"></script>
+  <script src="js/costs.js?v=87"></script>
+  <script src="js/practice.js?v=87"></script>
+  <script src="js/quotes.js?v=87"></script>
+  <script src="js/start.js?v=87"></script>
 </body>
 </html>
