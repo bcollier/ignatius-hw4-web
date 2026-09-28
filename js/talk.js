@@ -429,6 +429,38 @@ function meterLevel(m) {
   return Math.sqrt(sum / m.buf.length);
 }
 
+// ---------------------------------------------------------------- the silence notice
+// A live voice is billed for every second the call is open, silence included. After
+// three minutes with no sound from either side, ask; with no answer in a minute, end
+// the call (it's saved as usual). Sampled on a timer, not the orb's animation frames,
+// which stop while the screen is off. Taking turns costs nothing in silence: no notice.
+const SILENCE_ASK_MS = 3 * 60 * 1000;
+const SILENCE_GRACE_MS = 60 * 1000;
+
+function watchSilence(t) {
+  if (t.provider === "turns") return;
+  t.lastSound = Date.now();
+  $("talk-still-keep").onclick = () => stillHere(t);
+  t.silenceTimer = setInterval(() => checkSilence(t, Date.now()), 500);
+}
+
+function checkSilence(t, now) {
+  if (talkState !== t) return clearInterval(t.silenceTimer);
+  const sound = (t.meters?.mic && meterLevel(t.meters.mic) > 0.03) || (t.meters?.ai && meterLevel(t.meters.ai) > 0.015);
+  if (sound) return stillHere(t, now);
+  const quiet = now - t.lastSound;
+  if (quiet < SILENCE_ASK_MS) return;
+  const left = Math.ceil((SILENCE_ASK_MS + SILENCE_GRACE_MS - quiet) / 1000);
+  if (left <= 0) return endTalk("Ended after four minutes of silence, to save the cost of a quiet call. It's saved below.");
+  $("talk-still").hidden = false;
+  $("talk-still-count").textContent = left;
+}
+
+function stillHere(t, now = Date.now()) {
+  t.lastSound = now;
+  $("talk-still").hidden = true;
+}
+
 function startOrb() {
   const t = talkState;
   const ctx = t.audioCtx;
@@ -452,6 +484,7 @@ function startOrb() {
     t.orbFrame = requestAnimationFrame(tick);
   };
   tick();
+  watchSilence(t);
 }
 
 function addTranscript(who, text) {
@@ -494,6 +527,8 @@ async function endTalk(message) {
 function cleanupTalk(t = talkState) {
   if (!t) return;
   clearInterval(t.timer);
+  clearInterval(t.silenceTimer);
+  $("talk-still").hidden = true;
   try { t.recog?.abort(); } catch {}
   try { t.player?.pause(); } catch {}
   $("talk-turns").hidden = true;

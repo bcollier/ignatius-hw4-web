@@ -851,3 +851,8 @@ input, select, textarea { font-size: max(16px, 1em); }
 .pipeline .node small { display: block; color: var(--muted); font-size: 0.82rem; }
 .pipeline .link { color: var(--muted); font-size: 0.95rem; }
 .pipeline p { margin: 10px 0 0; }
+
+/* ---------------------------------------------------------------- the silence notice (live calls) */
+.talk-still { margin: 14px 0; padding: 14px 16px; border: 1px solid var(--gold-flat); border-left-width: 5px; border-radius: 6px; background: var(--page); }
+.talk-still p { margin: 0 0 8px; }
+.talk-still .row-buttons { margin: 0; align-items: center; }
