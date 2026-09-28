@@ -13,6 +13,19 @@ async function openMe() {
     [$("player"), typeof practiceAudio !== "undefined" ? practiceAudio : null].forEach((a) => a && atVoiceSpeed(a));
     toast(`Voice speed: ${speed.selectedOptions[0].textContent.toLowerCase()}.`);
   };
+  const listenHow = $("me-listen"), pause = $("me-pause");
+  listenHow.value = store.get("talk.handsFree", true) === false ? "tap" : "hands";
+  pause.value = store.get("talk.endPause") || "normal";
+  $("me-pause-label").hidden = listenHow.value === "tap";
+  listenHow.onchange = () => {
+    store.set("talk.handsFree", listenHow.value === "tap" ? false : null);
+    $("me-pause-label").hidden = listenHow.value === "tap";
+    toast(listenHow.value === "tap" ? "Tap to talk." : "Hands-free: it listens and answers when you pause.");
+  };
+  pause.onchange = () => {
+    store.set("talk.endPause", pause.value === "normal" ? null : pause.value);
+    toast(`Pause before it answers: ${pause.value}.`);
+  };
   $("me-debug").checked = debugMode();
   $("me-evals-link").hidden = !debugMode();
   showWaitingPreviews();

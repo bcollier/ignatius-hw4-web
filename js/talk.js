@@ -599,7 +599,8 @@ async function startTurns(voice, brain, retreatId) {
     if (res.previous?.length) showEarlier(res.previous);
     talkConnected(res.max_seconds);
     $("talk-turns").hidden = false;
-    $("talk-turn").onclick = () => toggleListening(t);
+    $("talk-turn").onclick = () => turnButtonPressed(t);
+    t.wantListening = handsFree();
     wireComposer(t);
     applyTurnMode(t);
     await speakReply(t, res.greeting);
@@ -612,58 +613,139 @@ async function startTurns(voice, brain, retreatId) {
   }
 }
 
-function toggleListening(t) {
-  if (t.recog) return t.recog.stop(); // done talking: send what was heard
-  t.player.pause(); // talking over the companion stops it
-  t.queue = [];
+// Hands-free, the way a voice conversation with Claude works: after the companion speaks,
+// the app listens, and it answers when you pause. It waits longer after a word or two, or
+// after "and…", "but…", "um…", since prayer has pauses in it. The button pauses listening,
+// sends at once, or interrupts the companion. "Tap to talk" (Settings) is the old way: tap
+// to start, tap when done.
+const END_PAUSES = { short: 1200, normal: 2000, long: 3500 }; // ms of quiet that ends your turn
+const handsFree = () => store.get("talk.handsFree", true) !== false;
+const endPause = () => END_PAUSES[store.get("talk.endPause")] || END_PAUSES.normal;
+const TRAILING = /\b(and|but|or|so|because|um+|uh+|like|the|a|to|of|that|i|my|which|when|if)$/i;
+
+function quietNeeded(heard) {
+  const words = heard.split(/\s+/).filter(Boolean).length;
+  return endPause() * (words <= 2 ? 1.6 : 1) * (TRAILING.test(heard.trim()) ? 1.7 : 1);
+}
+
+function listen(t) {
+  if (!SpeechRec || t.recog || talkState !== t || t.mode !== "voice") return;
   const recog = new SpeechRec();
   recog.lang = navigator.language || "en-US";
   recog.interimResults = true;
   recog.continuous = true;
   let heard = "";
+  let quiet = null;
   recog.onresult = (e) => {
-    heard = [...e.results].map((r) => r[0].transcript).join(" ").trim();
+    heard = [...e.results].map((x) => x[0].transcript).join(" ").replace(/\s+/g, " ").trim();
     $("talk-heard").textContent = heard;
+    showTurnButton(t, heard);
+    clearTimeout(quiet);
+    if (handsFree() && heard) quiet = setTimeout(() => { recog.send = true; recog.stop(); }, quietNeeded(heard));
   };
   recog.onerror = (e) => {
-    if (e.error === "not-allowed" || e.error === "service-not-allowed") $("talk-status").textContent = microphoneHelp();
-    else if (e.error !== "no-speech" && e.error !== "aborted") $("talk-status").textContent = `Couldn't hear that (${e.error}). Try again, or type instead.`;
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+      t.wantListening = false;
+      t.micRefused = true;
+      $("talk-status").textContent = microphoneHelp();
+    } else if (e.error !== "no-speech" && e.error !== "aborted") $("talk-status").textContent = `Couldn't hear that (${e.error}). Try again, or type instead.`;
   };
   recog.onend = () => {
-    t.recog = null;
+    clearTimeout(quiet);
+    if (t.recog === recog) t.recog = null;
     t.listening = false;
-    $("talk-turn").textContent = "Tap to talk";
-    $("talk-turn").classList.remove("listening");
     $("talk-heard").textContent = "";
-    if (talkState === t && heard) sayToCompanion(t, heard);
+    if (talkState !== t) return;
+    // Tap to talk sends whatever was heard when you tap Done; hands-free sends after the pause.
+    if (heard && (recog.send || !handsFree()) && !recog.discard) return sayToCompanion(t, heard);
+    // The browser stops listening by itself after a stretch of silence: keep listening.
+    if (handsFree() && t.wantListening && !recog.discard) setTimeout(() => listen(t), 250);
+    else showTurnButton(t, "");
   };
   t.recog = recog;
   t.listening = true;
-  $("talk-turn").textContent = "Done talking";
-  $("talk-turn").classList.add("listening");
-  $("talk-status").className = "status ok";
-  $("talk-status").textContent = "Listening… tap Done talking when you've finished.";
-  recog.start();
+  try {
+    recog.start();
+  } catch {
+    t.recog = null;
+    t.listening = false;
+    t.wantListening = false; // e.g. a phone that only listens after a tap
+  }
+  showTurnButton(t, "");
+}
+
+function stopListening(t, { send = false } = {}) {
+  const recog = t.recog;
+  if (!recog) return;
+  if (send) recog.send = true;
+  else recog.discard = true;
+  try { send ? recog.stop() : recog.abort(); } catch {}
+}
+
+// The one button under the orb, and the line above it, for what's happening now.
+function showTurnButton(t, heard) {
+  const button = $("talk-turn"), status = $("talk-status");
+  button.classList.toggle("listening", !!t.recog);
+  status.className = "status ok";
+  if (t.recog) {
+    if (!handsFree()) {
+      button.textContent = "Done talking";
+      status.textContent = "Listening… tap Done talking when you've finished.";
+    } else {
+      button.textContent = heard ? "Send now" : "Pause listening";
+      status.textContent = heard ? "Listening… it will answer when you pause." : "Listening. Speak whenever you're ready; take your time.";
+    }
+  } else if (t.companionSpeaking) {
+    button.textContent = handsFree() ? "Interrupt" : "Tap to talk";
+    status.textContent = handsFree() ? "The companion is speaking. It will listen when it's done." : "The companion is speaking. Tap to talk to answer.";
+  } else {
+    button.textContent = handsFree() ? (t.micRefused ? "Tap to talk" : "Listen") : "Tap to talk";
+    status.textContent = handsFree() && !t.micRefused ? "Not listening. Tap Listen when you want to talk." : "Tap to talk when you're ready.";
+  }
+}
+
+function turnButtonPressed(t) {
+  if (t.recog) {
+    if (!handsFree()) return stopListening(t, { send: true });
+    if ($("talk-heard").textContent.trim()) return stopListening(t, { send: true }); // Send now
+    t.wantListening = false; // Pause listening
+    return stopListening(t);
+  }
+  t.player.pause(); // talking over the companion stops it
+  t.queue = [];
+  t.micRefused = false;
+  t.wantListening = handsFree();
+  listen(t);
 }
 
 async function sayToCompanion(t, text) {
+  stopListening(t); // typed while it was listening: that's the answer
   const you = chatLine("you", text);
   const pending = chatLine("companion", "");
   const stopWaiting = startWaiting(pending, you); // something quiet happens while it writes
   $("talk-status").className = "status working";
   $("talk-status").textContent = "The companion is writing…";
   $("talk-turn").disabled = true;
+  $("talk-turn").textContent = "Waiting for the reply";
+  $("talk-turn").classList.remove("listening");
+  t.writing = true;
+  let reply, failed = null;
   try {
-    const { reply } = await postJson("/api/talk/turn", { session_id: t.sessionId, text, mode: t.mode });
-    stopWaiting();
-    if (talkState === t) await speakReply(t, reply);
+    ({ reply } = await postJson("/api/talk/turn", { session_id: t.sessionId, text, mode: t.mode }));
   } catch (err) {
-    stopWaiting();
     pending.remove();
-    if (talkState === t) talkError(err.message);
+    failed = err.message || "Something went wrong in the conversation.";
   } finally {
-    $("talk-turn").disabled = false;
+    stopWaiting();
+    t.writing = false;
+    $("talk-turn").disabled = false; // free again, so the companion can be interrupted
   }
+  if (talkState !== t) return;
+  if (failed) {  // say what went wrong, and let the person choose when to talk again
+    if (t.mode === "voice" && SpeechRec) showTurnButton(t, "");
+    return talkError(failed);
+  }
+  await speakReply(t, reply);
 }
 
 // ---------------------------------------------------------------- how you talk: four ways, one conversation
@@ -738,7 +820,8 @@ function showTalkSwitch(current) {
 
 function applyTurnMode(t) {
   const typing = t.mode !== "voice";
-  $("talk-turn").hidden = typing || !SpeechRec;
+  $("talk-turns").hidden = typing || !SpeechRec;
+  if (typing) stopListening(t);
   $("talk-type").placeholder = typing ? "Write to the companion…" : "Or type what you'd say";
   $("talk-type-form").hidden = false;
   $("talk-transcript").classList.toggle("chat", typing);
@@ -749,7 +832,12 @@ function applyTurnMode(t) {
   }
   showTalkSwitch(t.mode);
   $("talk-status").className = "status ok";
-  $("talk-status").textContent = t.mode === "voice" ? "Tap to talk when you're ready." : "Write whenever you're ready. Enter sends; Shift+Enter starts a new line.";
+  $("talk-status").textContent = "Write whenever you're ready. Enter sends; Shift+Enter starts a new line.";
+  if (!typing && SpeechRec) {
+    t.wantListening = handsFree();
+    if (t.wantListening && !t.companionSpeaking && !t.writing) listen(t);
+    else showTurnButton(t, "");
+  }
   if (typing) $("talk-type").focus({ preventScroll: true });
 }
 
@@ -779,7 +867,10 @@ function chatLine(who, text) {
 }
 
 function modeNote(text) {
-  $("talk-transcript").append(el("li", { class: "mode-note", "data-who": "note", text }));
+  const list = $("talk-transcript"), last = list.lastElementChild;
+  // Switching again before anything is said just updates the note.
+  if (last?.classList.contains("mode-note") && !last.classList.contains("earlier") && last.dataset.who === "note") last.textContent = text;
+  else list.append(el("li", { class: "mode-note", "data-who": "note", text }));
 }
 
 // A continued conversation: what was said before, shown quieter above.
@@ -813,24 +904,37 @@ function wireComposer(t) {
 
 // Speak a reply sentence by sentence: the next sentence is recorded while this one plays.
 async function speakReply(t, reply) {
-  if (!reply) return;
+  if (!reply) {
+    if (t.mode === "voice" && handsFree() && t.wantListening) listen(t);
+    return;
+  }
   addTranscript("companion", reply);
   $("talk-status").className = "status ok";
   if (t.mode === "text") {
     $("talk-status").textContent = "Write whenever you're ready.";
     return;
   }
-  $("talk-status").textContent = t.mode === "listen" ? "The companion is speaking. Write your answer whenever you like." : "The companion is speaking. Tap to talk to answer.";
+  t.companionSpeaking = true;
+  if (t.mode === "voice") showTurnButton(t, "");
+  else $("talk-status").textContent = "The companion is speaking. Write your answer whenever you like.";
   const sentences = reply.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g)?.map((x) => x.trim()).filter(Boolean) || [reply];
   const turn = ++t.speaking;
   let next = fetchSpeech(t, sentences[0]);
   for (let i = 0; i < sentences.length; i++) {
     const url = await next;
     if (i + 1 < sentences.length) next = fetchSpeech(t, sentences[i + 1]);
-    if (talkState !== t || t.speaking !== turn || t.recog) return URL.revokeObjectURL(url); // interrupted
+    if (talkState !== t || t.speaking !== turn || t.recog) {  // interrupted
+      if (t.speaking === turn) t.companionSpeaking = false;
+      return URL.revokeObjectURL(url);
+    }
     await playClip(t, url);
   }
-  if (talkState === t && t.speaking === turn && !t.recog) $("talk-status").textContent = t.mode === "voice" && SpeechRec ? "Tap to talk to answer." : "Write your answer.";
+  if (t.speaking === turn) t.companionSpeaking = false;
+  if (talkState !== t || t.speaking !== turn || t.recog) return;
+  if (t.mode === "voice" && SpeechRec) {
+    if (handsFree() && t.wantListening) listen(t); // your turn: it listens
+    else showTurnButton(t, "");
+  } else $("talk-status").textContent = "Write your answer.";
 }
 
 async function fetchSpeech(t, text) {

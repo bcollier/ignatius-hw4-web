@@ -73,13 +73,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=101">
-  <link rel="icon" href="icons/icon-192.png?v=101" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=101">
+  <link rel="manifest" href="manifest.webmanifest?v=102">
+  <link rel="icon" href="icons/icon-192.png?v=102" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=102">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=101">
+  <link rel="stylesheet" href="style.css?v=102">
 </head>
 <body>
   <header class="topbar">
@@ -490,7 +490,7 @@
             <label>Voice <select id="talk-voice"></select></label>
           </div>
           <label id="talk-brain-label" class="talk-brain" hidden>Brain, the model that writes the companion's replies <select id="talk-brain"></select></label>
-          <p id="talk-turns-hint" class="hint" hidden>Taking turns: tap to talk, and the companion answers after a moment in a free voice. Slower than the live voices, but it costs only what the brain reads and writes, so a conversation that is mostly you talking costs very little, and with the free brain nothing at all.</p>
+          <p id="talk-turns-hint" class="hint" hidden>Taking turns: just talk, and when you pause the companion answers after a moment in a free voice. Slower than the live voices, but it costs only what the brain reads and writes, so a conversation that is mostly you talking costs very little, and with the free brain nothing at all.</p>
           <p class="row-buttons">
             <button type="button" id="talk-hear" class="link with-icon"><span data-icon="speaker" data-size="18"></span>Hear this voice</button>
             <span id="talk-no-sample" class="hint" hidden>No sample for this voice: OpenAI offers it only in live conversation. Marin and Cedar have samples.</span>
@@ -501,7 +501,7 @@
         <fieldset id="talk-modes" class="talk-modes">
           <legend>How would you like to talk?</legend>
           <label class="talk-mode" data-mode="live"><input type="radio" name="talk-mode" value="live"><strong>Live voice</strong><span>Talk and listen at once, like a phone call. You can interrupt.</span></label>
-          <label class="talk-mode" data-mode="voice"><input type="radio" name="talk-mode" value="voice"><strong>Free voice</strong><span>Tap to talk, and it answers aloud.</span></label>
+          <label class="talk-mode" data-mode="voice"><input type="radio" name="talk-mode" value="voice"><strong>Free voice</strong><span>Just talk; it answers aloud when you pause.</span></label>
           <label class="talk-mode" data-mode="listen"><input type="radio" name="talk-mode" value="listen"><strong>Type, hear it answer</strong><span>You type and stay quiet; it speaks in your ear.</span></label>
           <label class="talk-mode" data-mode="text"><input type="radio" name="talk-mode" value="text"><strong>Text chat</strong><span>Type and read. Nothing is spoken.</span></label>
         </fieldset>
@@ -536,7 +536,7 @@
         </div>
         <div id="talk-orb" class="talk-orb" hidden aria-hidden="true"></div>
         <div id="talk-turns" class="talk-turns" hidden>
-          <button type="button" id="talk-turn" class="gold big">Tap to talk</button>
+          <button type="button" id="talk-turn" class="gold big">Listen</button>
           <p id="talk-heard" class="meta" aria-live="polite"></p>
         </div>
         <ol id="talk-transcript" class="talk-transcript" aria-live="polite"></ol>
@@ -592,6 +592,22 @@
           <select id="me-speed"></select>
         </label>
         <p class="hint">How fast the recorded voices speak: the readings, reflections, deep dives, practices and the companion when it takes turns. The pitch stays the same, and silences keep their length. Live voices (GPT-Live, Grok) speak at their own pace.</p>
+      </div>
+      <div class="card">
+        <label>Talking with the companion (free voice)
+          <select id="me-listen">
+            <option value="hands">Hands-free: it listens, and answers when you pause</option>
+            <option value="tap">Tap to talk, and tap again when you're done</option>
+          </select>
+        </label>
+        <label id="me-pause-label">How long a pause means you've finished
+          <select id="me-pause">
+            <option value="short">Short (about 1 second)</option>
+            <option value="normal">Normal (about 2 seconds)</option>
+            <option value="long">Long (about 3½ seconds), for slow, reflective talking</option>
+          </select>
+        </label>
+        <p class="hint">Hands-free works like a voice conversation with Claude: after the companion speaks, it listens, and it waits a little longer after just a word or two, or after "and…" or "um…". You can pause listening, send at once, or interrupt the companion with the button. Tap to talk is better somewhere noisy.</p>
       </div>
 
       <h2>Agents</h2>
@@ -768,7 +784,7 @@
             <span class="node model">The brain writes a reply<small>Claude · GPT · Muse</small></span><span class="link">→</span>
             <span class="node">Text to speech<small>Microsoft voice, a sentence at a time</small></span>
           </div>
-          <p class="meta">You tap to talk; it answers when you've finished. Replies take two to twenty seconds, depending on the brain.</p>
+          <p class="meta">It listens and answers when you pause (or you tap to talk, in Settings). Replies take two to twenty seconds, depending on the brain.</p>
         </div>
       </div>
 
@@ -1008,26 +1024,26 @@
 
   <script src="vendor/supabase.js?v=2.117.2"></script>
   <script src="vendor/qrcode.js?v=2.0.4"></script> <!-- qrcode-generator 2.0.4 (MIT), for the sign-in QR code --> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=101"></script>
+  <script src="config.js?v=102"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=101"></script>
-  <script src="js/look.js?v=101"></script>
-  <script src="js/settings.js?v=101"></script>
-  <script src="js/router.js?v=101"></script>
-  <script src="js/library.js?v=101"></script>
-  <script src="js/new-retreat.js?v=101"></script>
-  <script src="js/retreat.js?v=101"></script>
-  <script src="js/build-log.js?v=101"></script>
-  <script src="js/research.js?v=101"></script>
-  <script src="js/pray.js?v=101"></script>
-  <script src="js/about-me.js?v=101"></script>
-  <script src="js/waiting.js?v=101"></script>
-  <script src="js/talk.js?v=101"></script>
-  <script src="js/agents.js?v=101"></script>
-  <script src="js/evals.js?v=101"></script>
-  <script src="js/costs.js?v=101"></script>
-  <script src="js/practice.js?v=101"></script>
-  <script src="js/quotes.js?v=101"></script>
-  <script src="js/start.js?v=101"></script>
+  <script src="js/core.js?v=102"></script>
+  <script src="js/look.js?v=102"></script>
+  <script src="js/settings.js?v=102"></script>
+  <script src="js/router.js?v=102"></script>
+  <script src="js/library.js?v=102"></script>
+  <script src="js/new-retreat.js?v=102"></script>
+  <script src="js/retreat.js?v=102"></script>
+  <script src="js/build-log.js?v=102"></script>
+  <script src="js/research.js?v=102"></script>
+  <script src="js/pray.js?v=102"></script>
+  <script src="js/about-me.js?v=102"></script>
+  <script src="js/waiting.js?v=102"></script>
+  <script src="js/talk.js?v=102"></script>
+  <script src="js/agents.js?v=102"></script>
+  <script src="js/evals.js?v=102"></script>
+  <script src="js/costs.js?v=102"></script>
+  <script src="js/practice.js?v=102"></script>
+  <script src="js/quotes.js?v=102"></script>
+  <script src="js/start.js?v=102"></script>
 </body>
 </html>
