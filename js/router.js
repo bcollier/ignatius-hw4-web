@@ -21,7 +21,7 @@ document.addEventListener("click", (event) => {
 });
 window.addEventListener("popstate", () => route());
 
-const VIEWS = ["signin", "library", "new", "retreat", "research", "talk", "me", "agents", "about", "costs", "practice"];
+const VIEWS = ["signin", "library", "new", "retreat", "research", "talk", "me", "agents", "evals", "about", "costs", "practice"];
 function show(view) {
   window.__appStarted = true; // for the start-up guard in index.html
   if (typeof hideWaking === "function") hideWaking();
@@ -47,12 +47,14 @@ async function route() {
   if (!p.has("talk") && talkState) endTalk("You left the conversation.");
   $("site-foot").hidden = !signedIn();
   $("costs-link").hidden = !debugMode();
+  $("evals-link").hidden = !debugMode();
   $("practice-link").hidden = !signedIn();
   if (p.has("about")) return show("about");
   if (!signedIn()) return show("signin");
   if (p.has("new")) return openNew();
   if (p.has("me")) return openMe();
   if (p.has("agents")) return openAgents();
+  if (p.has("evals")) return openEvals();
   if (p.has("costs")) return openCosts();
   if (!p.has("practice") && typeof stopPractice === "function") {
     stopPractice();

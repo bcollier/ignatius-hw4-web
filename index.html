@@ -73,13 +73,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=92">
-  <link rel="icon" href="icons/icon-192.png?v=92" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=92">
+  <link rel="manifest" href="manifest.webmanifest?v=93">
+  <link rel="icon" href="icons/icon-192.png?v=93" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=93">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=92">
+  <link rel="stylesheet" href="style.css?v=93">
 </head>
 <body>
   <header class="topbar">
@@ -595,7 +595,18 @@
       <h2>Debug mode</h2>
       <div class="card">
         <label class="check"><input id="me-debug" type="checkbox"> <strong>Debug mode</strong>: show technical details, each retreat's build log and what it cost to make, and a Costs page</label>
+        <p id="me-evals-link" class="hint" hidden><a href="./?evals" data-nav="evals">Eval analysis</a>: how the AI judges scored the models, and whether they agree.</p>
       </div>
+    </section>
+
+    <!-- ============================================================ evals (debug mode) -->
+    <section id="view-evals" class="view evals" hidden>
+      <a href="./?me" data-nav="me" class="back">← Settings</a>
+      <h1>Eval analysis</h1>
+      <p class="lede">How the AI judges scored the models' reflections, deep dives and companion conversations, and, before trusting any ranking, whether the judges agree with each other enough to be measuring anything.</p>
+      <p id="ev-meta" class="meta"></p>
+      <div id="ev-tracks" class="ev-tracks" role="tablist" aria-label="Track"></div>
+      <div id="ev-body"></div>
     </section>
 
     <!-- ============================================================ agents -->
@@ -866,7 +877,7 @@
       <div id="costs-page"></div>
     </section>
   </main>
-  <footer class="site-foot" id="site-foot" hidden><a href="./?costs" data-nav="" id="costs-link" hidden>Costs</a><a href="./?me" data-nav="me" id="me-link">Settings</a></footer>
+  <footer class="site-foot" id="site-foot" hidden><a href="./?costs" data-nav="" id="costs-link" hidden>Costs</a><a href="./?evals" data-nav="evals" id="evals-link" hidden>Evals</a><a href="./?me" data-nav="me" id="me-link">Settings</a></footer>
 
   <!-- ============================================================ praying (full screen) -->
   <section id="view-pray" class="pray" hidden aria-label="Praying">
@@ -976,24 +987,25 @@
 
   <script src="vendor/supabase.js?v=2.117.2"></script>
   <script src="vendor/qrcode.js?v=2.0.4"></script> <!-- qrcode-generator 2.0.4 (MIT), for the sign-in QR code --> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=92"></script>
+  <script src="config.js?v=93"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=92"></script>
-  <script src="js/look.js?v=92"></script>
-  <script src="js/settings.js?v=92"></script>
-  <script src="js/router.js?v=92"></script>
-  <script src="js/library.js?v=92"></script>
-  <script src="js/new-retreat.js?v=92"></script>
-  <script src="js/retreat.js?v=92"></script>
-  <script src="js/build-log.js?v=92"></script>
-  <script src="js/research.js?v=92"></script>
-  <script src="js/pray.js?v=92"></script>
-  <script src="js/about-me.js?v=92"></script>
-  <script src="js/talk.js?v=92"></script>
-  <script src="js/agents.js?v=92"></script>
-  <script src="js/costs.js?v=92"></script>
-  <script src="js/practice.js?v=92"></script>
-  <script src="js/quotes.js?v=92"></script>
-  <script src="js/start.js?v=92"></script>
+  <script src="js/core.js?v=93"></script>
+  <script src="js/look.js?v=93"></script>
+  <script src="js/settings.js?v=93"></script>
+  <script src="js/router.js?v=93"></script>
+  <script src="js/library.js?v=93"></script>
+  <script src="js/new-retreat.js?v=93"></script>
+  <script src="js/retreat.js?v=93"></script>
+  <script src="js/build-log.js?v=93"></script>
+  <script src="js/research.js?v=93"></script>
+  <script src="js/pray.js?v=93"></script>
+  <script src="js/about-me.js?v=93"></script>
+  <script src="js/talk.js?v=93"></script>
+  <script src="js/agents.js?v=93"></script>
+  <script src="js/evals.js?v=93"></script>
+  <script src="js/costs.js?v=93"></script>
+  <script src="js/practice.js?v=93"></script>
+  <script src="js/quotes.js?v=93"></script>
+  <script src="js/start.js?v=93"></script>
 </body>
 </html>

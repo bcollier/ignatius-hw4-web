@@ -14,10 +14,13 @@ async function openMe() {
     toast(`Voice speed: ${speed.selectedOptions[0].textContent.toLowerCase()}.`);
   };
   $("me-debug").checked = debugMode();
+  $("me-evals-link").hidden = !debugMode();
   $("me-debug").onchange = (e) => {
     store.set("debug", e.target.checked || null);
     document.documentElement.classList.toggle("debug", debugMode());
     $("costs-link").hidden = !debugMode();
+    $("evals-link").hidden = !debugMode();
+    $("me-evals-link").hidden = !debugMode();
     $("debug-badge").hidden = !debugMode();
   };
   try {
