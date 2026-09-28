@@ -6,6 +6,11 @@
 >
 > **Live app:** https://bcollier.github.io/ignatius-hw4-web/ · **Backend repo:** [ignatius-hw4-api](https://github.com/bcollier/ignatius-hw4-api) · **Every prompt used to build it:** [PROMPT_LOG.md](PROMPT_LOG.md) · **Original design spec and build plan:** [design spec](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/original-spec/design-spec.md), [technical spec](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/original-spec/technical-spec.md), [build plan](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/original-spec/staging-plan.md) · **Redesign spec:** [IMPROVEMENTS.md](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/IMPROVEMENTS.md) · **Visual redesign spec:** [VISUAL_REDESIGN.md](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/VISUAL_REDESIGN.md) · **Code review guidance:** [CODE_REVIEW.md](https://github.com/bcollier/ignatius-hw4-api/blob/main/docs/CODE_REVIEW.md)
 
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=GpS1dclAo4w"><img src="docs/screenshots/video-walkthrough.jpg" alt="Video walkthrough of Ignatius at Home on YouTube: play" width="720"></a><br>
+  <sub><b>▶ <a href="https://www.youtube.com/watch?v=GpS1dclAo4w">Watch the walkthrough on YouTube</a></b>: from a retreat handout to a guided audio retreat, and the companion.</sub>
+</p>
+
 **Ignatius at Home turns prayer material you already have into a guided audio retreat you can pray at home, one day at a time.** Upload a retreat handout, a few passages of scripture, a reading with a painting, anything you have the right to use, and press **Make my retreat**. Twenty minutes later there is a week of prayer waiting: for each day the passage read aloud, a reflection for the heart, a deep dive into the passage's history and theology, and a gentle spoken guide who asks for the day's grace and leads you through the passage four times in the old pattern of *lectio divina*, with silence and a bell. On a phone, the day's painting fills the screen while you pray.
 
 <p align="center">
