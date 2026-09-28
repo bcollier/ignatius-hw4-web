@@ -13,6 +13,7 @@ const EV_LEVEL_COLORS = ["#b2182b", "#d6604d", "#f4a582", "#d9d0c1", "#92c5de", 
 let evData = null;
 let evTrack = "heart";
 let evFit = null; // evals/fitness.json: measured fitness for this app, and cost
+let evScl = null; // evals/scales.json: the scale study, other ways of asking the judges
 let evMeasure = "overall"; // what the model comparison shows: the overall score or one scale
 
 async function openEvals() {
@@ -24,6 +25,7 @@ async function openEvals() {
   }
   try {
     evData = evData || await (await fetch(`evals/${EV_RUN}.json?v=${RUNNING_VERSION}`, { cache: "no-store" })).json();
+    evScl = evScl || await fetch(`evals/scales.json?v=${RUNNING_VERSION}`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
     evFit = evFit || await fetch(`evals/fitness.json?v=${RUNNING_VERSION}`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
   } catch {
     $("ev-body").replaceChildren(el("p", { class: "lede", text: "No eval results have been published yet." }));
@@ -127,7 +129,7 @@ function renderEvals() {
       onclick: () => { evTrack = t.id; renderEvals(); } })));
   $("ev-body").replaceChildren(
     evVerdict(), evJudges(), evDistributions(), evAgreement(), evDiscrimination(),
-    evModels(), evFitness(), evRedundancy(), evPower(), evJudgments());
+    evModels(), evFitness(), evScaleStudy(), evRedundancy(), evPower(), evJudgments());
   evWireTips();
 }
 
@@ -584,6 +586,59 @@ function evFitness() {
       `Each row weights the measures differently (table below); the dots are each model's fitness under that weighting. The bar shows how often each model comes out on top across ${f.sensitivity.draws.toLocaleString()} random weightings: a model that wins under most of them is a safe choice whatever your priorities.`,
       dot, shares, el("details", {}, el("summary", { text: "The weightings" }), el("div", { class: "ev-table-wrap" }, wtable))),
     evFigure("What the checks found", `Assumptions: ${f.assumptions.note || ""}`, el("div", { class: "ev-table-wrap" }, facts)));
+}
+
+// ---------------------------------------------------------------- the scale study
+// The same pieces, the same cheap judges, asked seven other ways. Each column says which
+// direction is good; cells are shaded from poor (pale red) to good (blue) on fixed cut-offs.
+function evScaleStudy() {
+  const d = evScl;
+  if (!d) return "";
+  const V = d.variants, order = d.ranking.order;
+  const margin = (v) => {
+    const xs = Object.values(v.discrimination).filter((x) => x && x.eta2 != null).map((x) => x.eta2 - x.null);
+    return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
+  };
+  const shade = (good) => (good == null ? "" : good === 2 ? "ev-good" : good === 1 ? "ev-fair" : "ev-poor");
+  const cols = [
+    { h: "Top-end pile-up", tip: "Share of scores in the top two points (or the same share of the range). Lower is better: 80% means the scale can't tell good from ordinary.",
+      v: (v) => v.shape.ceiling, f: evPct, g: (x) => (x <= 0.35 ? 2 : x <= 0.6 ? 1 : 0) },
+    { h: "Judges agree (α)", tip: "Krippendorff's alpha within each track. 0.67+ usable, 0.8+ reliable; 0 is chance; below 0 the judges systematically disagree.",
+      v: (v) => v.reliability.alpha, f: evF2, g: (x) => (x >= 0.67 ? 2 : x >= 0.3 ? 1 : 0) },
+    { h: "Judges' average (ICC(2,k))", tip: "How reliable the three judges' average is. 0.75+ good, 0.5–0.75 moderate, below 0.5 poor.",
+      v: (v) => v.reliability.icck, f: evF2, g: (x) => (x >= 0.75 ? 2 : x >= 0.5 ? 1 : 0) },
+    { h: "Same answer twice (ρ)", tip: "The same judge asked the same thing twice: rank correlation. 0.9+ very stable.",
+      v: (v) => v.test_retest.spearman, f: evF2, g: (x) => (x >= 0.9 ? 2 : x >= 0.7 ? 1 : 0) },
+    { h: "Separates the models (η² over chance)", tip: "How much of the score depends on which model wrote the piece, beyond what luck gives, averaged over tracks. Higher is better; 0 means no signal.",
+      v: margin, f: evF2, g: (x) => (x >= 0.35 ? 2 : x >= 0.15 ? 1 : 0) },
+  ];
+  const hist = (v) => {
+    const hs = v.shape.hist || [], W = 120, H = 34, max = Math.max(1, ...hs), bw = W / Math.max(1, hs.length);
+    const svg = evSvg(W, H + 12, "ev-mini");
+    hs.forEach((n, i) => svg.append(evS("rect", { x: i * bw + 1, y: H - (n / max) * H, width: bw - 2, height: (n / max) * H, class: "ev-mini-bar" })));
+    svg.append(evS("text", { x: 0, y: H + 11, class: "ev-tick" }, "low"), evS("text", { x: W, y: H + 11, class: "ev-tick", "text-anchor": "end" }, "high"));
+    return svg;
+  };
+  const table = el("table", { class: "ev-table ev-scales" },
+    el("thead", {}, el("tr", {}, el("th", { text: "Way of asking" }), el("th", { text: "Scores given" }),
+      ...cols.map((c) => el("th", { title: c.tip, class: "ev-has-tip-native", text: c.h })))),
+    el("tbody", {}, order.map((id, i) => {
+      const v = V[id];
+      return el("tr", { class: id === "v0" ? "ev-current" : "" },
+        el("th", {}, el("strong", { text: `${i + 1}. ${v.label}` }), el("span", { class: "hint", text: v.change })),
+        el("td", {}, hist(v)),
+        ...cols.map((c) => {
+          const x = c.v(v);
+          return el("td", { class: `ev-fit-cell ${x == null ? "" : shade(c.g(x))}`, title: c.tip, text: x == null ? "–" : c.f(x) });
+        }));
+    })));
+  return el("section", { class: "ev-section" },
+    el("h2", { text: "Would another way of asking work better? · all tracks" }),
+    el("p", { text: `The current rubric piles up at the top. The same pieces were scored again by the same cheap judges in seven other ways. Ordered by mean rank across nine criteria; the current rubric is highlighted. Hover a heading for what it measures and where the cut-offs are.` }),
+    evFigure("Seven other ways of asking, against the current rubric",
+      "Comparing pieces (pairwise, ranking) did far more than rewording a scale: pairwise is the only way the judges' agreement comes near a usable level (the three judges' average reaches 0.74), and it separates the models best. Ranking's even spread is built into the design, so its pile-up score is not earned. Rewording helped the pile-up (critique first most) but not agreement. Full report: docs/evals/SCALE_STUDY.md in the API repo.",
+      el("div", { class: "ev-table-wrap" }, table),
+      evLegend([["good", "#92c5de", "square"], ["fair", "#e8e0cf", "square"], ["poor", "#f4c3b5", "square"]])));
 }
 
 // 7 ---------------------------------------------------------------- redundancy

@@ -1061,3 +1061,11 @@ span.ev-has-tip:hover, span.ev-has-tip:focus { color: var(--rubric); outline: no
 .ev-share { display: flex; height: 26px; border-radius: 4px; overflow: hidden; margin: 10px 0 4px; font-size: 0.85rem; }
 .ev-share span { background: var(--c); color: #fff; display: flex; align-items: center; padding: 0 8px; white-space: nowrap; overflow: hidden; }
 .ev-grid-key { font-size: 0.82rem; color: var(--muted); line-height: 1.3; }
+.ev-scales th .hint { display: block; font-weight: normal; font-size: 0.8rem; max-width: 22rem; }
+.ev-scales td.ev-good, .ev-scales td.ev-fair, .ev-scales td.ev-poor { color: #1c1712; }
+.ev-scales td.ev-good { background: #92c5de; }
+.ev-scales td.ev-fair { background: #e8e0cf; }
+.ev-scales td.ev-poor { background: #f4c3b5; }
+.ev-scales tr.ev-current th strong::after { content: " · current"; color: var(--accent, #a32a1c); font-weight: normal; }
+.ev-mini { width: 120px; height: 46px; }
+.ev-mini-bar { fill: #6b5d4b; }
