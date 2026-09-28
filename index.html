@@ -2,23 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <!-- Where this page may load from and connect to. The inline start-up script is allowed by
+       its hash: if you change it, update the sha256 (python3 tools/csp_hash.py prints it). -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-LTeZUWris4o6mbaZBXErREkATI7QJAlmCpQVCDTP6Yw=' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://ignatius-hw4-api.onrender.com http://localhost:*; media-src 'self' data: blob: https://*.supabase.co https://ignatius-hw4-api.onrender.com http://localhost:*; connect-src 'self' https://ignatius-hw4-api.onrender.com https://*.supabase.co wss://*.supabase.co wss://api.x.ai http://localhost:*; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="same-origin">
   <script>
     // Start-up guard, written into the page so it works even when the app's own scripts
     // fail or are stale: any error while starting is shown with a Reload button and
     // reported to the server (so it can be fixed), and a page that hasn't started after
     // eight seconds checks for a newer version and reloads into it.
     (function () {
+      // Never inside another site's frame (a page laid invisibly over another to steal clicks).
+      if (window.top !== window.self) { document.documentElement.style.display = "none"; throw new Error("framed"); }
       var local = ["localhost", "127.0.0.1"].indexOf(location.hostname) >= 0;
       var api = local ? (function () { try { return JSON.parse(localStorage.getItem("apiBase")) || "http://localhost:8000"; } catch (e) { return "http://localhost:8000"; } })()
         : "https://ignatius-hw4-api.onrender.com";
       var sent = 0;
       function version() { var s = document.querySelector('script[src*="js/core.js"]'); return s ? (s.src.split("v=")[1] || "") : ""; }
+      // Never the values in the address (a sign-in code or token can be there), and nothing
+      // that looks like a token in the message: only the parameter names, to see which page.
+      function clean(text) { return String(text || "").replace(/((?:token|code|hash|access|refresh|key)[a-z_]*=)[^&\s"']+/gi, "$1[hidden]"); }
+      function pageName() { return Array.from(new URLSearchParams(location.search).keys()).join("&").slice(0, 200); }
       function report(message, where) {
         if (sent++ >= 3) return;
         try {
           fetch(api + "/api/client-error", { method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true,
-            body: JSON.stringify({ message: String(message).slice(0, 1000), where: String(where || "").slice(0, 300), version: version(),
-              page: location.search.slice(0, 200), agent: navigator.userAgent.slice(0, 300), standalone: !!navigator.standalone }) });
+            body: JSON.stringify({ message: clean(message).slice(0, 1000), where: clean(where).slice(0, 300), version: version(),
+              page: pageName(), agent: navigator.userAgent.slice(0, 300), standalone: !!navigator.standalone }) });
         } catch (e) {}
       }
       function show(message) {
@@ -63,13 +73,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=90">
-  <link rel="icon" href="icons/icon-192.png?v=90" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=90">
+  <link rel="manifest" href="manifest.webmanifest?v=91">
+  <link rel="icon" href="icons/icon-192.png?v=91" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=91">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=90">
+  <link rel="stylesheet" href="style.css?v=91">
 </head>
 <body>
   <header class="topbar">
@@ -961,24 +971,24 @@
 
   <script src="vendor/supabase.js?v=2.117.2"></script>
   <script src="vendor/qrcode.js?v=2.0.4"></script> <!-- qrcode-generator 2.0.4 (MIT), for the sign-in QR code --> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=90"></script>
+  <script src="config.js?v=91"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=90"></script>
-  <script src="js/look.js?v=90"></script>
-  <script src="js/settings.js?v=90"></script>
-  <script src="js/router.js?v=90"></script>
-  <script src="js/library.js?v=90"></script>
-  <script src="js/new-retreat.js?v=90"></script>
-  <script src="js/retreat.js?v=90"></script>
-  <script src="js/build-log.js?v=90"></script>
-  <script src="js/research.js?v=90"></script>
-  <script src="js/pray.js?v=90"></script>
-  <script src="js/about-me.js?v=90"></script>
-  <script src="js/talk.js?v=90"></script>
-  <script src="js/agents.js?v=90"></script>
-  <script src="js/costs.js?v=90"></script>
-  <script src="js/practice.js?v=90"></script>
-  <script src="js/quotes.js?v=90"></script>
-  <script src="js/start.js?v=90"></script>
+  <script src="js/core.js?v=91"></script>
+  <script src="js/look.js?v=91"></script>
+  <script src="js/settings.js?v=91"></script>
+  <script src="js/router.js?v=91"></script>
+  <script src="js/library.js?v=91"></script>
+  <script src="js/new-retreat.js?v=91"></script>
+  <script src="js/retreat.js?v=91"></script>
+  <script src="js/build-log.js?v=91"></script>
+  <script src="js/research.js?v=91"></script>
+  <script src="js/pray.js?v=91"></script>
+  <script src="js/about-me.js?v=91"></script>
+  <script src="js/talk.js?v=91"></script>
+  <script src="js/agents.js?v=91"></script>
+  <script src="js/costs.js?v=91"></script>
+  <script src="js/practice.js?v=91"></script>
+  <script src="js/quotes.js?v=91"></script>
+  <script src="js/start.js?v=91"></script>
 </body>
 </html>
