@@ -1009,3 +1009,31 @@ mark.hl.still { transition: none; }
 .wait-preview-head { display: flex; gap: 8px; align-items: center; }
 .wait-preview .talk-transcript { max-height: none; }
 .wait-preview .talk-transcript li { max-width: 100%; font-size: 0.95rem; }
+.ev-band.worse { fill: color-mix(in srgb, var(--bad) 7%, transparent); }
+.ev-note { font-size: 12px; fill: var(--muted) !important; }
+.ev-note.strong { fill: var(--ink) !important; font-weight: 600; }
+.ev-note.end { text-anchor: end; } .ev-note.mid, .ev-band-label.mid { text-anchor: middle; } .ev-note.endish { text-anchor: end; }
+.ev-leader { stroke: var(--muted); stroke-width: 1; fill: none; }
+.ev-leader.thin { stroke-dasharray: 2 2; }
+.ev-arrowhead { fill: var(--muted); }
+.ev-callout { font-size: 12px; font-style: italic; }
+.ev-callout.raw { fill: var(--muted) !important; } .ev-callout.std { fill: var(--ink) !important; } .ev-callout.icc { fill: var(--rubric) !important; }
+.ev-piece { margin: 12px 0; padding: 14px 16px; }
+.ev-piece header { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; margin-bottom: 10px; }
+.ev-piece-model { font-weight: 600; }
+.ev-verdicts { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 760px) { .ev-verdicts { grid-template-columns: 1fr; } }
+.ev-verdict { border-top: 2px solid var(--line); padding-top: 8px; font-size: 0.95rem; line-height: 1.4; }
+.ev-verdict-head { display: flex; align-items: center; gap: 2px; font-weight: 600; margin-bottom: 4px; }
+.ev-verdict-score { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 400; }
+.ev-plus b { color: var(--ok); } .ev-minus b { color: var(--bad); }
+.ev-plus, .ev-minus { margin: 4px 0; }
+mark.ev-shared { background: color-mix(in srgb, var(--gold-flat) 35%, transparent); color: inherit; border-radius: 2px; padding: 0 1px; }
+.ev-raw { margin-top: 10px; }
+.ev-raw summary { cursor: pointer; color: var(--rubric); }
+.ev-raw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8px; }
+@media (max-width: 760px) { .ev-raw-grid { grid-template-columns: 1fr; } }
+.ev-raw-grid h5 { margin: 0 0 6px; font-size: 0.9rem; color: var(--muted); font-weight: 600; }
+.ev-raw-text { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 420px; overflow: auto; font-size: 0.85rem; line-height: 1.45; background: var(--page); border: 1px solid var(--line); padding: 10px; border-radius: 4px; margin: 0; }
+.ev-raw-text.prose { font-family: var(--serif); font-size: 0.98rem; }
+.ev-conv { max-height: 420px; }

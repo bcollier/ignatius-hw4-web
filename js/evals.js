@@ -217,16 +217,32 @@ function evDistributions() {
 function evAgreement() {
   const t = evTd();
   const rows = [{ scale: "overall score", ...t.overall, bold: true }, ...t.scales.map((s) => ({ ...s, scale: evPretty(s.scale) }))];
-  const W = 760, rowH = 22, left = 180, right = 120, top = 30, lo = -0.6, hi = 1;
-  const H = top + rows.length * rowH + 30;
-  const svg = evSvg(W, H);
+  const W = 820, rowH = 22, left = 180, right = 150, top = 118, lo = -0.6, hi = 1, foot = 118;
+  const H = top + rows.length * rowH + foot;
+  const svg = evSvg(W, H, "ev-agree");
   const x = (v) => left + (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo) * (W - left - right);
+  const bottom = top + rows.length * rowH;
+  const note = (tx, ty, text, cls = "ev-note") => svg.append(evS("text", { x: tx, y: ty, class: cls }, text));
+  const arrow = (x1, y1, x2, y2) => svg.append(evS("path", { d: `M${x1} ${y1} L${x2} ${y2}`, class: "ev-leader", "marker-end": "url(#ev-arrow)" }));
+  svg.append(evS("defs", {}, evS("marker", { id: "ev-arrow", viewBox: "0 0 8 8", refX: "7", refY: "4", markerWidth: "7", markerHeight: "7", orient: "auto-start-reverse" },
+    evS("path", { d: "M0 0 L8 4 L0 8 z", class: "ev-arrowhead" }))));
+
+  // the scale itself, labelled where it matters
   svg.append(evS("rect", { x: x(0.8), y: top - 6, width: x(1) - x(0.8), height: rows.length * rowH + 4, class: "ev-band good" }));
   svg.append(evS("rect", { x: x(0.667), y: top - 6, width: x(0.8) - x(0.667), height: rows.length * rowH + 4, class: "ev-band fair" }));
-  svg.append(evS("text", { x: (x(0.8) + x(1)) / 2, y: top - 10, class: "ev-band-label", "text-anchor": "middle" }, "reliable"));
-  svg.append(evS("text", { x: (x(0.667) + x(0.8)) / 2, y: top - 10, class: "ev-band-label", "text-anchor": "middle" }, "tentative"));
-  svg.append(evS("line", { x1: x(0), x2: x(0), y1: top - 6, y2: top + rows.length * rowH, class: "ev-zero" }));
-  svg.append(evS("text", { x: W - right + 10, y: top - 10, class: "ev-axis-label" }, "exact · ±1"));
+  svg.append(evS("rect", { x: x(lo), y: top - 6, width: x(0) - x(lo), height: rows.length * rowH + 4, class: "ev-band worse" }));
+  note(x(1), 16, "1 = perfect agreement", "ev-note strong end");
+  arrow(x(1) - 4, 22, x(1) - 1, top - 10);
+  note(x(0), 16, "0 = no better than chance", "ev-note strong mid");
+  arrow(x(0), 22, x(0), top - 10);
+  note(x(lo) + 2, 16, "below 0 = systematic", "ev-note strong");
+  note(x(lo) + 2, 30, "disagreement", "ev-note strong");
+  note((x(0.667) + x(0.8)) / 2, top - 12, "tentative", "ev-band-label mid");
+  note((x(0.8) + x(1)) / 2, top - 12, "reliable", "ev-band-label mid");
+  svg.append(evS("line", { x1: x(0), x2: x(0), y1: top - 6, y2: bottom, class: "ev-zero" }));
+  note(W - right + 12, top - 26, "exact agreement ·", "ev-note");
+  note(W - right + 12, top - 12, "within one point", "ev-note");
+
   rows.forEach((r, i) => {
     const y = top + i * rowH + rowH / 2;
     svg.append(evS("line", { x1: left, x2: W - right, y1: y, y2: y, class: "ev-guide" }));
@@ -240,14 +256,38 @@ function evAgreement() {
       mark.append(evS("title", {}, `${r.scale}: ${name} ${v.toFixed(2)}`));
       svg.append(mark);
     }
-    if (r.exact != null) svg.append(evS("text", { x: W - right + 10, y: y + 4, class: "ev-row-note" }, `${evPct(r.exact)} · ${evPct(r.within1)}`));
+    if (r.exact != null) svg.append(evS("text", { x: W - right + 12, y: y + 4, class: "ev-row-note" }, `${evPct(r.exact)} · ${evPct(r.within1)}`));
+    if (i === 0) {  // callouts naming each marker, on the first row, staggered so they never collide
+      const called = pts.filter((p) => p[0] != null).sort((a, b) => a[0] - b[0]);
+      const words = { raw: "alpha, raw scores", std: "alpha, leniency removed", icc: "ICC(2,k): the judges' average" };
+      called.forEach(([v, kind], k) => {
+        const ly = top - 40 - k * 16;
+        const lx = Math.min(W - right - 10, Math.max(left + 10, x(v)));
+        svg.append(evS("path", { d: `M${x(v)} ${y - 7} L${x(v)} ${ly + 3}`, class: "ev-leader thin" }));
+        note(lx + 4, ly, words[kind], `ev-callout ${kind}`);
+      });
+    }
   });
-  [-0.5, 0, 0.5, 0.667, 0.8, 1].forEach((v) => svg.append(evS("text", { x: x(v), y: H - 8, class: "ev-tick", "text-anchor": "middle" }, v === 0.667 ? ".67" : String(v))));
+  [-0.5, 0, 0.5, 0.667, 0.8, 1].forEach((v) => svg.append(evS("text", { x: x(v), y: bottom + 16, class: "ev-tick", "text-anchor": "middle" }, v === 0.667 ? ".67" : String(v))));
+
+  // how to read it: two drawn examples
+  const fy = bottom + 44;
+  note(left - 10, fy, "How to read a row", "ev-note strong endish");
+  const ex1 = left + 10;
+  svg.append(evS("line", { x1: ex1, x2: ex1 + 90, y1: fy + 18, y2: fy + 18, class: "ev-span" }));
+  svg.append(evS("circle", { cx: ex1, cy: fy + 18, r: 4.5, class: "ev-pt raw" }));
+  svg.append(evS("circle", { cx: ex1 + 90, cy: fy + 18, r: 4.5, class: "ev-pt std" }));
+  note(ex1 + 104, fy + 22, "A long gap from hollow to filled: the judges order the pieces alike but disagree about how generous to be.");
+  const ex2 = x(0);
+  svg.append(evS("circle", { cx: ex1 + 45, cy: fy + 48, r: 4.5, class: "ev-pt std" }));
+  svg.append(evS("line", { x1: ex1 + 45, x2: ex1 + 45, y1: fy + 38, y2: fy + 58, class: "ev-zero" }));
+  note(ex1 + 104, fy + 52, "A filled circle near 0: even allowing for generosity, they don't rank the pieces alike.");
+  void ex2;
   return el("section", { class: "ev-section" },
     el("h2", { text: `Do the judges agree? · ${t.label}` }),
     evFigure("Agreement, scale by scale",
-      "Hollow circle: Krippendorff's alpha on the raw scores (1 = perfect agreement, 0 = chance, below 0 = systematic disagreement). Filled circle: alpha after removing each judge's own mean and spread, so only whether they rank the pieces alike remains. Diamond: ICC(2,k), the reliability of the judges' average. The right column is exact agreement and agreement within one point. A long gap between the hollow and filled circle means the judges disagree mostly about how generous to be; a filled circle near zero means they don't even order the pieces alike.",
-      svg, evLegend([["alpha, raw", "transparent", "ring"], ["alpha, leniency removed", "var(--ink)", "dot"], ["ICC(2,k)", "var(--rubric)", "diamond"]])));
+      "Krippendorff's alpha measures agreement beyond chance for any number of judges. The filled circle recomputes it after putting every judge on its own scale (its mean and spread removed). ICC(2,k) is the reliability of the judges' average, the number the reports use.",
+      svg));
 }
 
 // 5 ---------------------------------------------------------------- discrimination
@@ -378,19 +418,55 @@ function evPower() {
         el("tbody", {}, rows)))));
 }
 
-// 9 ---------------------------------------------------------------- every judgment
+// 9 ---------------------------------------------------------------- every piece, and what each judge said
 function evJudgments() {
-  const rows = evData.judgments.filter((r) => r.track === evTrack);
   const scales = evScales();
+  const rows = evData.judgments.filter((r) => r.track === evTrack);
   const overall = (r) => scales.reduce((a, s) => a + evGood(s, r.scores[s] ?? 4), 0) / scales.length;
-  const sorted = [...rows].sort((a, b) => a.item.localeCompare(b.item) || a.model.localeCompare(b.model) || a.judge.localeCompare(b.judge));
+  const byPiece = {};
+  for (const r of rows) (byPiece[`${r.model}|${r.track}|${r.item}`] ||= []).push(r);
+  const keys = Object.keys(byPiece).sort((a, b) => a.split("|")[2].localeCompare(b.split("|")[2]) || a.localeCompare(b));
+  const agree = evData.text_agreement || {};
+  const overlaps = (f) => keys.map((k) => agree[k]?.[f]?.overlap).filter((v) => v != null);
+  const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
+  const marked = (text, shared) => {  // words two or more judges used, marked
+    if (!shared?.length) return [text];
+    const re = new RegExp(`\\b(${shared.map((w) => w.replace(/[^a-z]/g, "")).join("|")})\\w*`, "gi");
+    const out = [];
+    let pos = 0;
+    for (const m of text.matchAll(re)) {
+      out.push(text.slice(pos, m.index), el("mark", { class: "ev-shared", text: m[0] }));
+      pos = m.index + m[0].length;
+    }
+    out.push(text.slice(pos));
+    return out;
+  };
+  const cards = keys.map((k) => {
+    const [model, , item] = k.split("|");
+    const judged = byPiece[k].sort((a, b) => a.judge.localeCompare(b.judge));
+    const ta = agree[k] || {};
+    const piece = evData.pieces?.[k];
+    const raw = piece ? el("details", { class: "ev-raw" }, el("summary", { text: evTrack === "companion" ? "Read the whole conversation" : "What it was given, and what it wrote" }),
+      el("div", { class: "ev-raw-grid" },
+        el("div", {}, el("h5", { text: `Given${piece.given_chars > piece.given.length ? ` (first ${piece.given.length.toLocaleString()} of ${piece.given_chars.toLocaleString()} characters)` : ""}` }),
+          el("pre", { class: "ev-raw-text", text: piece.given })),
+        el("div", {}, el("h5", { text: piece.turns ? "The conversation" : `Wrote (${piece.words || "?"} words, ${Math.round(piece.seconds || 0)} s)` }),
+          piece.turns ? el("ol", { class: "talk-transcript chat ev-conv" }, piece.turns.map((t) => el("li", { class: t.who === "user" ? "you" : "companion", text: t.text })))
+            : el("div", { class: "ev-raw-text prose", text: piece.wrote }),
+          piece.sources?.length ? el("p", { class: "hint", text: `Sources it listed: ${piece.sources.length}` }) : ""))) : "";
+    return el("article", { class: "card ev-piece" },
+      el("header", {},
+        el("strong", { text: item }), el("span", { class: "ev-piece-model" }, el("i", { class: "ev-key dot", style: `--c:${EV_MODEL_COLORS[model] || "#666"}` }), evModel(model)),
+        el("span", { class: "meta", text: `words shared between judges: strengths ${evPct(ta.strength?.overlap)}, weaknesses ${evPct(ta.weakness?.overlap)}` })),
+      el("div", { class: "ev-verdicts", style: `--cols:${judged.length}` }, judged.map((r) => el("div", { class: "ev-verdict" },
+        el("div", { class: "ev-verdict-head" }, el("i", { class: "ev-key dot", style: `--c:${EV_JUDGE_COLORS[r.judge] || "#888"}` }), evJudge(r.judge),
+          el("span", { class: "ev-verdict-score", text: overall(r).toFixed(2) })),
+        el("p", { class: "ev-plus" }, el("b", { text: "+ " }), ...marked(r.strength || "", ta.strength?.shared)),
+        el("p", { class: "ev-minus" }, el("b", { text: "− " }), ...marked(r.weakness || "", ta.weakness?.shared))))),
+      raw);
+  });
   return el("section", { class: "ev-section" },
-    el("h2", { text: `Every judgment · ${evTd().label}` }),
-    el("details", { class: "card" }, el("summary", { text: `Open the ${rows.length} judgments, with what each judge said` }),
-      el("div", { class: "ev-table-wrap" }, el("table", { class: "ev-table ev-judgments" },
-        el("thead", {}, el("tr", {}, ["Passage", "Model", "Judge", "Overall", "Strength", "Weakness"].map((h) => el("th", { text: h })))),
-        el("tbody", {}, sorted.map((r) => el("tr", {},
-          el("td", { text: r.item }), el("td", { text: evModel(r.model) }),
-          el("td", {}, el("i", { class: "ev-key dot", style: `--c:${EV_JUDGE_COLORS[r.judge] || "#888"}` }), evJudge(r.judge)),
-          el("td", { text: overall(r).toFixed(2) }), el("td", { text: r.strength || "" }), el("td", { text: r.weakness || "" }))))))));
+    el("h2", { text: `Every piece, and what each judge said · ${evTd().label}` }),
+    el("p", { text: `Every judge writes one strength and one weakness for each piece. On this track, the judges' strengths share ${evPct(mean(overlaps("strength")))} of their content words on average, and their weaknesses ${evPct(mean(overlaps("weakness")))} (mean pairwise Jaccard overlap). Words two or more judges used are highlighted. Word overlap is a rough measure: two judges can make the same point in different words, so read them side by side. Open a piece to see exactly what the model was given and what it wrote.` }),
+    el("details", { class: "card" }, el("summary", { text: `Open the ${keys.length} ${evTrack === "companion" ? "conversations" : "pieces"}` }), ...cards));
 }
