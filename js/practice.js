@@ -61,6 +61,18 @@ function noteSessionUsed(id) {
   store.set("practice.recent", recent);
 }
 
+// An unsaved journal answer is kept on this device while you write, under your account,
+// so on a shared browser the next person never sees it; every draft is cleared at sign-out.
+const practiceDraftKey = (run) => `practice.draft.${session?.user?.id || me?.id || "local"}.${run.session.id}.${run.index}`;
+
+function clearPracticeDrafts() {
+  try {
+    Object.keys(localStorage).filter((k) => k.startsWith("practice.draft.")).forEach((k) => localStorage.removeItem(k));
+  } catch {}
+  const box = $("practice-answer");
+  if (box) box.value = "";
+}
+
 let practiceEntries = [];
 const RECENT_COUNT = 3;
 
@@ -374,7 +386,7 @@ function renderSegment(seg) {
     body.append(el("p", { class: "practice-question", text: seg.question }),
       el("div", { class: "practice-clock", id: "practice-clock" }));
     if (seg.kind === "journal") {
-      const draftKey = `practice.draft.${run.session.id}.${run.index}`;
+      const draftKey = practiceDraftKey(run);
       const box = el("textarea", { id: "practice-answer", rows: 8, placeholder: seg.prompts.join("\n"), spellcheck: true,
         "aria-label": seg.question });
       box.value = store.get(draftKey, "");
@@ -524,7 +536,7 @@ async function savePracticeAnswer() {
   const answer = box.value.trim();
   box.id = ""; // saved once
   if (!answer || seg?.kind !== "journal") return;
-  store.set(`practice.draft.${run.session.id}.${run.index}`, null);
+  store.set(practiceDraftKey(run), null);
   try {
     await postJson("/api/practice/journal", { session: run.session.id, question: seg.question, answer });
   } catch (err) {

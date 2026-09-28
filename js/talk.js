@@ -25,6 +25,7 @@ function talkProviders() {
   const t = options.talk || {};
   const out = {};
   for (const [id, info] of Object.entries(t.providers || {})) {
+    if (info.premium && isFree()) continue; // the Grok voice is for premium accounts
     out[id] = { ...info, voices: id === "xai" && Object.keys(t.xai_voices || {}).length ? t.xai_voices : info.voices };
   }
   return out;

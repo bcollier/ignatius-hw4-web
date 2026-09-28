@@ -235,6 +235,8 @@ function showSignedOut() {
   retreat = null;
   $("account").hidden = true;
   myAgents = {}; // one person's prompts never carry over to the next
+  if (typeof stopPractice === "function") stopPractice();
+  clearPracticeDrafts(); // nor their unsaved journal answers
   $("guest-box").hidden = !options?.free_mode?.enabled;
   closePrayer(false);
   route();
