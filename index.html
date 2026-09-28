@@ -73,13 +73,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=93">
-  <link rel="icon" href="icons/icon-192.png?v=93" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=93">
+  <link rel="manifest" href="manifest.webmanifest?v=95">
+  <link rel="icon" href="icons/icon-192.png?v=95" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=95">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=93">
+  <link rel="stylesheet" href="style.css?v=95">
 </head>
 <body>
   <header class="topbar">
@@ -498,6 +498,13 @@
           </p>
           <p class="hint">Your choice is remembered on this device. What you want from the companion is set under <a href="./?me" data-nav="me">About me</a>.</p>
         </div>
+        <fieldset id="talk-modes" class="talk-modes">
+          <legend>How would you like to talk?</legend>
+          <label class="talk-mode" data-mode="live"><input type="radio" name="talk-mode" value="live"><strong>Live voice</strong><span>Talk and listen at once, like a phone call. You can interrupt.</span></label>
+          <label class="talk-mode" data-mode="voice"><input type="radio" name="talk-mode" value="voice"><strong>Free voice</strong><span>Tap to talk, and it answers aloud.</span></label>
+          <label class="talk-mode" data-mode="listen"><input type="radio" name="talk-mode" value="listen"><strong>Type, hear it answer</strong><span>You type and stay quiet; it speaks in your ear.</span></label>
+          <label class="talk-mode" data-mode="text"><input type="radio" name="talk-mode" value="text"><strong>Text chat</strong><span>Type and read. Nothing is spoken.</span></label>
+        </fieldset>
         <details class="talk-prompt" id="talk-prompt">
           <summary>The companion's instructions (advanced)</summary>
           <p class="hint">The full instructions the companion follows, before what it knows about you and this retreat. Change them if you like; they're saved to your account and used in every conversation. The shared background (under New retreat → Advanced) is always added after them. Every agent's prompt, and the companion's model, are also on the <a href="./?agents" data-nav="agents">Agents</a> page.</p>
@@ -511,9 +518,17 @@
         <div class="talk-controls">
           <button type="button" id="talk-start" class="big">Start talking</button>
           <button type="button" id="talk-stop" class="secondary" hidden>End conversation</button>
+          <button type="button" id="talk-new" class="link talk-new" hidden>Start a new conversation instead</button>
           <span id="talk-timer" class="meta" hidden></span>
         </div>
         <p id="talk-status" class="status" role="status"></p>
+        <div id="talk-switch" class="talk-switch" hidden role="group" aria-label="How you're talking">
+          <span class="meta">Talking by</span>
+          <button type="button" data-mode="voice" aria-pressed="false">Voice</button>
+          <button type="button" data-mode="listen" aria-pressed="false">Typing, spoken reply</button>
+          <button type="button" data-mode="text" aria-pressed="false">Text</button>
+          <button type="button" data-mode="live" aria-pressed="false">Live voice</button>
+        </div>
         <div id="talk-still" class="talk-still" role="alertdialog" aria-labelledby="talk-still-title" hidden>
           <p id="talk-still-title"><strong>Still there?</strong> Live voices cost about 5 cents a minute even in silence. For quiet prayer, the free voice that takes turns costs nothing while you're silent.</p>
           <p class="row-buttons"><button type="button" id="talk-still-keep">Keep talking</button>
@@ -523,12 +538,12 @@
         <div id="talk-turns" class="talk-turns" hidden>
           <button type="button" id="talk-turn" class="gold big">Tap to talk</button>
           <p id="talk-heard" class="meta" aria-live="polite"></p>
-          <form id="talk-type-form" class="inline-form">
-            <input id="talk-type" type="text" placeholder="Or type what you'd say" aria-label="Type to the companion" autocomplete="off">
-            <button type="submit" class="secondary">Send</button>
-          </form>
         </div>
         <ol id="talk-transcript" class="talk-transcript" aria-live="polite"></ol>
+        <form id="talk-type-form" class="talk-compose" hidden>
+          <textarea id="talk-type" rows="1" placeholder="Or type what you'd say" aria-label="Type to the companion" autocomplete="off" spellcheck="true"></textarea>
+          <button type="submit" class="secondary">Send</button>
+        </form>
         <p class="hint">This is an AI, not a priest, spiritual director or counselor. If you're in crisis or thinking about harming yourself, call or text 988 (in the US) or your local emergency number.</p>
       </div>
       <details class="card" id="talk-past">
@@ -595,6 +610,11 @@
       <h2>Debug mode</h2>
       <div class="card">
         <label class="check"><input id="me-debug" type="checkbox"> <strong>Debug mode</strong>: show technical details, each retreat's build log and what it cost to make, and a Costs page</label>
+        <div id="me-waiting-box" hidden>
+          <h3>Waiting animation</h3>
+          <p class="hint">What the companion shows while it writes a reply in the typed modes. All five are playing below; choose one.</p>
+          <div id="me-waiting" class="wait-previews"></div>
+        </div>
         <p id="me-evals-link" class="hint" hidden><a href="./?evals" data-nav="evals">Eval analysis</a>: how the AI judges scored the models, and whether they agree.</p>
       </div>
     </section>
@@ -987,25 +1007,26 @@
 
   <script src="vendor/supabase.js?v=2.117.2"></script>
   <script src="vendor/qrcode.js?v=2.0.4"></script> <!-- qrcode-generator 2.0.4 (MIT), for the sign-in QR code --> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=93"></script>
+  <script src="config.js?v=95"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=93"></script>
-  <script src="js/look.js?v=93"></script>
-  <script src="js/settings.js?v=93"></script>
-  <script src="js/router.js?v=93"></script>
-  <script src="js/library.js?v=93"></script>
-  <script src="js/new-retreat.js?v=93"></script>
-  <script src="js/retreat.js?v=93"></script>
-  <script src="js/build-log.js?v=93"></script>
-  <script src="js/research.js?v=93"></script>
-  <script src="js/pray.js?v=93"></script>
-  <script src="js/about-me.js?v=93"></script>
-  <script src="js/talk.js?v=93"></script>
-  <script src="js/agents.js?v=93"></script>
-  <script src="js/evals.js?v=93"></script>
-  <script src="js/costs.js?v=93"></script>
-  <script src="js/practice.js?v=93"></script>
-  <script src="js/quotes.js?v=93"></script>
-  <script src="js/start.js?v=93"></script>
+  <script src="js/core.js?v=95"></script>
+  <script src="js/look.js?v=95"></script>
+  <script src="js/settings.js?v=95"></script>
+  <script src="js/router.js?v=95"></script>
+  <script src="js/library.js?v=95"></script>
+  <script src="js/new-retreat.js?v=95"></script>
+  <script src="js/retreat.js?v=95"></script>
+  <script src="js/build-log.js?v=95"></script>
+  <script src="js/research.js?v=95"></script>
+  <script src="js/pray.js?v=95"></script>
+  <script src="js/about-me.js?v=95"></script>
+  <script src="js/waiting.js?v=95"></script>
+  <script src="js/talk.js?v=95"></script>
+  <script src="js/agents.js?v=95"></script>
+  <script src="js/evals.js?v=95"></script>
+  <script src="js/costs.js?v=95"></script>
+  <script src="js/practice.js?v=95"></script>
+  <script src="js/quotes.js?v=95"></script>
+  <script src="js/start.js?v=95"></script>
 </body>
 </html>

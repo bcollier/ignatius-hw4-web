@@ -15,12 +15,14 @@ async function openMe() {
   };
   $("me-debug").checked = debugMode();
   $("me-evals-link").hidden = !debugMode();
+  showWaitingPreviews();
   $("me-debug").onchange = (e) => {
     store.set("debug", e.target.checked || null);
     document.documentElement.classList.toggle("debug", debugMode());
     $("costs-link").hidden = !debugMode();
     $("evals-link").hidden = !debugMode();
     $("me-evals-link").hidden = !debugMode();
+    showWaitingPreviews();
     $("debug-badge").hidden = !debugMode();
   };
   try {
@@ -110,4 +112,12 @@ function showAccount() {
     el("button", { type: "button", class: "link", text: "Sign out", onclick: () => $("signout").click() }));
   if (!me?.anonymous) box.append(el("button", { type: "button", class: "link", text: "Sign in on your phone (QR code)",
     onclick: async () => { await offerHandoff(true); go("?"); } }));
+}
+
+
+// Debug mode: the five waiting animations, playing side by side, to choose from.
+function showWaitingPreviews() {
+  $("me-waiting-box").hidden = !debugMode();
+  if (debugMode()) waitingPreviews($("me-waiting"));
+  else $("me-waiting").replaceChildren();
 }

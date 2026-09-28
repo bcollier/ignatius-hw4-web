@@ -919,3 +919,93 @@ input, select, textarea { font-size: max(16px, 1em); }
 .ev-findings li { margin: 6px 0; line-height: 1.45; }
 .ev-multiples { grid-template-columns: 170px repeat(var(--cols), minmax(110px, 190px)); }
 .ev-mini { max-width: 190px; }
+
+/* ---------------------------------------------------------------- talking: modes, chat and composer */
+.talk-modes { border: 0; padding: 0; margin: 14px 0; display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.talk-modes legend { font-weight: 600; margin-bottom: 8px; padding: 0; }
+.talk-mode { display: grid; gap: 2px; padding: 10px 12px 10px 38px; position: relative; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--field); cursor: pointer; }
+.talk-mode input { position: absolute; left: 12px; top: 13px; }
+.talk-mode strong { font-family: var(--display); font-size: 1.15rem; }
+.talk-mode span { color: var(--muted); font-size: 0.92rem; line-height: 1.3; }
+.talk-mode:has(input:checked) { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); background: var(--page); }
+.talk-mode:has(input:disabled) { opacity: 0.55; cursor: default; }
+.talk-switch { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0 10px; font-size: 0.95rem; }
+.talk-switch button { padding: 4px 12px; font-size: 0.95rem; background: var(--page); color: var(--ink); border: 1px solid var(--line-strong); }
+.talk-switch button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.talk-new { margin-left: 8px; }
+.talk-compose { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
+.talk-compose textarea { flex: 1; min-width: 0; resize: none; font: inherit; font-size: 16px; line-height: 1.4; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--field); color: var(--ink); max-height: 30vh; }
+.talk-transcript.chat { max-height: 60vh; }
+.talk-transcript .earlier { opacity: 0.62; }
+.talk-transcript .mode-note { justify-self: center; font-size: 0.85rem; color: var(--muted); border: 0; padding: 2px 8px; letter-spacing: 0.02em; }
+
+/* ---------------------------------------------------------------- waiting animations */
+.talk-transcript .companion.waiting { display: flex; align-items: center; gap: 10px; min-height: 44px; font-family: var(--serif); font-size: 1rem; color: var(--muted); }
+.wait-note { font-style: italic; font-size: 0.95rem; color: var(--muted); }
+.wait-dots { display: inline-flex; gap: 4px; }
+.wait-dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--gold-flat); animation: wait-dot 1.6s ease-in-out infinite; }
+.wait-dots i:nth-child(2) { animation-delay: 0.2s; } .wait-dots i:nth-child(3) { animation-delay: 0.4s; }
+@keyframes wait-dot { 0%, 100% { opacity: 0.25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+
+/* 1. the highlighter: a marker stroke, slightly uneven, swept left to right */
+mark.hl { color: inherit; padding: 0 1px; border-radius: 3px 8px 5px 9px / 9px 4px 8px 5px;
+  background-color: transparent;
+  background-image: linear-gradient(100deg, rgb(245 200 90 / 0) 0%, rgb(240 196 84 / 0.55) 4%, rgb(246 212 120 / 0.42) 60%, rgb(236 188 72 / 0.58) 96%, rgb(245 200 90 / 0) 100%);
+  background-repeat: no-repeat; background-size: 0% 72%; background-position: 0 80%; transition: background-size 0.65s cubic-bezier(0.3, 0.7, 0.2, 1), opacity 0.6s; }
+mark.hl.on { background-size: 100% 72%; }
+mark.hl.fade { opacity: 1; background-image: linear-gradient(100deg, rgb(255 222 96 / 0) 0%, rgb(255 214 80 / 0.25) 3%, rgb(255 226 110 / 0.2) 97%, rgb(255 222 96 / 0) 100%); }
+mark.hl.still { transition: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) mark.hl { color: #1c1712; } }
+
+/* 2. the quill */
+.wait-quill { width: 170px; height: 44px; overflow: visible; }
+.wait-quill .ink { fill: none; stroke: var(--ink); stroke-width: 1.3; stroke-linecap: round; stroke-dasharray: 420; stroke-dashoffset: 420; animation: quill-ink 3.4s cubic-bezier(0.45, 0.05, 0.4, 1) infinite; }
+.wait-quill .blot { fill: var(--ink); offset-rotate: 0deg; animation: quill-move 3.4s cubic-bezier(0.45, 0.05, 0.4, 1) infinite; }
+.wait-quill .feather { fill: var(--gold-flat); stroke: var(--gold-ink); stroke-width: 0.5; offset-rotate: 0deg; animation: quill-move 3.4s cubic-bezier(0.45, 0.05, 0.4, 1) infinite; }
+@keyframes quill-ink { 0% { stroke-dashoffset: 420; opacity: 1; } 78% { stroke-dashoffset: 0; opacity: 1; } 92%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes quill-move { 0% { offset-distance: 0%; opacity: 1; } 78% { offset-distance: 100%; opacity: 1; } 90%, 100% { offset-distance: 100%; opacity: 0; } }
+.wait-quill.still .ink { animation: none; stroke-dashoffset: 0; } .wait-quill.still .blot, .wait-quill.still .feather { display: none; }
+
+/* 3. the candle */
+.wait-candle { width: 54px; height: 54px; }
+.wait-candle .halo { fill: rgb(255 210 120 / 0.28); transform-origin: 30px 20px; animation: candle-halo 3.2s ease-in-out infinite; }
+.wait-candle .wax { fill: #efe5cf; stroke: #cdbf9e; stroke-width: 0.6; }
+.wait-candle .wick { stroke: #3a2a1a; stroke-width: 1.2; }
+.wait-candle .flame { fill: #f3a13d; transform-origin: 30px 27px; animation: candle-flame 2.6s ease-in-out infinite; }
+.wait-candle .core { fill: #fff2c2; transform-origin: 30px 27px; animation: candle-flame 2.6s ease-in-out infinite reverse; }
+@keyframes candle-flame { 0%, 100% { transform: scale(1, 1) rotate(-1deg); } 30% { transform: scale(0.94, 1.07) rotate(2deg); } 60% { transform: scale(1.04, 0.95) rotate(-2deg); } }
+@keyframes candle-halo { 0%, 100% { transform: scale(0.9); opacity: 0.6; } 50% { transform: scale(1.12); opacity: 1; } }
+
+/* 4. still water */
+.wait-water { width: 120px; height: 44px; }
+.wait-water .ring { fill: none; stroke: var(--gold-flat); stroke-width: 1; transform-origin: 60px 22px; animation: water-ring 4.2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite; opacity: 0; }
+.wait-water .r2 { animation-delay: 1.4s; } .wait-water .r3 { animation-delay: 2.8s; }
+.wait-water .drop { fill: var(--gold-flat); animation: water-drop 4.2s ease-in-out infinite; }
+@keyframes water-ring { 0% { transform: scale(0.3); opacity: 0.9; } 100% { transform: scale(8.5); opacity: 0; } }
+@keyframes water-drop { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.35; } }
+
+/* 5. gold leaf */
+.wait-gold { position: relative; width: 52px; height: 52px; flex: none; }
+.wait-gold svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.wait-gold .frame { fill: color-mix(in srgb, var(--rubric) 10%, var(--page)); stroke: var(--gold-flat); stroke-width: 1.2; }
+.wait-gold .vine { fill: none; stroke: #4e7d4a; stroke-width: 1.4; stroke-linecap: round; stroke-dasharray: 190; stroke-dashoffset: 190; animation: gold-vine 4.5s ease-in-out infinite; }
+.wait-gold .bud { fill: var(--rubric); opacity: 0; animation: gold-bud 4.5s ease-in-out infinite; }
+.wait-gold b { position: absolute; inset: 0; display: grid; place-items: center; font: 700 30px/1 var(--display);
+  background: linear-gradient(115deg, #8d6a22 0%, #d8b45a 30%, #fff4c8 45%, #b98f33 60%, #e9cd7c 80%, #8d6a22 100%); background-size: 250% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent; animation: gild 3s ease-in-out infinite alternate; }
+@keyframes gold-vine { 0% { stroke-dashoffset: 190; } 55%, 80% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -190; } }
+@keyframes gold-bud { 0%, 45% { opacity: 0; } 60%, 80% { opacity: 1; } 100% { opacity: 0; } }
+.wait-gold.still .vine { animation: none; stroke-dashoffset: 0; } .wait-gold.still .bud { animation: none; opacity: 1; } .wait-gold.still b { animation: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wait-dots i, .wait-candle .halo, .wait-candle .flame, .wait-candle .core, .wait-water .ring, .wait-water .drop { animation: none; }
+  .wait-water .r1 { opacity: 0.6; transform: scale(3); }
+}
+
+/* the Settings preview of all five */
+.wait-previews { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-top: 10px; }
+.wait-preview { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--field); cursor: pointer; }
+.wait-preview.chosen { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.wait-preview-head { display: flex; gap: 8px; align-items: center; }
+.wait-preview .talk-transcript { max-height: none; }
+.wait-preview .talk-transcript li { max-width: 100%; font-size: 0.95rem; }

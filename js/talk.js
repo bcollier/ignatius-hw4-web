@@ -67,7 +67,9 @@ function fillTalkSettings() {
   psel.value = providers[savedP] ? savedP : firstChoice;
   psel.onchange = () => {
     store.set("talk.provider", psel.value);
-    fillTalkVoices();
+    if (psel.value !== "turns") store.set("talk.liveProvider", psel.value);
+    if ((psel.value === "turns") !== (talkMode !== "live")) chooseTalkMode(psel.value === "turns" ? "voice" : "live");
+    else fillTalkVoices();
   };
   $("talk-hear").onclick = playTalkSample;
   if (!talkSamples) loadTalkSamples().then(fillTalkVoices); // genders and samples arrive a moment later
@@ -158,6 +160,7 @@ async function openTalk(retreatId) {
     ? `Free accounts can talk as long as they like with the free voice, which takes turns, and can try the live voices for ${t.free_seconds} seconds a day.`
     : `Free accounts can talk for ${t.free_seconds} seconds a day. Premium accounts can talk for up to ${Math.round(t.max_seconds / 60)} minutes at a time.`;
   resetTalkControls(t, r);
+  setupTalkModes();
   loadTalkHistory();
   if (params().has("now")) {  // from "Talk now" on the home page: start straight away
     const url = new URL(location.href);
@@ -192,10 +195,17 @@ function resetTalkControls(t, r) {
   $("talk-timer").hidden = true;
   // Read the choice when talking starts, so a change just made is used.
   $("talk-start").onclick = () => {
-    const provider = providers[$("talk-provider").value] ? $("talk-provider").value : t.default_provider;
+    const chosen = $("talk-provider").value;
+    const provider = talkMode === "live" ? (providers[chosen] && chosen !== "turns" ? chosen : liveProviders()[0]) : "turns";
+    if (talkMode !== "text") unlockTalkAudio();
     startTalk(provider, $("talk-voice").value, r?.id || null);
   };
+  $("talk-new").onclick = () => {  // a fresh conversation, not a continuation
+    talkCarryOn = false;
+    $("talk-start").click();
+  };
   $("talk-stop").onclick = () => endTalk("You ended the conversation.");
+  updateStartLabel();
 }
 
 async function loadTalkHistory() {
@@ -203,9 +213,13 @@ async function loadTalkHistory() {
   list.innerHTML = "";
   try {
     const h = await api("/api/talk/history");
+    const last = h.conversations.at(-1);
+    recentThread = !!(last?.transcript && Date.now() - Date.parse(last.ended_at || last.started_at) < CONTINUE_MS);
+    updateStartLabel();
     for (const c of [...h.conversations].reverse()) {
       const when = new Date(c.started_at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
-      const item = el("li", {}, `${when} · ${c.retreat_title || "no retreat"} · ${formatMinutes(c.seconds || 0)}`);
+      const how = (c.modes || [c.provider]).map((m) => ({ turns: "taking turns", openai: "live voice", xai: "live voice" })[m] || m);
+      const item = el("li", {}, `${when} · ${c.retreat_title || "no retreat"} · ${formatMinutes(c.seconds || 0)} · ${[...new Set(how)].join(", ")}`);
       if (c.transcript) item.append(el("details", {}, el("summary", { text: "Transcript" }), el("pre", { text: c.transcript })));
       else item.append(el("span", { class: "meta", text: " (now part of the summary)" }));
       list.append(item);
@@ -235,6 +249,9 @@ function talkConnected(max) {
   $("talk-stop").hidden = false;
   $("talk-timer").hidden = false;
   $("talk-orb").hidden = false;
+  showTalkSwitch(talkState.provider === "turns" ? talkState.mode : "live");
+  $("talk-modes").hidden = true;  // the compact switch takes over while talking
+  $("talk-new").hidden = true;
   startOrb();
   talkState.timer = setInterval(() => {
     const secs = (Date.now() - talkState.started) / 1000;
@@ -254,7 +271,7 @@ async function startTalk(provider, voice, retreatId) {
     const audioCtx = provider !== "xai" && talkUnlocked?.ctx ? talkUnlocked.ctx : new AudioContext(provider === "xai" ? { sampleRate: 24000 } : {});
     talkUnlocked = null;
     const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
-    talkState = { provider, stream, transcriptParts: [], audioCtx };
+    talkState = { provider, stream, transcriptParts: [], audioCtx, retreatId, mode: "live" };
     status.textContent = "Connecting…";
     if (provider === "xai") await startGrok(stream, voice, retreatId);
     else await startOpenAI(stream, voice, retreatId);
@@ -289,7 +306,7 @@ async function startOpenAI(stream, voice, retreatId) {
   };
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
-  const res = await postJson("/api/talk/session", { provider: "openai", voice, sdp: offer.sdp, retreat_id: retreatId, local_time: localTimeWithOffset() });
+  const res = await postJson("/api/talk/session", { provider: "openai", voice, sdp: offer.sdp, retreat_id: retreatId, local_time: localTimeWithOffset(), carry_on: takeCarryOn() });
   talkState.sessionId = res.session_id;
   await pc.setRemoteDescription({ type: "answer", sdp: res.sdp });
   pc.onconnectionstatechange = () => {
@@ -323,7 +340,7 @@ const toBase64 = (buffer) => {
 };
 
 async function startGrok(stream, voice, retreatId) {
-  const res = await postJson("/api/talk/session", { provider: "xai", voice, retreat_id: retreatId, local_time: localTimeWithOffset() });
+  const res = await postJson("/api/talk/session", { provider: "xai", voice, retreat_id: retreatId, local_time: localTimeWithOffset(), carry_on: takeCarryOn() });
   const ctx = talkState.audioCtx || new AudioContext({ sampleRate: 24000 });
   // The companion's voice goes through one node, so the orb can follow it.
   const aiOut = ctx.createGain();
@@ -513,7 +530,8 @@ async function endTalk(message) {
   $("talk-status").textContent = message;
   $("talk-start").hidden = false;
   $("talk-start").disabled = false;
-  $("talk-start").textContent = "Talk again";
+  recentThread = true; // what was just said can be carried on
+  updateStartLabel();
   $("talk-stop").hidden = true;
   $("talk-orb").hidden = true;
   if (t.sessionId) {
@@ -529,6 +547,10 @@ function cleanupTalk(t = talkState) {
   clearInterval(t.timer);
   clearInterval(t.silenceTimer);
   $("talk-still").hidden = true;
+  $("talk-switch").hidden = true;
+  $("talk-transcript").classList.remove("chat");
+  $("talk-type-form").hidden = true;
+  $("talk-modes").hidden = !Object.keys(talkProviders()).length;
   try { t.recog?.abort(); } catch {}
   try { t.player?.pause(); } catch {}
   $("talk-turns").hidden = true;
@@ -561,7 +583,7 @@ async function startTurns(voice, brain, retreatId) {
   if (!talkUnlocked) player.play().catch(() => {});
   const audioCtx = talkUnlocked?.ctx || new (window.AudioContext || window.webkitAudioContext)();
   talkUnlocked = null;
-  talkState = { provider: "turns", player, audioCtx, speaking: 0 };
+  talkState = { provider: "turns", player, audioCtx, speaking: 0, mode: talkMode === "live" ? "voice" : talkMode, retreatId };
   const t = talkState;
   try {
     t.aiOut = audioCtx.createMediaElementSource(player);
@@ -571,19 +593,15 @@ async function startTurns(voice, brain, retreatId) {
   status.className = "status working";
   status.textContent = "Connecting…";
   try {
-    const res = await postJson("/api/talk/session", { provider: "turns", voice, brain, retreat_id: retreatId, local_time: localTimeWithOffset() });
+    const res = await postJson("/api/talk/session", { provider: "turns", voice, brain, retreat_id: retreatId,
+      local_time: localTimeWithOffset(), carry_on: takeCarryOn(), mode: t.mode });
     t.sessionId = res.session_id;
+    if (res.previous?.length) showEarlier(res.previous);
     talkConnected(res.max_seconds);
-    status.textContent = SpeechRec ? "Tap to talk when you're ready." : "This browser can't listen, so type what you'd say.";
     $("talk-turns").hidden = false;
-    $("talk-turn").hidden = !SpeechRec;
     $("talk-turn").onclick = () => toggleListening(t);
-    $("talk-type-form").onsubmit = (e) => {
-      e.preventDefault();
-      const text = $("talk-type").value.trim();
-      $("talk-type").value = "";
-      if (text) sayToCompanion(t, text);
-    };
+    wireComposer(t);
+    applyTurnMode(t);
     await speakReply(t, res.greeting);
   } catch (err) {
     status.className = "status bad";
@@ -629,19 +647,168 @@ function toggleListening(t) {
 }
 
 async function sayToCompanion(t, text) {
-  addTranscript("you", text);
-  transcriptLine("companion", false); // the companion's reply starts a new line
+  const you = chatLine("you", text);
+  const pending = chatLine("companion", "");
+  const stopWaiting = startWaiting(pending, you); // something quiet happens while it writes
   $("talk-status").className = "status working";
-  $("talk-status").textContent = "The companion is thinking…";
+  $("talk-status").textContent = "The companion is writing…";
   $("talk-turn").disabled = true;
   try {
-    const { reply } = await postJson("/api/talk/turn", { session_id: t.sessionId, text });
+    const { reply } = await postJson("/api/talk/turn", { session_id: t.sessionId, text, mode: t.mode });
+    stopWaiting();
     if (talkState === t) await speakReply(t, reply);
   } catch (err) {
+    stopWaiting();
+    pending.remove();
     if (talkState === t) talkError(err.message);
   } finally {
     $("talk-turn").disabled = false;
   }
+}
+
+// ---------------------------------------------------------------- how you talk: four ways, one conversation
+// Live voice (speech to speech), the free voice (speech to text, the brain, text to
+// speech), typing with the reply spoken, and text chat. The last three share one
+// session and switch instantly; moving to or from the live voice ends one call and
+// starts the next as a continuation. The server keeps it all as one conversation.
+
+const CONTINUE_MS = 12 * 3600 * 1000;
+const MODE_NOTES = { voice: "You're talking now; it answers aloud.", listen: "You're typing now; it answers aloud.",
+  text: "Text only now; nothing is spoken." };
+let talkMode = null;
+let talkCarryOn = true;
+let recentThread = false;
+
+const liveProviders = () => Object.keys(talkProviders()).filter((p) => p !== "turns");
+
+function modeAvailable(mode) {
+  if (mode === "live") return liveProviders().length > 0;
+  if (!talkProviders().turns) return false;
+  return mode !== "voice" || !!SpeechRec;
+}
+
+function setupTalkModes() {
+  const saved = store.get("talk.mode");
+  const fallback = store.get("talk.provider") && store.get("talk.provider") !== "turns" && modeAvailable("live") ? "live" : null;
+  talkMode = [saved, fallback, "voice", "listen", "text", "live"].find((m) => m && modeAvailable(m)) || "text";
+  document.querySelectorAll("#talk-modes .talk-mode").forEach((label) => {
+    const input = label.querySelector("input");
+    const ok = modeAvailable(input.value);
+    input.disabled = !ok;
+    label.hidden = input.value === "live" && !ok;
+    if (input.value === "voice" && !SpeechRec) label.querySelector("span").textContent = "This browser can't listen: choose typing instead.";
+    input.onchange = () => chooseTalkMode(input.value);
+  });
+  $("talk-modes").hidden = !Object.keys(talkProviders()).length;
+  chooseTalkMode(talkMode, false);
+}
+
+function chooseTalkMode(mode, save = true) {
+  talkMode = mode;
+  if (save) store.set("talk.mode", mode);
+  document.querySelectorAll('#talk-modes input[name="talk-mode"]').forEach((i) => (i.checked = i.value === mode));
+  const psel = $("talk-provider");
+  if (mode === "live") {
+    if (psel.value === "turns" || !psel.value) psel.value = store.get("talk.liveProvider") in talkProviders() ? store.get("talk.liveProvider") : liveProviders()[0];
+  } else if (talkProviders().turns) psel.value = "turns";
+  fillTalkVoices();
+  updateStartLabel();
+}
+
+function updateStartLabel() {
+  if (talkState) return;
+  $("talk-start").textContent = recentThread ? "Continue our conversation" : talkMode === "text" ? "Start writing" : "Start talking";
+  $("talk-new").hidden = !recentThread;
+}
+
+function takeCarryOn() {
+  const carry = talkCarryOn;
+  talkCarryOn = true;
+  return carry;
+}
+
+function showTalkSwitch(current) {
+  document.querySelectorAll("#talk-switch button").forEach((b) => {
+    b.hidden = !modeAvailable(b.dataset.mode);
+    b.setAttribute("aria-pressed", String(b.dataset.mode === current));
+    b.onclick = () => switchTalkMode(b.dataset.mode);
+  });
+  $("talk-switch").hidden = false;
+}
+
+function applyTurnMode(t) {
+  const typing = t.mode !== "voice";
+  $("talk-turn").hidden = typing || !SpeechRec;
+  $("talk-type").placeholder = typing ? "Write to the companion…" : "Or type what you'd say";
+  $("talk-type-form").hidden = false;
+  $("talk-transcript").classList.toggle("chat", typing);
+  $("talk-orb").hidden = t.mode === "text";
+  if (t.mode === "text") {  // nothing more is spoken
+    t.speaking++;
+    t.player.pause();
+  }
+  showTalkSwitch(t.mode);
+  $("talk-status").className = "status ok";
+  $("talk-status").textContent = t.mode === "voice" ? "Tap to talk when you're ready." : "Write whenever you're ready. Enter sends; Shift+Enter starts a new line.";
+  if (typing) $("talk-type").focus({ preventScroll: true });
+}
+
+async function switchTalkMode(mode) {
+  const t = talkState;
+  if (!t || t.mode === mode) return;
+  if (t.provider === "turns" && mode !== "live") {  // the same session: just change how
+    t.mode = mode;
+    chooseTalkMode(mode);
+    modeNote(MODE_NOTES[mode]);
+    return applyTurnMode(t);
+  }
+  // To or from the live voice: end this call, start the other as a continuation.
+  if (mode !== "text") unlockTalkAudio();
+  const retreatId = t.retreatId;
+  await endTalk(mode === "live" ? "Switching to the live voice…" : "Leaving the live voice…");
+  chooseTalkMode(mode);
+  talkCarryOn = true;
+  startTalk(mode === "live" ? $("talk-provider").value : "turns", $("talk-voice").value, retreatId);
+}
+
+function chatLine(who, text) {
+  const li = el("li", { class: who, "data-who": who }, text ? el("span", { class: "said", text }) : "");
+  $("talk-transcript").append(li);
+  li.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  return li;
+}
+
+function modeNote(text) {
+  $("talk-transcript").append(el("li", { class: "mode-note", "data-who": "note", text }));
+}
+
+// A continued conversation: what was said before, shown quieter above.
+function showEarlier(previous) {
+  const list = $("talk-transcript");
+  list.replaceChildren(...previous.map((p) => el("li", { class: `${p.who === "note" ? "mode-note" : p.who} earlier`, "data-who": `earlier-${p.who}`, text: p.text })));
+  modeNote("Continuing your conversation");
+}
+
+function wireComposer(t) {
+  const box = $("talk-type");
+  const fit = () => {
+    box.style.height = "auto";
+    box.style.height = `${Math.min(box.scrollHeight, 240)}px`;
+  };
+  box.oninput = fit;
+  box.onkeydown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+      e.preventDefault();
+      $("talk-type-form").requestSubmit();
+    }
+  };
+  $("talk-type-form").onsubmit = (e) => {
+    e.preventDefault();
+    const text = box.value.trim();
+    box.value = "";
+    fit();
+    if (text && talkState === t) sayToCompanion(t, text);
+  };
 }
 
 // Speak a reply sentence by sentence: the next sentence is recorded while this one plays.
@@ -649,7 +816,11 @@ async function speakReply(t, reply) {
   if (!reply) return;
   addTranscript("companion", reply);
   $("talk-status").className = "status ok";
-  $("talk-status").textContent = "The companion is speaking. Tap to talk to answer.";
+  if (t.mode === "text") {
+    $("talk-status").textContent = "Write whenever you're ready.";
+    return;
+  }
+  $("talk-status").textContent = t.mode === "listen" ? "The companion is speaking. Write your answer whenever you like." : "The companion is speaking. Tap to talk to answer.";
   const sentences = reply.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g)?.map((x) => x.trim()).filter(Boolean) || [reply];
   const turn = ++t.speaking;
   let next = fetchSpeech(t, sentences[0]);
@@ -659,7 +830,7 @@ async function speakReply(t, reply) {
     if (talkState !== t || t.speaking !== turn || t.recog) return URL.revokeObjectURL(url); // interrupted
     await playClip(t, url);
   }
-  if (talkState === t && t.speaking === turn && !t.recog) $("talk-status").textContent = SpeechRec ? "Tap to talk to answer." : "Type your answer.";
+  if (talkState === t && t.speaking === turn && !t.recog) $("talk-status").textContent = t.mode === "voice" && SpeechRec ? "Tap to talk to answer." : "Write your answer.";
 }
 
 async function fetchSpeech(t, text) {
