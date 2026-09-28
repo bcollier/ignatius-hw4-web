@@ -15,8 +15,10 @@ async function loadPractice() {
   return practiceData;
 }
 
-const sessionMinutes = (s) => Math.round(s.segments.reduce((n, g) =>
-  n + (g.kind === "speak" ? (g.audio?.standard?.seconds || g.text.split(/\s+/).length / 2.3) : g.seconds), 0) / 60);
+// A session's length in minutes, from `from` on: the recorded speech (at the chosen voice
+// speed) plus every silence and journaling pause.
+const sessionMinutes = (s, from = 0) => Math.max(1, Math.round(s.segments.slice(from).reduce((n, g) =>
+  n + (g.kind === "speak" ? (g.audio?.standard?.seconds || g.text.split(/\s+/).length / 2.3) / voiceSpeed() : g.seconds), 0) / 60));
 
 async function openPractice(which) {
   show("practice");
@@ -374,7 +376,9 @@ function nextSegment(step) {
 function renderSegment(seg) {
   const run = practiceRun;
   const total = run.session.segments.length;
-  $("practice-step").textContent = `${seg.step} · ${run.index + 1} of ${total}`;
+  const left = sessionMinutes(run.session, run.index);
+  $("practice-step").textContent = `${seg.step} · ${run.index + 1} of ${total} · about ${sessionMinutes(run.session)} minutes`
+    + (run.index ? `, ${left} left` : "");
   $("practice-progress").style.setProperty("--p", (run.index + 1) / total);
   showStage(seg);
   const body = $("practice-body");
@@ -412,6 +416,7 @@ function playOn(src, { loop = false, onended = null } = {}) {
   practiceAudio.loop = loop;
   practiceAudio.onended = onended;
   if (practiceAudio.src !== url) practiceAudio.src = url; // a silence after a silence just keeps playing
+  atVoiceSpeed(practiceAudio, url);
   practiceAudio.play().catch(showPlayState);
 }
 

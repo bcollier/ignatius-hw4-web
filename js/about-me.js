@@ -5,6 +5,14 @@ async function openMe() {
   document.title = "Settings · Ignatius at Home";
   $("me-status").textContent = "";
   showAccount();
+  const speed = $("me-speed");
+  speed.replaceChildren(...VOICE_SPEEDS.map(([v, label]) => new Option(label, v)));
+  speed.value = String(voiceSpeed());
+  speed.onchange = () => {
+    store.set("play.speed", speed.value === "1" ? null : speed.value);
+    [$("player"), typeof practiceAudio !== "undefined" ? practiceAudio : null].forEach((a) => a && atVoiceSpeed(a));
+    toast(`Voice speed: ${speed.selectedOptions[0].textContent.toLowerCase()}.`);
+  };
   $("me-debug").checked = debugMode();
   $("me-debug").onchange = (e) => {
     store.set("debug", e.target.checked || null);

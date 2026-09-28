@@ -161,6 +161,23 @@ const postJson = (path, body, method = "POST") =>
 // Debug mode shows the technical extras (build log, costs). Turn it on or off by opening
 // the site with ?debug=true or ?debug=false; the choice is remembered in this browser.
 const debugMode = () => !!store.get("debug");
+
+// How fast the recorded voices speak (Settings → Voice speed), for every reading,
+// reflection, practice and turn-taking reply. The pitch stays the same. Silences and
+// bells (sounds/) keep their exact length, and live voices stream at their own pace.
+const VOICE_SPEEDS = [["0.8", "Slower"], ["0.9", "A little slower"], ["1", "Normal"], ["1.1", "A little faster"]];
+const voiceSpeed = () => {
+  const saved = String(store.get("play.speed", "1"));
+  return VOICE_SPEEDS.some(([v]) => v === saved) ? Number(saved) : 1;
+};
+
+function atVoiceSpeed(audio, src = audio.currentSrc || audio.src || "") {
+  const rate = /\/sounds\//.test(src) ? 1 : voiceSpeed();
+  audio.preservesPitch = true;
+  audio.defaultPlaybackRate = rate; // kept when the source changes
+  audio.playbackRate = rate;
+  return audio;
+}
 function readDebugFlag() {
   const flag = new URLSearchParams(location.search).get("debug");
   if (flag == null) return;

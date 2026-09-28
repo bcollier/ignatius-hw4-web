@@ -313,7 +313,7 @@ function journalBox(journal) {
 
 function renderTrack(key, track) {
   const box = el("div", { class: "track" }, el("h4", { text: `${TRACK_LABELS[key]}${track.seconds ? ` · ${formatClock(track.seconds)}` : ""}` }));
-  box.append(el("audio", { controls: true, preload: "none", src: fileUrl(track.url) }));
+  box.append(el("audio", { controls: true, preload: "none", src: fileUrl(track.url), onplay: (e) => atVoiceSpeed(e.target) }));
   const details = el("details", {}, el("summary", { text: track.trimmed ? "Script (trimmed to fit)" : "Script" }), el("p", { class: "script", text: track.script }));
   if (track.sources?.length) {
     details.append(el("p", { class: "meta", text: track.web_search ? `Sources checked with web search${track.research ? ` (${track.research})` : ""}:` : "Sources suggested by the model, not checked:" }));

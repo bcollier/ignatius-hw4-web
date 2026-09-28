@@ -210,6 +210,7 @@ function playStep(index) {
   const step = steps[stepIndex];
   const player = $("player");
   player.src = step.src;
+  atVoiceSpeed(player, step.src);
   player.play().catch(() => setPlayIcon(false)); // iOS may need a tap on play
   if (step.part) partsPlayed.add(step.part);
   // A short quiet between parts keeps showing the part just heard.

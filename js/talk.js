@@ -646,6 +646,7 @@ function playClip(t, url) {
     t.player.onended = done;
     t.player.onpause = done; // interrupted by Tap to talk or the end of the conversation
     t.player.src = url;
+    atVoiceSpeed(t.player);
     t.audioCtx.resume?.().catch(() => {});
     t.player.play().catch(done);
   });
