@@ -463,6 +463,10 @@ function pausePractice() {
   run.paused = true;
   if (run.endAt != null) run.left = run.endAt - Date.now();
   practiceAudio.pause();
+  if (!backgroundMusic.paused) {  // the music pauses too, and comes back where it was
+    run.musicPaused = true;
+    fadeMusic(0, 500);
+  }
   showPlayState();
 }
 
@@ -475,7 +479,11 @@ function resumePractice() {
     run.left = null;
   }
   practiceAudio.play().catch(showPlayState);
-  if (backgroundMusic.paused && store.get("practice.music", "none") !== "none") startMusic();
+  if (run.musicPaused) {
+    run.musicPaused = false;
+    backgroundMusic.play().catch(() => {});
+    duckMusic(run.session.segments[run.index]?.kind === "speak");
+  } else if (backgroundMusic.paused && store.get("practice.music", "none") !== "none") startMusic();
   showPlayState();
 }
 
