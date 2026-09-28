@@ -46,7 +46,50 @@ function chooseFile(file) {
   $("drop-title").textContent = file ? file.name
     : ex ? `Using the example: ${ex.title}${chosenExample.endsWith(".txt") ? " (plain text)" : ""}`
     : "Choose a PDF, Word or text file";
+  previewFile(file);
   document.querySelectorAll(".example-doc").forEach((c) => c.classList.toggle("chosen", !!chosenExample && c.dataset.slug === chosenExample.replace(/\.txt$/, "")));
+}
+
+// A first look at the chosen file: the server reads its start and says what it is (a
+// working title and two or three sentences), so the person can see it's the right file
+// rather than "P1W3P.pdf". If that fails, the file name simply stays.
+let previewFor = null; // the file being described; a newer choice wins
+let dropHintDefault = null;
+
+async function previewFile(file) {
+  const hint = $("drop-hint");
+  dropHintDefault ??= hint.textContent;
+  previewFor = file || null;
+  $("drop").classList.remove("previewed");
+  if (!file) {
+    hint.replaceChildren(dropHintDefault);
+    return;
+  }
+  const maxMb = options?.limits?.max_upload_mb ?? DEFAULT_MAX_UPLOAD_MB;
+  if (!/\.(pdf|docx|txt|md|jpe?g|png)$/i.test(file.name) || file.size > maxMb * 1024 * 1024) {
+    hint.replaceChildren(dropHintDefault);
+    return;
+  }
+  hint.replaceChildren("Reading it to see what it is", el("span", { class: "wait-dots", "aria-hidden": "true" }, el("i"), el("i"), el("i")));
+  const form = new FormData();
+  form.append("file", file);
+  if ($("plan-model").value) form.append("model", $("plan-model").value);
+  let seen;
+  try {
+    seen = await api("/api/retreats/preview", { method: "POST", body: form });
+  } catch {
+    seen = null;
+  }
+  if (previewFor !== file) return; // another file was chosen meanwhile
+  if (!seen) {
+    hint.replaceChildren(dropHintDefault);
+    return;
+  }
+  $("drop").classList.add("previewed");
+  $("drop-title").textContent = seen.title;
+  const about = [file.name, seen.pages ? `${seen.pages} page${seen.pages === 1 ? "" : "s"}` : ""].filter(Boolean).join(" · ");
+  hint.replaceChildren(el("span", { class: "drop-description", text: seen.description }),
+    el("span", { class: "drop-file", text: `${about} · Not the right file? Choose another.` }));
 }
 
 // Example documents to build from, with a look at the source first.

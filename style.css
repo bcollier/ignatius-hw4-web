@@ -1069,3 +1069,9 @@ span.ev-has-tip:hover, span.ev-has-tip:focus { color: var(--rubric); outline: no
 .ev-scales tr.ev-current th strong::after { content: " · current"; color: var(--accent, #a32a1c); font-weight: normal; }
 .ev-mini { width: 120px; height: 46px; }
 .ev-mini-bar { fill: #6b5d4b; }
+
+/* the first look at a chosen file (new-retreat.js previewFile) */
+#drop-hint .wait-dots { margin-left: 0.5rem; vertical-align: middle; }
+.drop.previewed .drop-title { font-size: 1.6rem; }
+.drop-description { display: block; color: var(--ink); font-size: 1.02rem; line-height: 1.45; max-width: 38rem; margin: 0.2rem auto 0.4rem; }
+.drop-file { display: block; font-size: 0.85rem; color: var(--muted); }
