@@ -1047,3 +1047,17 @@ span.ev-has-tip:hover, span.ev-has-tip:focus { color: var(--rubric); outline: no
 .ev-pt.kappa { fill: var(--gold-flat); stroke: var(--gold-ink); stroke-width: 0.6; }
 .ev-pt.ac2 { fill: #2e6f9e; }
 .ev-callout.kappa { fill: #8a6516 !important; } .ev-callout.ac2 { fill: #2e6f9e !important; }
+.ev-measure { display: inline-flex; gap: 8px; align-items: center; margin: 4px 0 6px; font-size: 1rem; }
+.ev-measure select { font-size: 1rem; max-width: 100%; }
+.ev-scores td.ev-score { background: color-mix(in srgb, var(--c) 45%, transparent); text-align: center; font-weight: 600; min-width: 48px; }
+.ev-scores th { white-space: nowrap; }
+.ev-tip-lines { margin: 6px 0 0; padding-left: 18px; font-size: 0.9rem; }
+.ev-fit-cell { text-align: center; font-variant-numeric: tabular-nums; }
+.ev-fit-cell.total { font-weight: 700; }
+.ev-fit-plots { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.ev-fit-plot h4 { margin: 0 0 4px; font-size: 1.05rem; }
+.ev-frontier { fill: none; stroke: var(--rubric); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.ev-model-dot.front { stroke: var(--rubric); stroke-width: 2.5; }
+.ev-share { display: flex; height: 26px; border-radius: 4px; overflow: hidden; margin: 10px 0 4px; font-size: 0.85rem; }
+.ev-share span { background: var(--c); color: #fff; display: flex; align-items: center; padding: 0 8px; white-space: nowrap; overflow: hidden; }
+.ev-grid-key { font-size: 0.82rem; color: var(--muted); line-height: 1.3; }

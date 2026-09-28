@@ -12,6 +12,8 @@ const EV_MODEL_COLORS = { opus: "#7B2D8E", "gpt6-sol": "#1F5FA8", muse: "#B8741A
 const EV_LEVEL_COLORS = ["#b2182b", "#d6604d", "#f4a582", "#d9d0c1", "#92c5de", "#4393c3", "#2166ac"]; // 1..7, diverging at 4
 let evData = null;
 let evTrack = "heart";
+let evFit = null; // evals/fitness.json: measured fitness for this app, and cost
+let evMeasure = "overall"; // what the model comparison shows: the overall score or one scale
 
 async function openEvals() {
   show("evals");
@@ -22,6 +24,7 @@ async function openEvals() {
   }
   try {
     evData = evData || await (await fetch(`evals/${EV_RUN}.json?v=${RUNNING_VERSION}`, { cache: "no-store" })).json();
+    evFit = evFit || await fetch(`evals/fitness.json?v=${RUNNING_VERSION}`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
   } catch {
     $("ev-body").replaceChildren(el("p", { class: "lede", text: "No eval results have been published yet." }));
     return;
@@ -62,13 +65,26 @@ function evScaleTip(node, scale) {
 function evWireTips() {
   const tip = $("ev-tip");
   const showFor = (target) => {
-    const scale = target?.closest?.("[data-scale]")?.getAttribute("data-scale");
-    const info = scale && evData.scale_text?.[evTrack]?.[scale];
-    if (!info) return (tip.hidden = true);
-    tip.replaceChildren(el("strong", { text: evPretty(scale) }), evLower(scale) ? el("span", { class: "ev-tip-chip", text: "↓ lower is better" }) : "",
-      el("p", { text: `The judge was asked: “${info.question}”` }), el("p", { class: "meta", text: `Scale: ${info.scale}` }));
+    const anchor = target?.closest?.("[data-scale], [data-item]");
+    if (!anchor) return (tip.hidden = true);
+    const scale = anchor.getAttribute("data-scale");
+    if (scale) {
+      const info = evData.scale_text?.[evTrack]?.[scale];
+      if (!info) return (tip.hidden = true);
+      tip.replaceChildren(el("strong", { text: evPretty(scale) }), evLower(scale) ? el("span", { class: "ev-tip-chip", text: "↓ lower is better" }) : "",
+        el("p", { text: `The judge was asked: “${info.question}”` }), el("p", { class: "meta", text: `Scale: ${info.scale}` }));
+    } else {
+      const it = evData.items?.[anchor.getAttribute("data-item")];
+      if (!it) return (tip.hidden = true);
+      tip.replaceChildren(...(it.kind === "passage"
+        ? [el("strong", { text: `${it.ref} · ${it.title}` }), el("p", { class: "meta", text: `Day ${it.day} of “${it.retreat}”` }),
+          el("p", { text: `Grace: ${it.grace}` }), el("p", { text: `Focus: ${it.focus}` })]
+        : [el("strong", { text: `A conversation: “${anchor.getAttribute("data-item")}”` }), el("p", { class: "meta", text: `${it.when} ${it.last}` }),
+          el("p", { text: `On ${evData.items[it.passage]?.ref || it.passage}. The person's scripted lines:` }),
+          el("ol", { class: "ev-tip-lines" }, it.lines.map((l) => el("li", { text: l })))]));
+    }
     tip.hidden = false;
-    const r = target.closest("[data-scale]").getBoundingClientRect();
+    const r = anchor.getBoundingClientRect();
     const w = Math.min(380, window.innerWidth - 24);
     tip.style.width = `${w}px`;
     tip.style.left = `${Math.max(12, Math.min(window.innerWidth - w - 12, r.left + r.width / 2 - w / 2))}px`;
@@ -79,7 +95,7 @@ function evWireTips() {
   view.onmouseover = (e) => showFor(e.target);
   view.onfocusin = (e) => showFor(e.target);
   view.onclick = (e) => showFor(e.target);
-  view.onmouseout = (e) => { if (!e.relatedTarget?.closest?.("[data-scale]")) tip.hidden = true; };
+  view.onmouseout = (e) => { if (!e.relatedTarget?.closest?.("[data-scale], [data-item]")) tip.hidden = true; };
 }
 
 function evFigure(title, caption, ...content) {
@@ -111,7 +127,7 @@ function renderEvals() {
       onclick: () => { evTrack = t.id; renderEvals(); } })));
   $("ev-body").replaceChildren(
     evVerdict(), evJudges(), evDistributions(), evAgreement(), evDiscrimination(),
-    evModels(), evRedundancy(), evPower(), evJudgments());
+    evModels(), evFitness(), evRedundancy(), evPower(), evJudgments());
   evWireTips();
 }
 
@@ -163,7 +179,7 @@ function evJudges() {
     }
   }
   const W = 760, rowH = 34, left = 170, right = 70, top = 26;
-  const svg = evSvg(W, top + judges.length * rowH + 30);
+  const svg = evSvg(W, top + judges.length * rowH + 40);
   const x = (p) => left + p * (W - left - right);
   svg.append(evS("text", { x: left, y: 14, class: "ev-axis-label" }, "share of that judge's scores, 1 (worst) to 7 (best), lower-is-better scales turned around"));
   judges.forEach((j, i) => {
@@ -185,6 +201,8 @@ function evJudges() {
     svg.append(evS("text", { x: W - right + 8, y: y + 30, class: "ev-row-note" }, `mean ${mean.toFixed(2)}`));
   });
   [0, 0.25, 0.5, 0.75, 1].forEach((p) => svg.append(evS("text", { x: x(p), y: top + judges.length * rowH + 16, class: "ev-tick", "text-anchor": "middle" }, evPct(p))));
+  svg.append(evS("text", { x: left, y: top + judges.length * rowH + 30, class: "ev-note strong" }, "← more of the low, critical scores"));
+  svg.append(evS("text", { x: W - right, y: top + judges.length * rowH + 30, class: "ev-note strong end" }, "more of the top scores →"));
 
   const stats = evData.judge_stats;
   const table = el("table", { class: "ev-table" },
@@ -220,7 +238,7 @@ function evDistributions() {
   const judges = evData.judges.map((j) => j.id);
   const byScale = Object.fromEntries(evTd().scales.map((s) => [s.scale, s]));
   const grid = el("div", { class: "ev-multiples", style: `--cols:${judges.length}` });
-  grid.append(el("span", {}), ...judges.map((j) => el("span", { class: "ev-col-head" }, el("i", { class: "ev-key dot", style: `--c:${EV_JUDGE_COLORS[j]}` }), evJudge(j))));
+  grid.append(el("span", { class: "ev-grid-key" }, "Each bar counts scores of 1 to 7; │ is the judge's mean. A single tall bar means no spread to measure."), ...judges.map((j) => el("span", { class: "ev-col-head" }, el("i", { class: "ev-key dot", style: `--c:${EV_JUDGE_COLORS[j]}` }), evJudge(j))));
   for (const s of scales) {
     const info = byScale[s];
     grid.append(evScaleTip(el("span", { class: "ev-row-head" }, evPretty(s), evLower(s) ? el("small", { text: " ↓ lower is better" }) : ""), s));
@@ -334,10 +352,23 @@ function evAgreement() {
 // 5 ---------------------------------------------------------------- discrimination
 function evDiscrimination() {
   const rows = [...evTd().scales].sort((a, b) => (b.eta2 ?? 0) - (a.eta2 ?? 0));
-  const W = 760, rowH = 22, left = 180, right = 110, top = 22;
-  const svg = evSvg(W, top + rows.length * rowH + 26);
+  const W = 820, rowH = 22, left = 180, right = 150, top = 96;
+  const svg = evSvg(W, top + rows.length * rowH + 118);
   const x = (v) => left + v * (W - left - right);
-  svg.append(evS("text", { x: left, y: 12, class: "ev-axis-label" }, "share of the scale's variation that is which model wrote the piece (η²)"));
+  svg.append(evS("defs", {}, evS("marker", { id: "ev-arrow2", viewBox: "0 0 8 8", refX: "7", refY: "4", markerWidth: "7", markerHeight: "7", orient: "auto-start-reverse" },
+    evS("path", { d: "M0 0 L8 4 L0 8 z", class: "ev-arrowhead" }))));
+  const note = (tx, ty, text, cls = "ev-note") => svg.append(evS("text", { x: tx, y: ty, class: cls }, text));
+  const arrow = (x1, y1, x2, y2) => svg.append(evS("path", { d: `M${x1} ${y1} L${x2} ${y2}`, class: "ev-leader", "marker-end": "url(#ev-arrow2)" }));
+  note(left, 18, "share of the scale's variation that comes from which model wrote the piece (η²) →");
+  note(W - right + 10, top - 22, "p: chance a bar this", "ev-note");
+  note(W - right + 10, top - 8, "long comes by luck", "ev-note");
+  if (rows[0]?.eta2_null != null) {  // name the parts on the first bar
+    const r0 = rows[0], y0 = top + 11;
+    arrow(x(r0.eta2_null) - 40, top - 44, x(r0.eta2_null) - 2, y0 - 8);
+    note(x(r0.eta2_null) - 44, top - 50, "red tick: what luck alone gives", "ev-callout icc end");
+    arrow(x(r0.eta2) + 30, top - 30, x(r0.eta2) + 2, y0 - 6);
+    note(x(r0.eta2) + 34, top - 30, "bar end: this scale's signal", "ev-callout std");
+  }
   rows.forEach((r, i) => {
     const y = top + i * rowH;
     const sig = r.eta2_p != null && r.eta2_p < 0.05;
@@ -347,7 +378,16 @@ function evDiscrimination() {
     if (r.eta2_null != null) svg.append(evS("line", { x1: x(r.eta2_null), x2: x(r.eta2_null), y1: y + 2, y2: y + rowH - 2, class: "ev-null" }));
     svg.append(evS("text", { x: W - right + 8, y: y + 14, class: "ev-row-note" }, r.eta2_p == null ? "" : `p ${r.eta2_p < 0.001 ? "< .001" : r.eta2_p.toFixed(3)}${sig ? " *" : ""}`));
   });
-  [0, 0.25, 0.5, 0.75, 1].forEach((v) => svg.append(evS("text", { x: x(v), y: top + rows.length * rowH + 16, class: "ev-tick", "text-anchor": "middle" }, String(v))));
+  const bottom = top + rows.length * rowH;
+  [0, 0.25, 0.5, 0.75, 1].forEach((v) => svg.append(evS("text", { x: x(v), y: bottom + 16, class: "ev-tick", "text-anchor": "middle" }, String(v))));
+  note(x(0), bottom + 32, "0 = says nothing about which model wrote it", "ev-note strong");
+  note(x(1), bottom + 32, "1 = entirely which model wrote it", "ev-note strong end");
+  const fy = bottom + 62;
+  note(left - 10, fy, "How to read a bar", "ev-note strong endish");
+  svg.append(evS("rect", { x: left, y: fy - 10, width: 70, height: 12, class: "ev-bar sig" }), evS("line", { x1: left + 30, x2: left + 30, y1: fy - 12, y2: fy + 4, class: "ev-null" }));
+  note(left + 84, fy, "Dark, well past its red tick (*): the scale tells the models apart, more than luck would (p < .05). Good.");
+  svg.append(evS("rect", { x: left, y: fy + 12, width: 34, height: 12, class: "ev-bar" }), evS("line", { x1: left + 30, x2: left + 30, y1: fy + 10, y2: fy + 26, class: "ev-null" }));
+  note(left + 84, fy + 22, "Pale, ending near its red tick: no more model signal than chance. The scale doesn't separate the models (yet).");
   return el("section", { class: "ev-section" },
     el("h2", { text: `Can each scale tell the models apart? · ${evTd().label}` }),
     evFigure("Signal against chance",
@@ -358,11 +398,14 @@ function evDiscrimination() {
 // 6 ---------------------------------------------------------------- models
 function evModels() {
   const t = evTd();
-  const rows = t.models;
+  if (evMeasure !== "overall" && !evScales().includes(evMeasure)) evMeasure = "overall";
+  const stats = evModelStats(evMeasure);
+  const rows = stats.models;
   const all = rows.flatMap((r) => [r.lo, r.hi, ...Object.values(r.by_judge)]).filter((v) => v != null);
   const lo = Math.max(1, Math.floor((Math.min(...all) - 0.15) * 4) / 4), hi = Math.min(7, Math.ceil((Math.max(...all) + 0.15) * 4) / 4);
-  const W = 760, rowH = 40, left = 170, right = 90, top = 26;
-  const svg = evSvg(W, top + rows.length * rowH + 30);
+  const W = 760, rowH = 40, left = 170, right = 90, top = 34;
+  const svg = evSvg(W, top + rows.length * rowH + 48);
+  svg.append(evS("text", { x: W - right, y: top + rows.length * rowH + 40, class: "ev-note strong end" }, "better →"));
   const x = (v) => left + (v - lo) / (hi - lo) * (W - left - right);
   for (let v = Math.ceil(lo * 4) / 4; v <= hi + 1e-9; v += 0.25) {
     svg.append(evS("line", { x1: x(v), x2: x(v), y1: top - 6, y2: top + rows.length * rowH, class: "ev-grid" }));
@@ -376,16 +419,25 @@ function evModels() {
     Object.entries(r.by_judge).forEach(([j, v]) => svg.append(evS("line", { x1: x(v), x2: x(v), y1: y - 11, y2: y - 5, stroke: EV_JUDGE_COLORS[j] || "#888", "stroke-width": 2.5 },
       evS("title", {}, `${evJudge(j)}: ${v.toFixed(2)}`))));
     svg.append(evS("circle", { cx: x(r.mean), cy: y, r: 6, fill: c, class: "ev-model-dot" }, evS("title", {}, `${evModel(r.model)}: ${evF2(r.mean)} (${evF2(r.lo)} to ${evF2(r.hi)}), ${r.n} pieces`)));
+    if (i === 0) {  // name the parts on the first row
+      svg.append(evS("text", { x: x(r.hi) + 8, y: y + 4, class: "ev-callout std" }, "← dot: the mean · bar: 95% interval"));
+      const jv = Math.min(...Object.values(r.by_judge));
+      if (Number.isFinite(jv)) svg.append(evS("text", { x: x(jv) - 4, y: y - 15, class: "ev-callout raw", "text-anchor": "end" }, "ticks: each judge's mean →"));
+    }
     svg.append(evS("text", { x: W - right + 8, y: y + 4, class: "ev-row-value" }, evF2(r.mean)));
     svg.append(evS("text", { x: W - right + 8, y: y + 17, class: "ev-row-note" }, `n = ${r.n}`));
   });
 
-  const diffs = t.diffs;
+  const diffs = stats.diffs;
   const span = Math.ceil(Math.max(0.2, ...diffs.flatMap((d) => [Math.abs(d.lo), Math.abs(d.hi)])) * 10) / 10; // a round edge
   const W2 = 760, rowH2 = 26, left2 = 230, top2 = 16;
-  const svg2 = evSvg(W2, top2 + diffs.length * rowH2 + 28);
+  const svg2 = evSvg(W2, top2 + diffs.length * rowH2 + 60);
   const x2 = (v) => left2 + (v + span) / (2 * span) * (W2 - left2 - 60);
   svg2.append(evS("line", { x1: x2(0), x2: x2(0), y1: 4, y2: top2 + diffs.length * rowH2, class: "ev-zero" }));
+  svg2.append(evS("text", { x: x2(0), y: top2 + diffs.length * rowH2 + 34, class: "ev-note strong mid" }, "0 = no difference"));
+  svg2.append(evS("text", { x: x2(span * 0.55), y: top2 + diffs.length * rowH2 + 34, class: "ev-note mid" }, "first model better →"));
+  svg2.append(evS("text", { x: x2(-span * 0.55), y: top2 + diffs.length * rowH2 + 34, class: "ev-note mid" }, "← second model better"));
+  svg2.append(evS("text", { x: 8, y: top2 + diffs.length * rowH2 + 52, class: "ev-note" }, "Solid: the interval misses 0, a real difference between the models. Pale: it crosses 0, so it could be noise."));
   diffs.forEach((dd, i) => {
     const y = top2 + i * rowH2 + rowH2 / 2;
     const clear = dd.lo > 0 || dd.hi < 0;
@@ -399,13 +451,139 @@ function evModels() {
   const self = t.self_preference.map((s) => `${evJudge(s.judge)} rated its own model's pieces ${evF2(Math.abs(s.preference))} points ${s.preference >= 0 ? "more" : "less"} generously, relative to the other judges, than it rated the rest`);
   return el("section", { class: "ev-section" },
     el("h2", { text: `The models · ${t.label}` }),
-    evFigure("Mean overall score, with 95% intervals",
+    el("label", { class: "ev-measure" }, "Compare on ",
+      el("select", { onchange: (e) => { evMeasure = e.target.value; const sec = e.target.closest(".ev-section"); sec.replaceWith(evModels()); evWireTips(); } },
+        el("option", { value: "overall", text: "the overall score (every scale)", selected: evMeasure === "overall" }),
+        ...evScales().map((sc) => el("option", { value: sc, text: `${evPretty(sc)}${evLower(sc) ? " (turned around: higher is better)" : ""}`, selected: evMeasure === sc })))),
+    evFigure(evMeasure === "overall" ? "Mean overall score, with 95% intervals" : `Mean “${evPretty(evMeasure)}” score, with 95% intervals`,
       "The dot is each model's mean overall score (every scale, lower-is-better ones turned around, averaged across the judges), the bar its 95% bootstrap interval from resampling its pieces 4,000 times. The small coloured ticks above are each judge's own mean for that model: where they fan out, the ranking depends on who's judging.",
       svg, evLegend([...rows.map((r) => [evModel(r.model), EV_MODEL_COLORS[r.model] || "#666"]), ...evData.judges.map((j) => [`${evJudge(j.id)} (tick)`, EV_JUDGE_COLORS[j.id] || "#888", "tick"])])),
     evFigure("Differences between models",
       "Each row is one model's mean minus another's, with a 95% bootstrap interval. Solid rows exclude zero: the difference is unlikely to be noise from which passages were chosen. It says nothing about noise shared by the judges themselves; the agreement section covers that."
       + (self.length ? ` Self-preference: ${self.join("; ")}.` : ""),
       svg2));
+}
+
+// 6b --------------------------------------------------------------- fitness for this app, and cost
+// Not judges' opinions: what the pieces themselves show (scripture quoted word for word,
+// sources inside the research, instructions followed, written for the ear, companion
+// behaviour, reliability, speed, cost), from evals/fitness.py. Across all tracks.
+function evFitness() {
+  const f = evFit;
+  if (!f) return "";
+  const ids = Object.keys(f.models);
+  const dims = f.dimensions;
+  const heat = (v) => `color-mix(in srgb, #2166ac ${Math.round((v ?? 0) * 70)}%, var(--page))`;
+  const table = el("table", { class: "ev-table ev-fit" },
+    el("thead", {}, el("tr", {}, el("th", { text: "Model" }), ...dims.map((d) => el("th", { title: d.how, class: "ev-has-tip-native", text: d.label })),
+      el("th", { text: "Fitness (balanced)" }))),
+    el("tbody", {}, ids.map((m) => {
+      const mm = f.models[m];
+      return el("tr", {}, el("th", {}, el("i", { class: "ev-key dot", style: `--c:${EV_MODEL_COLORS[m] || "#666"}` }), mm.label.replace(/ \(.*\)/, "")),
+        ...dims.map((d) => {
+          const v = mm.subscores[d.id];
+          if (!v || v.value == null) return el("td", { class: "ev-fit-cell", text: "–" });
+          const ci = v.lo != null ? ` (95% interval ${v.lo.toFixed(2)} to ${v.hi.toFixed(2)}, n = ${v.n})` : "";
+          return el("td", { class: "ev-fit-cell", style: `background:${heat(v.value)}`, title: `${d.label}: ${v.value.toFixed(2)}${ci}. ${d.how}`, text: v.value.toFixed(2) });
+        }),
+        el("td", { class: "ev-fit-cell total", text: mm.fitness.balanced.toFixed(2) }));
+    })));
+
+  // cost against value, with the Pareto frontier
+  const scatter = (title, yOf, frontier, yLabel) => {
+    const W = 380, H = 260, L = 46, B = 36, T = 16, R = 16;
+    const pts = ids.map((m) => ({ m, x: f.models[m].operations.usd_per_retreat || 0, ...yOf(f.models[m]) }));
+    const xmax = Math.max(0.5, ...pts.map((p) => p.x)) * 1.15;
+    const ys = pts.flatMap((p) => [p.lo ?? p.y, p.hi ?? p.y]);
+    const ylo = Math.max(0, Math.floor((Math.min(...ys) - 0.03) * 20) / 20), yhi = Math.min(1, Math.ceil((Math.max(...ys) + 0.03) * 20) / 20);
+    const x = (v) => L + (v / xmax) * (W - L - R), y = (v) => T + (1 - (v - ylo) / (yhi - ylo)) * (H - T - B);
+    const svg = evSvg(W, H);
+    for (let v = ylo; v <= yhi + 1e-9; v += 0.05) {
+      svg.append(evS("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), class: "ev-grid" }), evS("text", { x: L - 6, y: y(v) + 4, class: "ev-tick", "text-anchor": "end" }, v.toFixed(2)));
+    }
+    const step = xmax > 4 ? 1 : 0.5;
+    for (let v = 0; v <= xmax; v += step) svg.append(evS("text", { x: x(v), y: H - B + 16, class: "ev-tick", "text-anchor": "middle" }, `$${v.toFixed(v % 1 ? 1 : 0)}`));
+    svg.append(evS("text", { x: (L + W - R) / 2, y: H - 4, class: "ev-axis-label", "text-anchor": "middle" }, "cost per 7-day retreat (text), dollars"));
+    svg.append(evS("text", { x: 12, y: (T + H - B) / 2, class: "ev-axis-label", "text-anchor": "middle", transform: `rotate(-90 12 ${(T + H - B) / 2})` }, yLabel));
+    svg.append(evS("text", { x: L + 6, y: T + 12, class: "ev-note strong" }, "↖ better: cheaper and higher"));
+    svg.append(evS("text", { x: W - R - 4, y: H - B - 6, class: "ev-note end" }, "worse: costly and lower ↘"));
+    const front = pts.filter((p) => frontier.includes(p.m)).sort((a, b) => a.x - b.x);
+    svg.append(evS("text", { x: L + 6, y: T + 26, class: "ev-note" }, front.length > 1 ? "ringed dots, joined: the frontier" : "ringed dot: nothing beats it on both"));
+    if (front.length > 1) svg.append(evS("path", { d: front.map((p, k) => `${k ? "L" : "M"}${x(p.x)} ${y(p.y)}`).join(" "), class: "ev-frontier" }));
+    const placed = [];  // labels nudged apart so they never sit on each other
+    for (const p of pts) {
+      const c = EV_MODEL_COLORS[p.m] || "#666";
+      let ly = y(p.y) - 8;
+      while (placed.some(([px, py]) => Math.abs(px - x(p.x)) < 90 && Math.abs(py - ly) < 13)) ly += 14;
+      placed.push([x(p.x), ly]);
+      if (p.lo != null) svg.append(evS("line", { x1: x(p.x), x2: x(p.x), y1: y(p.lo), y2: y(p.hi), stroke: c, "stroke-width": 2, opacity: 0.6 }));
+      svg.append(evS("circle", { cx: x(p.x), cy: y(p.y), r: frontier.includes(p.m) ? 7 : 5.5, fill: c, class: `ev-model-dot${frontier.includes(p.m) ? " front" : ""}` },
+        evS("title", {}, `${f.models[p.m].label}: $${p.x.toFixed(2)} a retreat, ${p.y.toFixed(3)}${frontier.includes(p.m) ? " (on the frontier)" : ""}`)));
+      svg.append(evS("text", { x: x(p.x) + 9, y: ly, class: "ev-row-note" }, f.models[p.m].label.replace(/ \(.*\)|Claude |OpenAI /g, "")));
+    }
+    return el("div", { class: "ev-fit-plot" }, el("h4", { text: title }), svg);
+  };
+  const q = (mm) => ({ y: mm.subscores.quality.value, lo: mm.subscores.quality.lo, hi: mm.subscores.quality.hi });
+  const fit = (mm) => ({ y: mm.fitness.balanced });
+
+  // fitness under each weighting
+  const profiles = Object.keys(f.weights);
+  const W = 760, rowH = 34, left = 170, right = 150, top = 20;
+  const allF = profiles.flatMap((pr) => ids.map((m) => f.models[m].fitness[pr]));
+  const lo = Math.floor((Math.min(...allF) - 0.02) * 50) / 50, hi = Math.ceil((Math.max(...allF) + 0.02) * 50) / 50;
+  const sx = (v) => left + (v - lo) / (hi - lo) * (W - left - right);
+  const dot = evSvg(W, top + profiles.length * rowH + 44);
+  dot.append(evS("text", { x: W - right, y: top + profiles.length * rowH + 36, class: "ev-note strong end" }, "higher fitness is better →"));
+  dot.append(evS("text", { x: left, y: top + profiles.length * rowH + 36, class: "ev-note" }, "grey bar: spread between best and worst model"));
+  for (let v = lo; v <= hi + 1e-9; v += 0.02) dot.append(evS("line", { x1: sx(v), x2: sx(v), y1: top - 4, y2: top + profiles.length * rowH, class: "ev-grid" }),
+    evS("text", { x: sx(v), y: top + profiles.length * rowH + 16, class: "ev-tick", "text-anchor": "middle" }, v.toFixed(2)));
+  profiles.forEach((pr, k) => {
+    const yy = top + k * rowH + rowH / 2;
+    dot.append(evS("text", { x: left - 10, y: yy + 4, class: "ev-row-label", "text-anchor": "end" }, pr.replace(/_/g, " ")));
+    const vals = ids.map((m) => [m, f.models[m].fitness[pr]]);
+    dot.append(evS("line", { x1: sx(Math.min(...vals.map((v) => v[1]))), x2: sx(Math.max(...vals.map((v) => v[1]))), y1: yy, y2: yy, class: "ev-span" }));
+    for (const [m, v] of vals) dot.append(evS("circle", { cx: sx(v), cy: yy, r: 6, fill: EV_MODEL_COLORS[m] || "#666", class: "ev-model-dot" }, evS("title", {}, `${f.models[m].label}: ${v.toFixed(3)}`)));
+    const win = f.sensitivity.winner_by_weighting[pr];
+    dot.append(evS("text", { x: W - right + 10, y: yy + 4, class: "ev-row-note" }, `winner: ${f.models[win]?.label.replace(/ \(.*\)|Claude |OpenAI /g, "") || win}`));
+  });
+  const shares = el("div", { class: "ev-share" }, ids.map((m) => {
+    const v = f.sensitivity.win_share[m] || 0;
+    return v ? el("span", { style: `flex:${v};--c:${EV_MODEL_COLORS[m] || "#666"}`, title: `${f.models[m].label} wins ${evPct(v)} of ${f.sensitivity.draws.toLocaleString()} random weightings` },
+      v > 0.06 ? `${f.models[m].label.replace(/ \(.*\)|Claude |OpenAI /g, "")} ${evPct(v)}` : "") : "";
+  }));
+  const wtable = el("table", { class: "ev-table" },
+    el("thead", {}, el("tr", {}, el("th", { text: "Weighting" }), ...dims.map((d) => el("th", { text: d.label })))),
+    el("tbody", {}, profiles.map((pr) => el("tr", {}, el("th", { text: pr.replace(/_/g, " ") }), ...dims.map((d) => el("td", { text: evPct(f.weights[pr][d.id] || 0) }))))));
+
+  // what the checks found, in plain numbers
+  const row = (label, fn) => el("tr", {}, el("th", { text: label }), ...ids.map((m) => el("td", { text: fn(f.models[m]) })));
+  const facts = el("table", { class: "ev-table" },
+    el("thead", {}, el("tr", {}, el("th", { text: "" }), ...ids.map((m) => el("th", {}, el("i", { class: "ev-key dot", style: `--c:${EV_MODEL_COLORS[m] || "#666"}` }), f.models[m].label.replace(/ \(.*\)/, ""))))),
+    el("tbody", {},
+      row("Scripture quoted word for word", (mm) => `${mm.scripture.verbatim} of ${mm.scripture.from_passage} (${evPct(mm.scripture.verbatim_share)})`),
+      row("Sources cited that weren't in its research", (mm) => `${mm.grounding.outside} of ${mm.grounding.cited}`),
+      row("Checkable claims supported by the research", (mm) => mm.grounding.claims ? `${mm.grounding.supported} of ${mm.grounding.claims}` : "–"),
+      row("Length against the target", (mm) => `${Math.round(mm.instructions.mean_length_ratio * 100)}% (within ±15%: ${evPct(mm.instructions.within_15pct)})`),
+      row("The day's grace named", (mm) => evPct(mm.instructions.grace_share)),
+      row("Written for the ear (Flesch reading ease)", (mm) => mm.ear.flesch?.toFixed(0) ?? "–"),
+      row("Companion: one question at a time", (mm) => mm.companion?.conversations ? evPct(mm.companion.one_question_share) : "–"),
+      row("Companion: named 988 when at risk", (mm) => mm.companion?.conversations ? (mm.companion.names_help_when_at_risk ? "yes" : "no") : "–"),
+      row("Median seconds a piece", (mm) => `${Math.round(mm.operations.median_seconds)}${mm.operations.local ? " (this Mac)" : ""}`),
+      row("Cost: reflection · deep dive", (mm) => `$${(mm.operations.usd_per_heart || 0).toFixed(3)} · $${(mm.operations.usd_per_deep || 0).toFixed(3)}`),
+      row("Cost of a 7-day retreat's text", (mm) => `$${(mm.operations.usd_per_retreat || 0).toFixed(2)}`)));
+
+  return el("section", { class: "ev-section" },
+    el("h2", { text: "Which model for this app, at what cost? · all tracks" }),
+    el("p", { text: "Judges' opinions are one measure. These are checked directly in what each model wrote: scripture quoted word for word, sources that come from the research it was given, the app's instructions followed, writing for the ear, the companion's behaviour, reliability, speed and cost. Each is scored 0 to 1. Hover a cell for its interval and how it's measured." }),
+    evFigure("Sub-scores and fitness", "Darker blue is better. Fitness is the weighted sum under the balanced weighting (weights below). Judged quality comes from the cheap judges; the rest from the pieces themselves.",
+      el("div", { class: "ev-table-wrap" }, table)),
+    evFigure("Cost against value", "Each dot is a model: how much a 7-day retreat's text costs with it (free and local models at $0), against its judged quality (with its 95% interval) or its fitness. The line joins the Pareto frontier: models no other model beats on both cost and value. Larger dots are on it.",
+      el("div", { class: "ev-fit-plots" }, scatter("Judged quality", q, f.pareto.cost_vs_quality, "judged quality, 0 to 1"),
+        scatter("Fitness (balanced)", fit, f.pareto.cost_vs_fitness, "fitness, 0 to 1"))),
+    evFigure("Does the winner depend on what you care about?",
+      `Each row weights the measures differently (table below); the dots are each model's fitness under that weighting. The bar shows how often each model comes out on top across ${f.sensitivity.draws.toLocaleString()} random weightings: a model that wins under most of them is a safe choice whatever your priorities.`,
+      dot, shares, el("details", {}, el("summary", { text: "The weightings" }), el("div", { class: "ev-table-wrap" }, wtable))),
+    evFigure("What the checks found", `Assumptions: ${f.assumptions.note || ""}`, el("div", { class: "ev-table-wrap" }, facts)));
 }
 
 // 7 ---------------------------------------------------------------- redundancy
@@ -422,6 +600,9 @@ function evRedundancy() {
     const to = v >= 0 ? pos : neg, a = Math.abs(v);
     return `rgb(${mid.map((m, i) => Math.round(m + (to[i] - m) * a)).join(",")})`;
   };
+  [["How to read a square", "strong"], ["deep red: the two scales", ""], ["rise together (redundant)", ""], ["white: unrelated", ""],
+    ["blue: one rises as the", ""], ["other falls", ""], ["the diagonal is each scale", ""], ["with itself, always 1", ""]]
+    .forEach(([t, c], k) => svg.append(evS("text", { x: 4, y: 14 + k * 14, class: `ev-note ${c}` }, t)));
   scales.forEach((s, i) => {
     svg.append(evScaleTip(evS("text", { x: left - 6, y: top + i * cell + cell / 2 + 4, class: "ev-heat-label", "text-anchor": "end" }, evPretty(s)), s));
     svg.append(evScaleTip(evS("text", { x: 0, y: 0, class: "ev-heat-label", transform: `translate(${left + i * cell + cell / 2 + 4},${top - 6}) rotate(-60)` }, evPretty(s)), s));
@@ -436,7 +617,7 @@ function evRedundancy() {
     evFigure("How the scales move together",
       `Pearson correlation between every pair of scales, on each piece's average across judges (lower-is-better scales turned around, so red always means "good together"). One factor explains ${evPct(t.first_factor)} of all the scales' variation${t.fruit_mean_r != null ? `, and the nine fruits of the Spirit correlate ${evF2(t.fruit_mean_r)} with each other on average` : ""}. A block of deep red means those scales are one measurement under several names; a scale that's pale everywhere is either measuring something distinct or measuring nothing (check its agreement above).`,
       el("div", { class: "ev-scroll" }, svg),
-      evLegend([["−1", "rgb(33,102,172)", "square"], ["0", "rgb(247,247,247)", "square"], ["+1", "rgb(178,24,43)", "square"]])));
+      evLegend([["−1: opposite", "rgb(33,102,172)", "square"], ["0: unrelated (distinct scales: good)", "rgb(247,247,247)", "square"], ["+0.7 or more: probably the same thing twice", "rgb(190,70,80)", "square"], ["+1: identical", "rgb(178,24,43)", "square"]])));
 }
 
 // 8 ---------------------------------------------------------------- power
@@ -456,7 +637,58 @@ function evPower() {
       "From the spread of overall scores among one model's own pieces: how many pieces each model would need for a difference of 0.1, 0.2 or 0.5 points (on the 1–7 scale) to be found 80% of the time at p < .05. Green: the current run already has enough. This treats the judges' average as the truth; if the judges don't agree (above), more passages won't fix that, more or better judges will.",
       el("div", { class: "ev-table-wrap" }, el("table", { class: "ev-table" },
         el("thead", {}, el("tr", {}, ["Track", "Spread within a model", "Pieces per model now", "for 0.1", "for 0.2", "for 0.5"].map((h) => el("th", { text: h })))),
-        el("tbody", {}, rows)))));
+        el("tbody", {}, rows))),
+      evLegend([["green: the current run already has enough pieces", "var(--ok, #2e7d32)", "square"], ["plain number: how many pieces per model it would take", "var(--line)", "square"]]),
+      el("p", { class: "hint", text: "Smaller spread within a model is better: the model is consistent, so fewer passages are needed. A difference of 0.1 on a 7-point scale is tiny; 0.5 is one a reader would notice." })));
+}
+
+// Every judge's score on every scale for one piece, coloured worst (red) to best (blue).
+function evAllScores(judged) {
+  const scales = evScales();
+  const cell = (s, v) => {
+    if (v == null) return el("td", { text: "–" });
+    const g = evGood(s, v);
+    return el("td", { class: "ev-score", style: `--c:${EV_LEVEL_COLORS[Math.round(g) - 1]}`, title: `${evPretty(s)}: ${v} (${evLower(s) ? "lower is better" : "higher is better"})`, text: String(v) });
+  };
+  return el("details", { class: "ev-raw" }, el("summary", { text: "All scores, every scale" }),
+    el("div", { class: "ev-table-wrap" }, el("table", { class: "ev-table ev-scores" },
+      el("thead", {}, el("tr", {}, el("th", { text: "Scale" }), judged.map((r) => el("th", {}, el("i", { class: "ev-key dot", style: `--c:${EV_JUDGE_COLORS[r.judge] || "#888"}` }), evJudge(r.judge))))),
+      el("tbody", {}, scales.map((s) => el("tr", {},
+        el("th", {}, evScaleTip(el("span", {}, evPretty(s), evLower(s) ? " ↓" : ""), s)), judged.map((r) => cell(s, r.scores[s]))))))));
+}
+
+// The model comparison for any measure: the overall score (from the analysis) or one
+// scale, recomputed here from the judgments (each piece's mean across judges; means
+// with 95% bootstrap intervals from resampling pieces 2,000 times).
+function evModelStats(measure) {
+  const t = evTd();
+  if (measure === "overall") return { models: t.models, diffs: t.diffs };
+  const byPiece = {};
+  for (const r of evData.judgments) {
+    if (r.track !== evTrack || r.scores[measure] == null) continue;
+    (byPiece[`${r.model}|${r.item}`] ||= []).push([r.judge, evGood(measure, r.scores[measure])]);
+  }
+  const mean = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;
+  const resample = (xs) => Array.from(xs, () => xs[Math.floor(Math.random() * xs.length)]);
+  const values = {};
+  const judgeVals = {};
+  for (const [k, list] of Object.entries(byPiece)) {
+    const m = k.split("|")[0];
+    (values[m] ||= []).push(mean(list.map(([, v]) => v)));
+    for (const [j, v] of list) ((judgeVals[m] ||= {})[j] ||= []).push(v);
+  }
+  const models = evData.models.map((m) => m.id).filter((m) => (values[m] || []).length > 1).map((m) => {
+    const ms = Array.from({ length: 2000 }, () => mean(resample(values[m]))).sort((a, b) => a - b);
+    return { model: m, n: values[m].length, mean: mean(values[m]), lo: ms[50], hi: ms[1949],
+      by_judge: Object.fromEntries(Object.entries(judgeVals[m]).map(([j, vs]) => [j, mean(vs)])) };
+  });
+  const diffs = [];
+  models.forEach((a, i) => models.slice(i + 1).forEach((b) => {
+    const va = values[a.model], vb = values[b.model];
+    const ds = Array.from({ length: 2000 }, () => mean(resample(va)) - mean(resample(vb))).sort((x, y) => x - y);
+    diffs.push({ a: a.model, b: b.model, diff: mean(va) - mean(vb), lo: ds[50], hi: ds[1949] });
+  }));
+  return { models, diffs };
 }
 
 // 9 ---------------------------------------------------------------- every piece, and what each judge said
@@ -497,14 +729,14 @@ function evJudgments() {
           piece.sources?.length ? el("p", { class: "hint", text: `Sources it listed: ${piece.sources.length}` }) : ""))) : "";
     return el("article", { class: "card ev-piece" },
       el("header", {},
-        el("strong", { text: item }), el("span", { class: "ev-piece-model" }, el("i", { class: "ev-key dot", style: `--c:${EV_MODEL_COLORS[model] || "#666"}` }), evModel(model)),
+        el("strong", { class: "ev-has-tip", "data-item": item, tabindex: "0", text: item }), el("span", { class: "ev-piece-model" }, el("i", { class: "ev-key dot", style: `--c:${EV_MODEL_COLORS[model] || "#666"}` }), evModel(model)),
         el("span", { class: "meta", text: `words shared between judges: strengths ${evPct(ta.strength?.overlap)}, weaknesses ${evPct(ta.weakness?.overlap)}` })),
       el("div", { class: "ev-verdicts", style: `--cols:${judged.length}` }, judged.map((r) => el("div", { class: "ev-verdict" },
         el("div", { class: "ev-verdict-head" }, el("i", { class: "ev-key dot", style: `--c:${EV_JUDGE_COLORS[r.judge] || "#888"}` }), evJudge(r.judge),
           el("span", { class: "ev-verdict-score", text: overall(r).toFixed(2) })),
         el("p", { class: "ev-plus" }, el("b", { text: "+ " }), ...marked(r.strength || "", ta.strength?.shared)),
         el("p", { class: "ev-minus" }, el("b", { text: "− " }), ...marked(r.weakness || "", ta.weakness?.shared))))),
-      raw);
+      evAllScores(judged), raw);
   });
   return el("section", { class: "ev-section" },
     el("h2", { text: `Every piece, and what each judge said · ${evTd().label}` }),
