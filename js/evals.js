@@ -49,6 +49,39 @@ const evGood = (s, v) => (evLower(s) ? 8 - v : v);
 const evTd = () => evData.tracks_data[evTrack];
 const evScales = () => evData.tracks.find((t) => t.id === evTrack).scales;
 
+// Hovering (or focusing, or tapping) a scale's name shows exactly what the judge was
+// asked and the scale it answered on, from the judge prompt itself.
+function evScaleTip(node, scale) {
+  if (!evData.scale_text?.[evTrack]?.[scale]) return node;
+  node.setAttribute("data-scale", scale);
+  node.setAttribute("tabindex", "0");
+  node.classList.add("ev-has-tip");
+  return node;
+}
+
+function evWireTips() {
+  const tip = $("ev-tip");
+  const showFor = (target) => {
+    const scale = target?.closest?.("[data-scale]")?.getAttribute("data-scale");
+    const info = scale && evData.scale_text?.[evTrack]?.[scale];
+    if (!info) return (tip.hidden = true);
+    tip.replaceChildren(el("strong", { text: evPretty(scale) }), evLower(scale) ? el("span", { class: "ev-tip-chip", text: "↓ lower is better" }) : "",
+      el("p", { text: `The judge was asked: “${info.question}”` }), el("p", { class: "meta", text: `Scale: ${info.scale}` }));
+    tip.hidden = false;
+    const r = target.closest("[data-scale]").getBoundingClientRect();
+    const w = Math.min(380, window.innerWidth - 24);
+    tip.style.width = `${w}px`;
+    tip.style.left = `${Math.max(12, Math.min(window.innerWidth - w - 12, r.left + r.width / 2 - w / 2))}px`;
+    const below = r.bottom + 10 + tip.offsetHeight < window.innerHeight;
+    tip.style.top = `${(below ? r.bottom + 8 : r.top - tip.offsetHeight - 8) + window.scrollY}px`;
+  };
+  const view = $("view-evals");
+  view.onmouseover = (e) => showFor(e.target);
+  view.onfocusin = (e) => showFor(e.target);
+  view.onclick = (e) => showFor(e.target);
+  view.onmouseout = (e) => { if (!e.relatedTarget?.closest?.("[data-scale]")) tip.hidden = true; };
+}
+
 function evFigure(title, caption, ...content) {
   return el("figure", { class: "card ev-figure" }, el("h3", { text: title }), ...content, caption ? el("figcaption", { class: "hint", text: caption }) : "");
 }
@@ -79,6 +112,7 @@ function renderEvals() {
   $("ev-body").replaceChildren(
     evVerdict(), evJudges(), evDistributions(), evAgreement(), evDiscrimination(),
     evModels(), evRedundancy(), evPower(), evJudgments());
+  evWireTips();
 }
 
 // 1 ---------------------------------------------------------------- the short answer
@@ -103,7 +137,7 @@ function evVerdict() {
   const best = heart?.diffs?.filter((x) => x.lo > 0 || x.hi < 0) || [];
   return el("section", { class: "ev-section" },
     el("h2", { text: "The short answer" }),
-    el("p", { text: "Whether these judges' scores can be trusted, evTd by evTd. ICC(2,k) is how reliable the average of all the judges is: the number the reports use. ICC(2,1) is how reliable one judge is alone. Spearman-Brown turns that into how many judges it would take for the average to reach 0.8." }),
+    el("p", { text: "Whether these judges' scores can be trusted, track by track. ICC(2,k) is how reliable the average of all the judges is: the number the reports use. ICC(2,1) is how reliable one judge is alone. Spearman-Brown turns that into how many judges it would take for the average to reach 0.8." }),
     el("div", { class: "ev-table-wrap" }, el("table", { class: "ev-table" },
       el("thead", {}, el("tr", {}, ["Track", "Average of the judges", "One judge", "Judges for 0.8", "Scales with alpha ≥ 0.67", "Scores at 6 or 7", "Scales that separate the models (p < .05)"].map((h) => el("th", { text: h })))),
       el("tbody", {}, rows))),
@@ -189,7 +223,7 @@ function evDistributions() {
   grid.append(el("span", {}), ...judges.map((j) => el("span", { class: "ev-col-head" }, el("i", { class: "ev-key dot", style: `--c:${EV_JUDGE_COLORS[j]}` }), evJudge(j))));
   for (const s of scales) {
     const info = byScale[s];
-    grid.append(el("span", { class: "ev-row-head" }, evPretty(s), evLower(s) ? el("small", { text: " ↓ lower is better" }) : ""));
+    grid.append(evScaleTip(el("span", { class: "ev-row-head" }, evPretty(s), evLower(s) ? el("small", { text: " ↓ lower is better" }) : ""), s));
     const peak = Math.max(1, ...judges.map((j) => Math.max(...(info?.hist[j] || [0]))));
     for (const j of judges) {
       const h = info?.hist[j] || Array(7).fill(0), n = h.reduce((a, b) => a + b, 0);
@@ -216,8 +250,8 @@ function evDistributions() {
 // 4 ---------------------------------------------------------------- agreement
 function evAgreement() {
   const t = evTd();
-  const rows = [{ scale: "overall score", ...t.overall, bold: true }, ...t.scales.map((s) => ({ ...s, scale: evPretty(s.scale) }))];
-  const W = 820, rowH = 22, left = 180, right = 150, top = 118, lo = -0.6, hi = 1, foot = 118;
+  const rows = [{ scale: "overall score", ...t.overall, bold: true }, ...t.scales.map((s) => ({ ...s, key: s.scale, scale: evPretty(s.scale) }))];
+  const W = 820, rowH = 22, left = 180, right = 150, top = 150, lo = -0.6, hi = 1, foot = 150;
   const H = top + rows.length * rowH + foot;
   const svg = evSvg(W, H, "ev-agree");
   const x = (v) => left + (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo) * (W - left - right);
@@ -246,22 +280,25 @@ function evAgreement() {
   rows.forEach((r, i) => {
     const y = top + i * rowH + rowH / 2;
     svg.append(evS("line", { x1: left, x2: W - right, y1: y, y2: y, class: "ev-guide" }));
-    svg.append(evS("text", { x: left - 10, y: y + 4, class: `ev-row-label${r.bold ? " bold" : ""}`, "text-anchor": "end" }, r.scale));
-    const pts = [[r.alpha, "raw", "Krippendorff's alpha"], [r.alpha_std, "std", "alpha with each judge's leniency removed"], [r.icck, "icc", "ICC(2,k), the average of the judges"]];
-    const xs = pts.filter((p) => p[0] != null).map((p) => x(p[0]));
+    svg.append(evScaleTip(evS("text", { x: left - 10, y: y + 4, class: `ev-row-label${r.bold ? " bold" : ""}`, "text-anchor": "end" }, r.scale), r.key));
+    const pts = [[r.alpha, "raw", "Krippendorff's alpha"], [r.alpha_std, "std", "alpha with each judge's leniency removed"], [r.icck, "icc", "ICC(2,k), the average of the judges"],
+      [r.kappa, "kappa", "Cohen's quadratic-weighted kappa, averaged over pairs of judges"], [r.ac2, "ac2", "Gwet's AC2 (quadratic weights), robust to a ceiling"]];
+    const xs = pts.slice(0, 3).filter((p) => p[0] != null).map((p) => x(p[0]));  // the line joins alpha, alpha adjusted and ICC
     if (xs.length > 1) svg.append(evS("line", { x1: Math.min(...xs), x2: Math.max(...xs), y1: y, y2: y, class: "ev-span" }));
     for (const [v, kind, name] of pts) {
       if (v == null) continue;
-      const mark = kind === "icc" ? evS("path", { d: `M${x(v)} ${y - 5}l5 5l-5 5l-5 -5z`, class: `ev-pt ${kind}` }) : evS("circle", { cx: x(v), cy: y, r: 4.5, class: `ev-pt ${kind}` });
+      const shapes = { icc: `M${x(v)} ${y - 5}l5 5l-5 5l-5 -5z`, kappa: `M${x(v) - 4} ${y - 4}h8v8h-8z`, ac2: `M${x(v)} ${y - 5.5}l5.5 9.5h-11z` };
+      const mark = shapes[kind] ? evS("path", { d: shapes[kind], class: `ev-pt ${kind}` }) : evS("circle", { cx: x(v), cy: y, r: 4.5, class: `ev-pt ${kind}` });
       mark.append(evS("title", {}, `${r.scale}: ${name} ${v.toFixed(2)}`));
       svg.append(mark);
     }
     if (r.exact != null) svg.append(evS("text", { x: W - right + 12, y: y + 4, class: "ev-row-note" }, `${evPct(r.exact)} · ${evPct(r.within1)}`));
-    if (i === 0) {  // callouts naming each marker, on the first row, staggered so they never collide
-      const called = pts.filter((p) => p[0] != null).sort((a, b) => a[0] - b[0]);
-      const words = { raw: "alpha, raw scores", std: "alpha, leniency removed", icc: "ICC(2,k): the judges' average" };
+    if (i <= 1) {  // callouts naming each marker (the kappa and AC2 ones on the first scale), staggered
+      const called = pts.filter((p, n) => p[0] != null && (i === 0 ? n < 3 : n >= 3)).sort((a, b) => a[0] - b[0]);
+      const words = { raw: "alpha, raw scores", std: "alpha, leniency removed", icc: "ICC(2,k): the judges' average",
+        kappa: "Cohen's weighted κ", ac2: "Gwet's AC2" };
       called.forEach(([v, kind], k) => {
-        const ly = top - 40 - k * 16;
+        const ly = top - 40 - (i === 0 ? k : 3 + k) * 16;
         const lx = Math.min(W - right - 10, Math.max(left + 10, x(v)));
         svg.append(evS("path", { d: `M${x(v)} ${y - 7} L${x(v)} ${ly + 3}`, class: "ev-leader thin" }));
         note(lx + 4, ly, words[kind], `ev-callout ${kind}`);
@@ -282,11 +319,15 @@ function evAgreement() {
   svg.append(evS("circle", { cx: ex1 + 45, cy: fy + 48, r: 4.5, class: "ev-pt std" }));
   svg.append(evS("line", { x1: ex1 + 45, x2: ex1 + 45, y1: fy + 38, y2: fy + 58, class: "ev-zero" }));
   note(ex1 + 104, fy + 52, "A filled circle near 0: even allowing for generosity, they don't rank the pieces alike.");
+  svg.append(evS("path", { d: `M${ex1 + 20} ${fy + 78}h8v8h-8z`, class: "ev-pt kappa" }));
+  svg.append(evS("path", { d: `M${ex1 + 70} ${fy + 76.5}l5.5 9.5h-11z`, class: "ev-pt ac2" }));
+  note(ex1 + 104, fy + 86, "Square near 0 but triangle near 1: the judges give the same scores, but the scores");
+  note(ex1 + 104, fy + 102, "don't vary enough to tell pieces apart (the ceiling).");
   void ex2;
   return el("section", { class: "ev-section" },
     el("h2", { text: `Do the judges agree? · ${t.label}` }),
     evFigure("Agreement, scale by scale",
-      "Krippendorff's alpha measures agreement beyond chance for any number of judges. The filled circle recomputes it after putting every judge on its own scale (its mean and spread removed). ICC(2,k) is the reliability of the judges' average, the number the reports use.",
+      "Krippendorff's alpha measures agreement beyond chance for any number of judges; the filled circle recomputes it after putting every judge on its own scale. ICC(2,k) is the reliability of the judges' average, the number the reports use. The square is Cohen's quadratic-weighted kappa, averaged over every pair of judges. The triangle is Gwet's AC2, which uses the same weights but a chance correction that doesn't collapse when nearly every score is the same: kappa and alpha fall toward zero under a ceiling (the \"kappa paradox\") even when the judges agree, and AC2 shows whether they do.",
       svg));
 }
 
@@ -300,7 +341,7 @@ function evDiscrimination() {
   rows.forEach((r, i) => {
     const y = top + i * rowH;
     const sig = r.eta2_p != null && r.eta2_p < 0.05;
-    svg.append(evS("text", { x: left - 10, y: y + 14, class: "ev-row-label", "text-anchor": "end" }, evPretty(r.scale)));
+    svg.append(evScaleTip(evS("text", { x: left - 10, y: y + 14, class: "ev-row-label", "text-anchor": "end" }, evPretty(r.scale)), r.scale));
     svg.append(evS("rect", { x: left, y: y + 4, width: Math.max(0, x(r.eta2 || 0) - left), height: rowH - 8, class: `ev-bar${sig ? " sig" : ""}` },
       evS("title", {}, `η² ${evF2(r.eta2)}, by chance ${evF2(r.eta2_null)}, p ${r.eta2_p == null ? "–" : r.eta2_p.toFixed(3)}`)));
     if (r.eta2_null != null) svg.append(evS("line", { x1: x(r.eta2_null), x2: x(r.eta2_null), y1: y + 2, y2: y + rowH - 2, class: "ev-null" }));
@@ -382,8 +423,8 @@ function evRedundancy() {
     return `rgb(${mid.map((m, i) => Math.round(m + (to[i] - m) * a)).join(",")})`;
   };
   scales.forEach((s, i) => {
-    svg.append(evS("text", { x: left - 6, y: top + i * cell + cell / 2 + 4, class: "ev-heat-label", "text-anchor": "end" }, evPretty(s)));
-    svg.append(evS("text", { x: 0, y: 0, class: "ev-heat-label", transform: `translate(${left + i * cell + cell / 2 + 4},${top - 6}) rotate(-60)` }, evPretty(s)));
+    svg.append(evScaleTip(evS("text", { x: left - 6, y: top + i * cell + cell / 2 + 4, class: "ev-heat-label", "text-anchor": "end" }, evPretty(s)), s));
+    svg.append(evScaleTip(evS("text", { x: 0, y: 0, class: "ev-heat-label", transform: `translate(${left + i * cell + cell / 2 + 4},${top - 6}) rotate(-60)` }, evPretty(s)), s));
     scales.forEach((s2, j) => {
       const r = matrix[i][j];
       svg.append(evS("rect", { x: left + j * cell, y: top + i * cell, width: cell - 1, height: cell - 1, fill: color(r) }, evS("title", {}, `${evPretty(s)} × ${evPretty(s2)}: r = ${evF2(r)}`)));
