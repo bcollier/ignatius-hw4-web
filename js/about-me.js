@@ -28,6 +28,7 @@ async function openMe() {
   };
   showBootTimes();
   showMyHighlights();
+  showCalendarFeed();
   $("me-debug").checked = debugMode();
   $("me-evals-link").hidden = !debugMode();
   showWaitingPreviews();
@@ -219,4 +220,43 @@ function bootChart(data) {
       bootS("text", { x: kx + 12, y: ky + 4, class: "boot-note" }, label));
   });
   return svg;
+}
+
+
+// ---------------------------------------------------------------- prayed days on your calendar
+async function showCalendarFeed() {
+  const box = $("me-calendar");
+  box.hidden = typeof hlSignedIn === "function" ? !hlSignedIn() : !session;
+  if (box.hidden) return;
+  const show = (feed) => {
+    $("me-cal-off").hidden = feed.on;
+    $("me-cal-ready").hidden = !feed.on;
+    if (!feed.on) return;
+    $("me-cal-google").href = `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(feed.webcal)}`;
+    $("me-cal-apple").href = feed.webcal;
+    $("me-cal-copy").onclick = () => navigator.clipboard?.writeText(feed.https).then(() => toast("Copied the calendar address."), () => toast(feed.https));
+  };
+  try {
+    show(await api("/api/calendar/feed"));
+  } catch {
+    box.hidden = true;
+    return;
+  }
+  $("me-cal-on").onclick = async () => {
+    try {
+      show(await postJson("/api/calendar/feed", { timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC" }));
+      toast("Your calendar is ready: add it below.");
+    } catch (err) {
+      toast(err.message);
+    }
+  };
+  $("me-cal-off-btn").onclick = async () => {
+    try {
+      await api("/api/calendar/feed", { method: "DELETE" });
+      show({ on: false });
+      toast("The calendar is off; the old address no longer works.");
+    } catch (err) {
+      toast(err.message);
+    }
+  };
 }

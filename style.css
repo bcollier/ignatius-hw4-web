@@ -1116,3 +1116,7 @@ mark.user-hl { background: color-mix(in srgb, var(--gold-flat) 45%, transparent)
 .resume-btn.gold { background: linear-gradient(135deg, #f3dca0, #c9942f); color: #2a1d0c; border: 0; }
 .resume-btn strong { display: block; font-size: 1.15rem; }
 .resume-btn small { display: block; opacity: 0.85; }
+
+/* "Last prayed …" at the top of a day (retreat.js lastPrayedLine) */
+.last-prayed { display: flex; align-items: center; gap: 6px; margin: 0 0 10px; color: var(--muted); font-size: 0.95rem; }
+.last-prayed svg { color: var(--rubric); }

@@ -73,13 +73,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=106">
-  <link rel="icon" href="icons/icon-192.png?v=106" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=106">
+  <link rel="manifest" href="manifest.webmanifest?v=107">
+  <link rel="icon" href="icons/icon-192.png?v=107" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=107">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=106">
+  <link rel="stylesheet" href="style.css?v=107">
 </head>
 <body>
   <header class="topbar">
@@ -615,6 +615,22 @@
         <p class="hint">Hands-free works like a voice conversation with Claude: after the companion speaks, it listens, and it waits a little longer after just a word or two, or after "and…" or "um…". You can pause listening, send at once, or interrupt the companion with the button. Tap to talk is better somewhere noisy.</p>
       </div>
 
+      <div id="me-calendar" hidden>
+        <h2>Your calendar</h2>
+        <div class="card">
+          <p>Every day you mark prayed can appear on your own calendar as an all-day event, like <em>Prayed · Week 3 · Day 1 · Consideration of the way things are</em>, with links to this app and to that day.</p>
+          <p id="me-cal-off"><button type="button" id="me-cal-on" class="secondary">Turn on the calendar</button></p>
+          <div id="me-cal-ready" hidden>
+            <p class="row-buttons">
+              <a id="me-cal-google" class="button secondary" target="_blank" rel="noopener">Add to Google Calendar</a>
+              <a id="me-cal-apple" class="button secondary">Add to Apple Calendar (iPhone, iPad, Mac)</a>
+              <button type="button" id="me-cal-copy" class="link">Copy the address</button>
+            </p>
+            <p class="hint">Subscribe once, and days appear as you pray them. Google Calendar checks for new days every few hours; on an iPhone you can set how often (Settings → Calendar → Accounts). The address is private to you: anyone with it could see which days you prayed. <button type="button" id="me-cal-off-btn" class="link danger">Turn off</button> stops the address working.</p>
+          </div>
+        </div>
+      </div>
+
       <div id="me-highlights" hidden>
         <h2>Your highlights <span id="me-hl-count" class="meta"></span></h2>
         <div class="card">
@@ -1058,27 +1074,27 @@
 
   <script src="vendor/supabase.js?v=2.117.2"></script>
   <script src="vendor/qrcode.js?v=2.0.4"></script> <!-- qrcode-generator 2.0.4 (MIT), for the sign-in QR code --> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=106"></script>
+  <script src="config.js?v=107"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=106"></script>
-  <script src="js/look.js?v=106"></script>
-  <script src="js/settings.js?v=106"></script>
-  <script src="js/router.js?v=106"></script>
-  <script src="js/library.js?v=106"></script>
-  <script src="js/new-retreat.js?v=106"></script>
-  <script src="js/retreat.js?v=106"></script>
-  <script src="js/build-log.js?v=106"></script>
-  <script src="js/research.js?v=106"></script>
-  <script src="js/pray.js?v=106"></script>
-  <script src="js/about-me.js?v=106"></script>
-  <script src="js/waiting.js?v=106"></script>
-  <script src="js/talk.js?v=106"></script>
-  <script src="js/agents.js?v=106"></script>
-  <script src="js/evals.js?v=106"></script>
-  <script src="js/costs.js?v=106"></script>
-  <script src="js/practice.js?v=106"></script>
-  <script src="js/quotes.js?v=106"></script>
-  <script src="js/highlights.js?v=106"></script>
-  <script src="js/start.js?v=106"></script>
+  <script src="js/core.js?v=107"></script>
+  <script src="js/look.js?v=107"></script>
+  <script src="js/settings.js?v=107"></script>
+  <script src="js/router.js?v=107"></script>
+  <script src="js/library.js?v=107"></script>
+  <script src="js/new-retreat.js?v=107"></script>
+  <script src="js/retreat.js?v=107"></script>
+  <script src="js/build-log.js?v=107"></script>
+  <script src="js/research.js?v=107"></script>
+  <script src="js/pray.js?v=107"></script>
+  <script src="js/about-me.js?v=107"></script>
+  <script src="js/waiting.js?v=107"></script>
+  <script src="js/talk.js?v=107"></script>
+  <script src="js/agents.js?v=107"></script>
+  <script src="js/evals.js?v=107"></script>
+  <script src="js/costs.js?v=107"></script>
+  <script src="js/practice.js?v=107"></script>
+  <script src="js/quotes.js?v=107"></script>
+  <script src="js/highlights.js?v=107"></script>
+  <script src="js/start.js?v=107"></script>
 </body>
 </html>

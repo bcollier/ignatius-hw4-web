@@ -16,6 +16,8 @@ async function openRetreat(id, prayDay) {
     return showMessage(err.message);
   }
   if (!library.length) api("/api/retreats").then((b) => { library = b.retreats; }).catch(() => {});
+  const linkedDay = Number(params().get("day")); // ./?r=ID&day=N, e.g. from a calendar event
+  if (linkedDay) selectedDay = linkedDay;
   renderRetreat();
   if (prayDay) startPrayer(Number(prayDay));
   schedulePoll();
@@ -179,7 +181,7 @@ function renderDay() {
     panel.append(exercisePage(d, st, s));
     return colorDay(img);
   }
-  const page = el("div", { class: "page-text", "data-hl-day": d.day }, ...dayHeading(d, s));
+  const page = el("div", { class: "page-text", "data-hl-day": d.day }, lastPrayedLine(st), ...dayHeading(d, s));
   const line = listeningLine(st, s);
   if (line) page.append(el("p", { class: `state-line ${s.kind === "missed" ? "missed" : ""}`, text: line }));
   page.append(...dayActions(d, st, s));
@@ -231,7 +233,7 @@ function dayHeading(d, s) {
 // An exercise day: the handout's instruction, to go and do, then mark complete.
 function exercisePage(d, st, s) {
   const head = [retreat.plan.title, dayWords(d.day), s.date ? longWeekday(s.date) : "", s.today ? "today" : ""].filter(Boolean).join(" · ");
-  const page = el("div", { class: "page-text exercise", "data-hl-day": d.day },
+  const page = el("div", { class: "page-text exercise", "data-hl-day": d.day }, lastPrayedLine(st),
     el("p", { class: "running-head", text: head }),
     el("p", { class: "rubric", text: s.today || !s.date ? "Today's exercise" : "An exercise" }),
     el("h2", { class: "day-title", text: dayTitle(d.title) }),
@@ -256,7 +258,7 @@ function exercisePage(d, st, s) {
 
 function listeningLine(st, s) {
   const l = st.listening;
-  if (s.prayed) return `Prayed ${longDate(st.prayed_at)}.`;
+  if (s.prayed) return ""; // "Last prayed …" at the top of the day says it
   if (s.kind === "started") return `You listened as far as ${l.last_part || "part of it"} on ${longDate(l.updated_at)}, then stopped.`;
   if (s.kind === "missed") return "You haven't prayed this day yet.";
   return "";
@@ -288,6 +290,7 @@ function readyDayActions(d, st, s) {
   if (total == null) probeDurations(seq); // the length appears once the clips' durations are known
   return [row, el("div", { class: "quiet-row" },
     el("button", { type: "button", class: "link", text: s.prayed ? "Mark as not prayed" : "Mark as prayed", onclick: () => markPrayed(d.day, { prayed: !s.prayed }) }),
+    s.prayed && el("a", { class: "link", href: googleCalendarLink(d, st), target: "_blank", rel: "noopener", text: "Add to Google Calendar" }),
     el("button", { type: "button", class: "link", text: "Printable script (PDF)", onclick: (e) => downloadScript(d.day, e.target) }),
     el("a", { class: "link desktop-only", href: `./?r=${retreat.id}&research#research-day-${d.day}`, "data-nav": "", text: "Research notes" }),
     dayMenu(d, st))];
@@ -628,4 +631,32 @@ function renderIntroduction(plan, making) {
   const firstPrayed = !!retreat.days?.["1"]?.prayed_at;
   box.open = store.get(key, !firstPrayed);
   box.ontoggle = () => store.set(key, box.open);
+}
+
+
+// "Last prayed Monday, September 28, 2026" at the top of a day: kept even if the day is
+// later unmarked (the server remembers each date it was prayed).
+const fullDate = (iso) => new Date(iso).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+
+function lastPrayedLine(st) {
+  const when = st.last_prayed_at || st.prayed_at;
+  if (!when) return "";
+  const times = (st.prayed_log || []).length;
+  return el("p", { class: "last-prayed" }, icon("check", 16), ` Last prayed ${fullDate(when)}${times > 1 ? ` · prayed ${times} times` : ""}`);
+}
+
+// A prefilled all-day event in Google Calendar, one tap to save (no sign-in to the app needed).
+function dayEventTitle(d) {
+  const week = retreat.series?.length ? `Week ${retreat.series.length + 1}` : retreat.plan.title;
+  return `Prayed · ${week} · Day ${d.day} · ${dayTitle(d.title)}`;
+}
+
+function googleCalendarLink(d, st) {
+  const day = new Date(st.last_prayed_at || st.prayed_at || Date.now());
+  const ymd = (x) => `${x.getFullYear()}${String(x.getMonth() + 1).padStart(2, "0")}${String(x.getDate()).padStart(2, "0")}`;
+  const next = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1);
+  const link = new URL(`./?r=${retreat.id}&day=${d.day}`, location.href).href;
+  const q = new URLSearchParams({ action: "TEMPLATE", text: dayEventTitle(d), dates: `${ymd(day)}/${ymd(next)}`,
+    details: `${retreat.plan.title}\nThis day: ${link}\nIgnatius at Home: ${new URL("./", location.href).href}` });
+  return `https://calendar.google.com/calendar/render?${q}`;
 }
