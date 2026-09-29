@@ -5,6 +5,7 @@ let stepIndex = 0;
 let prayerDay = null;
 let partsPlayed = new Set();
 let lastReport = 0;
+let prayerBeganAt = null; // when this sitting began: the calendar shows the prayer from then to its finish
 let wakeLock = null;
 let imageTimer = null;
 let shownImage = -1;
@@ -136,6 +137,7 @@ function startPrayer(dayNo) {
   if (!d || st?.status !== "ready") return showMessage("This day isn't ready to pray yet.");
   if (isExercise(d, st)) return showMessage("This day is an exercise to go and do; there's nothing to listen to.");
   prayerDay = d;
+  prayerBeganAt = new Date().toISOString();
   steps = buildSequence(d, st);
   partsPlayed = new Set(st.listening?.parts_played || []);
   openPrayScreen();
@@ -414,7 +416,7 @@ function reportProgress(finished) {
   lastReport = Date.now();
   const body = {
     step: stepIndex, part: step ? (step.quiet ? blockLabel(step.block) : step.label) : "",
-    seconds: $("player").currentTime || 0, parts_played: [...partsPlayed], finished,
+    seconds: $("player").currentTime || 0, parts_played: [...partsPlayed], finished, began_at: prayerBeganAt,
   };
   const day = prayerDay.day;
   const rid = retreat.id;

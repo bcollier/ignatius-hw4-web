@@ -337,7 +337,7 @@ function startPractice(session) {
   $("practice-menu").hidden = true;
   $("practice-run").hidden = false;
   $("practice-title").textContent = session.title;
-  practiceRun = { session, index: -1, timer: null, endAt: null, left: null, total: 0, paused: false };
+  practiceRun = { session, index: -1, timer: null, endAt: null, left: null, total: 0, paused: false, beganAt: new Date().toISOString() };
   requestWakeLock();
   wireLockScreen();
   startMusic();
@@ -573,7 +573,11 @@ function finishPractice() {
   body.append(el("p", { class: "practice-words", text: "Thank you for this time." }),
     el("p", { class: "meta", text: "What you wrote is saved in your practice journal." }),
     el("a", { class: "button", href: "./?practice", "data-nav": "", text: "Back to the exercises" }));
-  if (run) loadPracticeJournal();
+  if (run) {
+    loadPracticeJournal();
+    // When it was done, for the calendar (an Examen at 11 p.m. shows at 11 p.m.).
+    postJson("/api/practice/done", { session: run.session.id, title: run.session.title, began_at: run.beganAt }).catch(() => {});
+  }
 }
 
 function wirePractice() {
