@@ -1148,3 +1148,14 @@ mark.user-hl { background: color-mix(in srgb, var(--gold-flat) 45%, transparent)
 .practice-words.following span.said { opacity: 0.95; }
 .practice-words.following span.now { opacity: 1; background-image: linear-gradient(90deg, #e8c46e, #f6e3a6); background-repeat: no-repeat;
   background-position: 0 100%; background-size: 100% 2px; animation: underline 0.6s ease-out both; }
+
+/* Sleep with prayer: a dim, quiet screen */
+.practice-run.sleep .practice-stage, .practice-run.sleep .art-caption { opacity: 0.35; transition: opacity 2s; }
+.practice-run.sleep .practice-words.following span { opacity: 0.35; }
+.practice-run.sleep .practice-words.following span.said, .practice-run.sleep .practice-words.following span.now { opacity: 0.75; }
+.practice-rest { text-align: center; font-style: italic; color: var(--muted); opacity: 0.6; margin: 18vh 0; }
+
+/* During a sleep prayer the whole screen is the candlelit night palette, whatever the phone's setting. */
+html.sleeping { --bg: #0d0b09; --page: #15120f; --field: #1b1814; --ink: #d9ccb4; --muted: #8f8269; --line: #2c261d;
+  --line-strong: #4a3f2f; --rubric: #c47a66; color-scheme: dark; }
+html.sleeping body { background: var(--bg); color: var(--ink); }

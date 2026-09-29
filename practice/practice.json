@@ -2203,6 +2203,795 @@
    "voices": {
     "standard": "Ava, Microsoft (free)"
    }
+  },
+  {
+   "id": "sleep-10",
+   "title": "Sleep with Prayer · 10 minutes",
+   "summary": "A few verses about God's care, read slowly, with chant between: then the music carries you to sleep.",
+   "group": "sleep",
+   "sleep": true,
+   "music": "chant",
+   "segments": [
+    {
+     "kind": "speak",
+     "step": "Settling",
+     "text": "Good night. This is a short prayer to carry you toward sleep. There is nothing left to do now, and nothing left to finish. Let the day be over. Let your body grow heavy, and let the music hold you. Between the words there will be long quiet. If you fall asleep before the end, that is exactly right.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-10-01.mp3",
+       "seconds": 24.2
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 48,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm four. In peace I will both lay myself down and sleep, for you, Yahweh alone, make me live in safety.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-10-03.mp3",
+       "seconds": 9.0
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 72,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From the letter to the Philippians. Finally, brothers, whatever things are true, whatever things are honorable, whatever things are just, whatever things are pure, whatever things are lovely, whatever things are of good report; if there is any virtue, and if there is any praise, think about these things.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-10-05.mp3",
+       "seconds": 24.3
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 95,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm one hundred and twenty-one. He will not allow your foot to be moved. He who keeps you will not slumber. Behold, he who keeps Israel will neither slumber nor sleep.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-10-07.mp3",
+       "seconds": 15.0
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 119,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Blessing",
+     "text": "Receive the blessing given to God's people from the beginning. Yahweh bless you, and keep you. Yahweh make his face to shine on you, and be gracious to you. Yahweh lift up his face toward you, and give you peace. Sleep now, in peace.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-10-09.mp3",
+       "seconds": 19.9
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 150,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "fade": true
+    }
+   ],
+   "credits": "Scripture: World English Bible (public domain). Chant: see the music credits below.",
+   "voices": {
+    "deluxe": "Colleen, ElevenLabs (Irish)"
+   }
+  },
+  {
+   "id": "sleep-30",
+   "title": "Sleep with Prayer · 30 minutes",
+   "summary": "Scripture about wonder and goodness, with long stretches of chant that grow longer as you drift off.",
+   "group": "sleep",
+   "sleep": true,
+   "music": "chant",
+   "segments": [
+    {
+     "kind": "speak",
+     "step": "Settling",
+     "text": "Good night. Let the day be over now. Whatever was done today, and whatever was left undone, can rest until morning. Settle into the bed, and let it hold your weight. Breathe slowly, and let each breath out be a little longer than the one before. The God who made the stars keeps watch tonight, and does not sleep, so you may. You will hear a few words of scripture, beautiful and good to think on, with long stretches of music between. There is nothing to answer and nothing to remember. If you fall asleep before the end, that is exactly right.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-30-01.mp3",
+       "seconds": 41.8
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 71,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm four. In peace I will both lay myself down and sleep, for you, Yahweh alone, make me live in safety.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-30-03.mp3",
+       "seconds": 9.2
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 84,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm nineteen. The heavens declare the glory of God. The expanse shows his handiwork. Day after day they pour out speech, and night after night they display knowledge.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-30-05.mp3",
+       "seconds": 15.6
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 97,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm eight. When I consider your heavens, the work of your fingers, the moon and the stars, which you have ordained; what is man, that you think of him? What is the son of man, that you care for him?",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-30-07.mp3",
+       "seconds": 17.0
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 110,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From the Gospel of Matthew. Why are you anxious about clothing? Consider the lilies of the field, how they grow. They don’t toil, neither do they spin, yet I tell you that even Solomon in all his glory was not dressed like one of these.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-30-09.mp3",
+       "seconds": 20.7
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 123,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From the letter to the Philippians. Finally, brothers, whatever things are true, whatever things are honorable, whatever things are just, whatever things are pure, whatever things are lovely, whatever things are of good report; if there is any virtue, and if there is any praise, think about these things.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-30-11.mp3",
+       "seconds": 24.5
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 137,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From the book of Lamentations. It is because of Yahweh’s loving kindnesses that we are not consumed, because his compassion doesn’t fail. They are new every morning. Great is your faithfulness.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-30-13.mp3",
+       "seconds": 15.6
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 150,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm one hundred and thirty-one. Surely I have stilled and quieted my soul, like a weaned child with his mother, like a weaned child is my soul within me.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-30-15.mp3",
+       "seconds": 13.4
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 163,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm sixty-three. when I remember you on my bed, and think about you in the night watches. For you have been my help. I will rejoice in the shadow of your wings.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-30-17.mp3",
+       "seconds": 14.3
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 176,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Blessing",
+     "text": "Receive the blessing given to God's people from the beginning. Yahweh bless you, and keep you. Yahweh make his face to shine on you, and be gracious to you. Yahweh lift up his face toward you, and give you peace. Sleep now, in peace.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-30-19.mp3",
+       "seconds": 20.3
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 450,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "fade": true
+    }
+   ],
+   "credits": "Scripture: World English Bible (public domain). Chant: see the music credits below.",
+   "voices": {
+    "deluxe": "Colleen, ElevenLabs (Irish)"
+   }
+  },
+  {
+   "id": "sleep-45",
+   "title": "Sleep with Prayer · 45 minutes",
+   "summary": "A long, slow night prayer: the goodness of creation and of God, read gently, with chant and quiet between.",
+   "group": "sleep",
+   "sleep": true,
+   "music": "chant",
+   "segments": [
+    {
+     "kind": "speak",
+     "step": "Settling",
+     "text": "Good night. Let the day be over now. Whatever was done today, and whatever was left undone, can rest until morning. Settle into the bed, and let it hold your weight. Breathe slowly, and let each breath out be a little longer than the one before. The God who made the stars keeps watch tonight, and does not sleep, so you may. You will hear a few words of scripture, beautiful and good to think on, with long stretches of music between. There is nothing to answer and nothing to remember. If you fall asleep before the end, that is exactly right.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-01.mp3",
+       "seconds": 43.0
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 64,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm four. In peace I will both lay myself down and sleep, for you, Yahweh alone, make me live in safety.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-03.mp3",
+       "seconds": 9.8
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 70,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From the book of Genesis. God saw everything that he had made, and, behold, it was very good. There was evening and there was morning, a sixth day.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-05.mp3",
+       "seconds": 12.6
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 77,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm nineteen. The heavens declare the glory of God. The expanse shows his handiwork. Day after day they pour out speech, and night after night they display knowledge.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-07.mp3",
+       "seconds": 14.9
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 84,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm eight. When I consider your heavens, the work of your fingers, the moon and the stars, which you have ordained; what is man, that you think of him? What is the son of man, that you care for him?",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-09.mp3",
+       "seconds": 16.2
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 91,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From the prophet Isaiah. Lift up your eyes on high, and see who has created these, who brings out their army by number. He calls them all by name. by the greatness of his might, and because he is strong in power, Not one is lacking.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-11.mp3",
+       "seconds": 18.3
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 98,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm one hundred and four. Yahweh, how many are your works! In wisdom have you made them all. The earth is full of your riches.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-13.mp3",
+       "seconds": 11.4
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 105,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From the Gospel of Matthew. Why are you anxious about clothing? Consider the lilies of the field, how they grow. They don’t toil, neither do they spin, yet I tell you that even Solomon in all his glory was not dressed like one of these.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-15.mp3",
+       "seconds": 21.3
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 111,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From the Song of Songs. For, behold, the winter is past. The rain is over and gone. The flowers appear on the earth. The time of the singing has come, and the voice of the turtledove is heard in our land.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-17.mp3",
+       "seconds": 17.4
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 118,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm twenty-seven. One thing I have asked of Yahweh, that I will seek after: that I may dwell in Yahweh’s house all the days of my life, to see Yahweh’s beauty, and to inquire in his temple.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-19.mp3",
+       "seconds": 17.7
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 125,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From the prophet Zephaniah. Yahweh, your God, is among you, a mighty one who will save. He will rejoice over you with joy. He will calm you in his love. He will rejoice over you with singing.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-21.mp3",
+       "seconds": 18.3
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 132,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm one hundred and thirty-nine. I will give thanks to you, for I am fearfully and wonderfully made. Your works are wonderful. My soul knows that very well.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-23.mp3",
+       "seconds": 11.3
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 139,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm twenty-three. Yahweh is my shepherd: I shall lack nothing. He makes me lie down in green pastures. He leads me beside still waters. He restores my soul. He guides me in the paths of righteousness for his name’s sake.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-25.mp3",
+       "seconds": 20.9
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 146,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm forty-six. Be still, and know that I am God. I will be exalted among the nations. I will be exalted in the earth.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-27.mp3",
+       "seconds": 11.2
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 152,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Scripture",
+     "text": "From Psalm sixty-three. when I remember you on my bed, and think about you in the night watches. For you have been my help. I will rejoice in the shadow of your wings.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-29.mp3",
+       "seconds": 13.8
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 159,
+     "question": "",
+     "prompts": [],
+     "why": ""
+    },
+    {
+     "kind": "speak",
+     "step": "Blessing",
+     "text": "Receive the blessing given to God's people from the beginning. Yahweh bless you, and keep you. Yahweh make his face to shine on you, and be gracious to you. Yahweh lift up his face toward you, and give you peace. Sleep now, in peace.",
+     "seconds": 0,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "audio": {
+      "deluxe": {
+       "file": "practice/deluxe/sleep-45-31.mp3",
+       "seconds": 20.6
+      }
+     }
+    },
+    {
+     "kind": "rest",
+     "step": "Rest",
+     "text": "",
+     "seconds": 675,
+     "question": "",
+     "prompts": [],
+     "why": "",
+     "fade": true
+    }
+   ],
+   "credits": "Scripture: World English Bible (public domain). Chant: see the music credits below.",
+   "voices": {
+    "deluxe": "Colleen, ElevenLabs (Irish)"
+   }
   }
  ],
  "model": "anthropic/claude-opus-5.5",
@@ -2233,6 +3022,10 @@
   {
    "characters": 22021,
    "elevenlabs_credits_used": 0
+  },
+  {
+   "characters": 28758,
+   "elevenlabs_credits_used": 1944
   }
  ]
 }

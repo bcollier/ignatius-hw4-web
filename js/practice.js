@@ -18,7 +18,7 @@ async function loadPractice() {
 // A session's length in minutes, from `from` on: the recorded speech (at the chosen voice
 // speed) plus every silence and journaling pause.
 const sessionMinutes = (s, from = 0) => Math.max(1, Math.round(s.segments.slice(from).reduce((n, g) =>
-  n + (g.kind === "speak" ? (g.audio?.standard?.seconds || g.text.split(/\s+/).length / 2.3) / voiceSpeed() : g.seconds), 0) / 60));
+  n + (g.kind === "speak" ? (g.audio?.standard?.seconds || g.audio?.deluxe?.seconds || g.text.split(/\s+/).length / 2.3) / voiceSpeed() : g.seconds), 0) / 60));
 
 async function openPractice(which) {
   show("practice");
@@ -37,9 +37,13 @@ async function openPractice(which) {
 // The menu, in three parts: prayers made for you (your own Examen), what you've done
 // recently, and the library of standard sessions.
 function renderPracticeMenu(data) {
+  document.documentElement.classList.remove("sleeping");
   $("practice-run").hidden = true;
   $("practice-menu").hidden = false;
-  $("practice-list").replaceChildren(...data.sessions.map((s) => practiceCard(s)));
+  const sleep = data.sessions.filter((s) => s.sleep);
+  $("practice-sleep-box").hidden = !sleep.length;
+  $("practice-sleep").replaceChildren(...sleep.map((s) => practiceCard(s, "For bedtime")));
+  $("practice-list").replaceChildren(...data.sessions.filter((s) => !s.sleep).map((s) => practiceCard(s)));
   $("practice-voice").value = store.get("practice.voice", "standard");
   $("practice-voice").onchange = () => store.set("practice.voice", $("practice-voice").value);
   loadPracticeJournal().then(renderRecent);
@@ -338,9 +342,13 @@ function startPractice(session) {
   $("practice-run").hidden = false;
   $("practice-title").textContent = session.title;
   practiceRun = { session, index: -1, timer: null, endAt: null, left: null, total: 0, paused: false, beganAt: new Date().toISOString() };
-  requestWakeLock();
+  $("practice-run").classList.toggle("sleep", !!session.sleep);
+  document.documentElement.classList.toggle("sleeping", !!session.sleep); // a dark screen for bedtime
+  if (session.sleep) releaseWakeLock(); // the screen may go dark: the sounds carry on
+  else requestWakeLock();
   wireLockScreen();
-  startMusic();
+  // A sleep prayer brings its own music (the person's choice of music, or the chant).
+  startMusic(session.sleep && !MUSIC[store.get("practice.music", "none")] ? session.music || "chant" : undefined);
   nextSegment(1);
 }
 
@@ -369,6 +377,7 @@ function nextSegment(step) {
   renderSegment(seg);
   showOnLockScreen(seg);
   duckMusic(seg.kind === "speak");
+  if (seg.fade) fadeMusic(0, seg.seconds * 1000); // the last stretch: the music fades to nothing
   if (seg.kind === "speak") playNarration(seg);
   else startCountdown(seg);
 }
@@ -386,6 +395,8 @@ function renderSegment(seg) {
   body.className = `practice-body ${seg.kind}`;
   if (seg.kind === "speak") {
     body.append(spokenWords(seg.text)); // each word in a span, so the one being spoken can be underlined
+  } else if (seg.kind === "rest") {
+    body.append(el("p", { class: "practice-rest", text: seg.fade ? "Sleep now. The music will fade away." : "Rest. Let the music carry you." }));
   } else {
     body.append(el("p", { class: "practice-question", text: seg.question }),
       el("div", { class: "practice-clock", id: "practice-clock" }));
@@ -422,7 +433,7 @@ function playOn(src, { loop = false, onended = null } = {}) {
 
 function playNarration(seg) {
   const voice = store.get("practice.voice", "standard");
-  const clip = seg.audio?.file ? seg.audio : seg.audio?.[voice] || seg.audio?.standard; // your own Examen has one voice
+  const clip = seg.audio?.file ? seg.audio : seg.audio?.[voice] || seg.audio?.standard || seg.audio?.deluxe; // some have one voice
   if (!clip) return startCountdown({ ...seg, seconds: Math.ceil(seg.text.split(/\s+/).length / 2.3) });
   practiceAudio.ontimeupdate = null;
   playOn(clip.path ? fileUrl(clip.file) : clip.file, { onended: () => nextSegment(1) }); // your own Examen is served by the API
@@ -501,6 +512,7 @@ function checkCountdown() {
   run.endAt = null;
   clearInterval(run.timer);
   practiceAudio.ontimeupdate = null;
+  if (run.session.segments[run.index]?.kind === "rest") return nextSegment(1); // no bell to wake a sleeper
   playOn(BELL, { onended: () => nextSegment(1) }); // the bell ends the pause, then the session moves on
 }
 
@@ -624,7 +636,7 @@ function finishPractice() {
   const body = $("practice-body");
   body.innerHTML = "";
   body.className = "practice-body done";
-  body.append(el("p", { class: "practice-words", text: "Thank you for this time." }),
+  body.append(el("p", { class: "practice-words", text: run?.session.sleep ? "Good night." : "Thank you for this time." }),
     el("p", { class: "meta", text: "What you wrote is saved in your practice journal." }),
     run ? healthButton(run.beganAt) : "",
     el("a", { class: "button", href: "./?practice", "data-nav": "", text: "Back to the exercises" }));
