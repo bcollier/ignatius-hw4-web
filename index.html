@@ -73,13 +73,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=109">
-  <link rel="icon" href="icons/icon-192.png?v=109" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=109">
+  <link rel="manifest" href="manifest.webmanifest?v=110">
+  <link rel="icon" href="icons/icon-192.png?v=110" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=110">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=109">
+  <link rel="stylesheet" href="style.css?v=110">
 </head>
 <body>
   <header class="topbar">
@@ -636,6 +636,25 @@
         </div>
       </div>
 
+      <h2>Apple Health</h2>
+      <div class="card" id="me-health">
+        <p>Count your prayer as <strong>Mindful Minutes</strong> in Apple Health on your iPhone or iPad. A web app can't write to Health itself, so a small Apple Shortcut does it: after each prayer or practice, tap <em>Add to Apple Health</em> and the real minutes are logged.</p>
+        <label class="check"><input id="me-health-on" type="checkbox"> <span>Offer <em>Add to Apple Health</em> after I pray, on this device</span></label>
+        <div id="me-health-steps" hidden>
+          <h3>Make the Shortcut once</h3>
+          <ol class="health-steps">
+            <li>Open the <strong>Shortcuts</strong> app and tap <strong>+</strong>. Name the shortcut <strong><span id="me-health-name-echo">Log Prayer</span></strong>.</li>
+            <li>Add the action <strong>Get Numbers from Input</strong>. It should read "Get numbers from <em>Shortcut Input</em>".</li>
+            <li>Add <strong>Adjust Date</strong>: <em>Subtract</em> <em>Numbers</em> <em>minutes</em> from <em>Current Date</em> (that's when you began).</li>
+            <li>Add <strong>Log Health Sample</strong>: Type <em>Mindful Minutes</em>, Value <em>Numbers</em>, Unit <em>min</em>, Date <em>Adjusted Date</em>.</li>
+            <li>Tap <strong>Done</strong>. If it doesn't receive the number, open the shortcut's details (ⓘ), turn on <em>Show in Share Sheet</em>, and set it to receive <em>Text</em>.</li>
+          </ol>
+          <label>The Shortcut's name, if you called it something else <input id="me-health-name" type="text" autocomplete="off" placeholder="Log Prayer"></label>
+          <p><button type="button" id="me-health-test" class="secondary">Try it: log 1 minute</button></p>
+          <p class="hint">The first time, the Shortcut asks permission to write to Health: allow it. You can delete the test minute in the Health app (Browse → Mental Wellbeing → Mindful Minutes).</p>
+        </div>
+      </div>
+
       <div id="me-highlights" hidden>
         <h2>Your highlights <span id="me-hl-count" class="meta"></span></h2>
         <div class="card">
@@ -1048,6 +1067,7 @@
         </div>
         <h2 id="after-title">After praying</h2>
         <div class="week-initials" id="after-week" aria-label="The days of this retreat"></div>
+        <p id="after-health" class="after-health"></p>
         <label>What word or phrase stayed with you?
           <input id="after-word" type="text" maxlength="100" autocomplete="off">
         </label>
@@ -1079,27 +1099,28 @@
 
   <script src="vendor/supabase.js?v=2.117.2"></script>
   <script src="vendor/qrcode.js?v=2.0.4"></script> <!-- qrcode-generator 2.0.4 (MIT), for the sign-in QR code --> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=109"></script>
+  <script src="config.js?v=110"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=109"></script>
-  <script src="js/look.js?v=109"></script>
-  <script src="js/settings.js?v=109"></script>
-  <script src="js/router.js?v=109"></script>
-  <script src="js/library.js?v=109"></script>
-  <script src="js/new-retreat.js?v=109"></script>
-  <script src="js/retreat.js?v=109"></script>
-  <script src="js/build-log.js?v=109"></script>
-  <script src="js/research.js?v=109"></script>
-  <script src="js/pray.js?v=109"></script>
-  <script src="js/about-me.js?v=109"></script>
-  <script src="js/waiting.js?v=109"></script>
-  <script src="js/talk.js?v=109"></script>
-  <script src="js/agents.js?v=109"></script>
-  <script src="js/evals.js?v=109"></script>
-  <script src="js/costs.js?v=109"></script>
-  <script src="js/practice.js?v=109"></script>
-  <script src="js/quotes.js?v=109"></script>
-  <script src="js/highlights.js?v=109"></script>
-  <script src="js/start.js?v=109"></script>
+  <script src="js/core.js?v=110"></script>
+  <script src="js/look.js?v=110"></script>
+  <script src="js/settings.js?v=110"></script>
+  <script src="js/router.js?v=110"></script>
+  <script src="js/library.js?v=110"></script>
+  <script src="js/new-retreat.js?v=110"></script>
+  <script src="js/retreat.js?v=110"></script>
+  <script src="js/build-log.js?v=110"></script>
+  <script src="js/research.js?v=110"></script>
+  <script src="js/pray.js?v=110"></script>
+  <script src="js/about-me.js?v=110"></script>
+  <script src="js/waiting.js?v=110"></script>
+  <script src="js/talk.js?v=110"></script>
+  <script src="js/agents.js?v=110"></script>
+  <script src="js/evals.js?v=110"></script>
+  <script src="js/costs.js?v=110"></script>
+  <script src="js/practice.js?v=110"></script>
+  <script src="js/quotes.js?v=110"></script>
+  <script src="js/highlights.js?v=110"></script>
+  <script src="js/health.js?v=110"></script>
+  <script src="js/start.js?v=110"></script>
 </body>
 </html>

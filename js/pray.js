@@ -438,6 +438,7 @@ function finishPrayer() {
   reportProgress(true);
   releaseWakeLock();
   showAfter(prayerDay.day, retreat.days[String(prayerDay.day)].journal);
+  $("after-health").replaceChildren(healthButton(prayerBeganAt)); // mindful minutes, when set up
 }
 
 function showAfter(day, journal) {
@@ -451,6 +452,7 @@ function showAfter(day, journal) {
     shownImage = -1;
     if (images.length) showImage(0);
   }
+  $("after-health").replaceChildren();
   illuminate(prayerDay);
   $("after-word").value = journal?.word || "";
   $("after-note").value = journal?.note || "";

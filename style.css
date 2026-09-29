@@ -1122,3 +1122,10 @@ mark.user-hl { background: color-mix(in srgb, var(--gold-flat) 45%, transparent)
 .last-prayed svg { color: var(--rubric); }
 .cal-steps { padding-left: 1.3em; display: grid; gap: 10px; margin: 0 0 8px; }
 #me-cal-url { width: 100%; font-size: 0.85rem; }
+
+/* Apple Health (health.js) */
+.health-steps { padding-left: 1.3em; display: grid; gap: 8px; }
+.health-heart { color: #ff2d55; }
+.health-button.sent { opacity: 0.7; pointer-events: none; }
+.after-health:empty { display: none; }
+.after-health { margin: 10px 0; }

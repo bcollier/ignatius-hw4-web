@@ -572,6 +572,7 @@ function finishPractice() {
   body.className = "practice-body done";
   body.append(el("p", { class: "practice-words", text: "Thank you for this time." }),
     el("p", { class: "meta", text: "What you wrote is saved in your practice journal." }),
+    run ? healthButton(run.beganAt) : "",
     el("a", { class: "button", href: "./?practice", "data-nav": "", text: "Back to the exercises" }));
   if (run) {
     loadPracticeJournal();

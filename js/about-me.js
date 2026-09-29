@@ -29,6 +29,7 @@ async function openMe() {
   showBootTimes();
   showMyHighlights();
   showCalendarFeed();
+  showHealthSettings();
   $("me-debug").checked = debugMode();
   $("me-evals-link").hidden = !debugMode();
   showWaitingPreviews();
