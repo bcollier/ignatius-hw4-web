@@ -377,15 +377,15 @@ function renderSegment(seg) {
   const run = practiceRun;
   const total = run.session.segments.length;
   const left = sessionMinutes(run.session, run.index);
-  $("practice-step").textContent = `${seg.step} · ${run.index + 1} of ${total} · about ${sessionMinutes(run.session)} minutes`
-    + (run.index ? `, ${left} left` : "");
+  $("practice-step").textContent = `${seg.step} · ${run.index + 1} of ${total} · about ${sessionMinutes(run.session)} min`
+    + (run.index ? ` · ${left} left` : "");
   $("practice-progress").style.setProperty("--p", (run.index + 1) / total);
   showStage(seg);
   const body = $("practice-body");
   body.innerHTML = "";
   body.className = `practice-body ${seg.kind}`;
   if (seg.kind === "speak") {
-    body.append(el("p", { class: "practice-words", text: seg.text }));
+    body.append(spokenWords(seg.text)); // each word in a span, so the one being spoken can be underlined
   } else {
     body.append(el("p", { class: "practice-question", text: seg.question }),
       el("div", { class: "practice-clock", id: "practice-clock" }));
@@ -426,6 +426,60 @@ function playNarration(seg) {
   if (!clip) return startCountdown({ ...seg, seconds: Math.ceil(seg.text.split(/\s+/).length / 2.3) });
   practiceAudio.ontimeupdate = null;
   playOn(clip.path ? fileUrl(clip.file) : clip.file, { onended: () => nextSegment(1) }); // your own Examen is served by the API
+  followNarration(clip.words);
+}
+
+// ---------------------------------------------------------------- the words as they're spoken
+// As on the prayer screen: the spoken word is underlined in gold and what's been said
+// stays bright. From the recording's word timings when it has them, otherwise from how
+// far through the recording it is.
+let practiceFollow = 0;
+
+function spokenWords(text) {
+  const p = el("p", { class: "practice-words following" });
+  p._starts = [];
+  p._spans = [];
+  for (const m of text.matchAll(/\S+/g)) {
+    const span = el("span", { text: m[0] });
+    p._starts.push(m.index);
+    p._spans.push(span);
+    p.append(span, " ");
+  }
+  p._length = text.length;
+  p._current = -1;
+  return p;
+}
+
+function followNarration(words) {
+  cancelAnimationFrame(practiceFollow);
+  const p = $("practice-body").querySelector(".practice-words.following");
+  if (!p) return;
+  const tick = () => {
+    practiceFollow = 0;
+    if (!p.isConnected) return;
+    let char = null;
+    if (words?.length) {
+      const t = practiceAudio.currentTime + 0.05;
+      let k = -1;
+      for (let i = 0; i < words.length && words[i][0] <= t; i++) k = i;
+      char = k < 0 ? -1 : words[k][1];
+    } else if (practiceAudio.duration > 0) {
+      char = (practiceAudio.currentTime / practiceAudio.duration) * p._length;
+    }
+    if (char != null) {
+      let i = -1;
+      while (i + 1 < p._starts.length && p._starts[i + 1] <= char) i++;
+      if (i !== p._current) {
+        p._spans.forEach((s, k) => s.classList.toggle("said", k < i));
+        p._spans[p._current]?.classList.remove("now");
+        p._spans[i]?.classList.add("now");
+        p._current = i;
+      }
+    }
+    if (!practiceAudio.paused) practiceFollow = requestAnimationFrame(tick);
+  };
+  practiceAudio.addEventListener("play", () => { if (!practiceFollow) practiceFollow = requestAnimationFrame(tick); }, { once: true });
+  practiceFollow = requestAnimationFrame(tick);
 }
 
 function startCountdown(seg) {
