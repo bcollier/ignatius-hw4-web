@@ -146,9 +146,41 @@ function startPrayer(dayNo) {
   resetStage(d);
   colorPrayer(d);
   buildProgressBar();
-  const from = Number(params().get("from") || 0);
-  playStep(from > 0 && from < steps.length ? from : 0);
+  // Left partway (on this device or another)? Ask: continue, or start from the beginning.
+  const from = params().get("from");
+  const l = st.listening;
+  const left = l && !l.finished_at && l.last_step > 0 && l.last_step < steps.length ? l : null;
+  if (from === "start" || !left) playStep(0);
+  else if (from === "resume") resumeAt(left);
+  else offerResume(left);
   requestWakeLock();
+}
+
+// Where to pick up: the part, a few seconds before where it stopped.
+function resumeAt(l) {
+  $("resume-choice").hidden = true;
+  playStep(l.last_step);
+  const back = Math.max(0, (l.seconds_in_part || 0) - 3);
+  if (back > 1) {
+    const player = $("player");
+    const seek = () => { try { if (!(player.duration > 0) || back < player.duration - 2) player.currentTime = back; } catch {} };
+    if (player.readyState >= 1) seek();
+    else player.addEventListener("loadedmetadata", seek, { once: true });
+  }
+}
+
+function offerResume(l) {
+  const box = $("resume-choice");
+  const secs = Math.round(l.seconds_in_part || 0);
+  const at = secs > 5 ? ` · ${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")} in` : "";
+  $("resume-where").textContent = `${l.last_part || "where you stopped"}${at}`;
+  $("resume-when").textContent = l.updated_at ? `You stopped ${longDate(l.updated_at)}.` : "";
+  $("resume-go").onclick = () => resumeAt(l);
+  $("resume-restart").onclick = () => { box.hidden = true; playStep(0); };
+  $("now-part").textContent = "Continue, or start again?";
+  $("now-meta").textContent = "";
+  box.hidden = false;
+  $("resume-go").focus({ preventScroll: true });
 }
 
 // The title and grace (shown when there's no picture) and the first picture.
@@ -213,6 +245,7 @@ function playStep(index) {
   atVoiceSpeed(player, step.src);
   player.play().catch(() => setPlayIcon(false)); // iOS may need a tap on play
   if (step.part) partsPlayed.add(step.part);
+  if (stepIndex > 0) reportProgress(false); // each new part is a place worth keeping
   // A short quiet between parts keeps showing the part just heard.
   const shown = step.quiet ? [...steps.slice(0, stepIndex)].reverse().find((s) => !s.quiet) || step : step;
   $("now-part").textContent = shown.label;
@@ -453,6 +486,7 @@ async function saveAfter() {
 function closePrayer(navigate = true) {
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
   if (!document.body.classList.contains("praying")) return;
+  $("resume-choice").hidden = true;
   const player = $("player");
   if (player.getAttribute("src") && $("after").hidden) reportProgress(false);
   player.pause();
@@ -495,7 +529,10 @@ function wirePlayer() {
     setPlayIcon(true);
     if (!followFrame) followFrame = requestAnimationFrame(followWord);
   });
-  player.addEventListener("pause", () => setPlayIcon(false));
+  player.addEventListener("pause", () => {
+    setPlayIcon(false);
+    if (document.body.classList.contains("praying") && player.getAttribute("src") && !player.ended) reportProgress(false);
+  });
   player.addEventListener("timeupdate", () => {
     fillCurrentSegment(player.currentTime);
     if (Date.now() - lastReport > PROGRESS_REPORT_MS) reportProgress(false);
@@ -565,7 +602,10 @@ function updateCandleTime(currentTime) {
 }
 
 function wirePlayerButtons(player) {
-  $("play-pause").onclick = () => (player.paused ? player.play() : player.pause());
+  $("play-pause").onclick = () => {
+    if (!$("resume-choice").hidden) return $("resume-go").click(); // play means continue
+    return player.paused ? player.play() : player.pause();
+  };
   $("next-step").onclick = () => nextBlock(1);
   $("prev-step").onclick = () => nextBlock(-1);
   $("stop-player").onclick = () => closePrayer();

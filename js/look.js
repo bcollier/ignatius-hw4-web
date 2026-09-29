@@ -14,6 +14,7 @@ const ICON_PATHS = {
   prev: '<path d="M17 5L8 12l9 7M6 5v14"/>',
   next: '<path d="M7 5l9 7-9 7M18 5v14"/>',
   play: '<path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/>',
+  restart: '<path d="M4.5 12a7.5 7.5 0 107.5-7.5H8"/><path d="M10.5 1.5L7.5 4.5l3 3"/>',
   pause: '<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor" stroke="none"/>',
   image: '<rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M3.5 16l5-5 4 4 3-3 5 5"/><circle cx="16" cy="9" r="1.4"/>',
   text: '<path d="M5 6h14M5 10h14M5 14h14M5 18h9"/>',

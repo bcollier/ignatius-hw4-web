@@ -1105,3 +1105,14 @@ mark.user-hl { background: color-mix(in srgb, var(--gold-flat) 45%, transparent)
 .retreat-intro summary { cursor: pointer; font: 600 1.15rem var(--display, var(--serif)); }
 .intro-text p { margin: 0.8em 0 0; line-height: 1.6; }
 .intro-text .grace { font-style: italic; }
+
+/* Continue, or start from the beginning (pray.js offerResume) */
+.resume-choice { position: absolute; inset: 0; z-index: 5; display: grid; place-content: center; gap: 14px; padding: 24px;
+  background: color-mix(in srgb, #14100b 78%, transparent); color: #f8f1e2; text-align: center; }
+.resume-title { font: 600 1.5rem var(--display, var(--serif)); margin: 0; }
+.resume-when { margin: 0 0 8px; opacity: 0.8; }
+.resume-btn { display: flex; align-items: center; gap: 14px; min-width: min(320px, 80vw); padding: 14px 20px; border-radius: 14px;
+  border: 1px solid rgb(255 255 255 / 0.35); background: rgb(255 255 255 / 0.08); color: inherit; text-align: left; font: inherit; }
+.resume-btn.gold { background: linear-gradient(135deg, #f3dca0, #c9942f); color: #2a1d0c; border: 0; }
+.resume-btn strong { display: block; font-size: 1.15rem; }
+.resume-btn small { display: block; opacity: 0.85; }

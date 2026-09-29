@@ -276,13 +276,13 @@ function readyDayActions(d, st, s) {
   const seq = buildSequence(d, st);
   const total = totalSeconds(seq);
   const l = st.listening;
-  const pray = (from) => () => go(`?r=${retreat.id}&pray=${d.day}${from ? `&from=${from}` : ""}`);
+  const pray = (from) => () => go(`?r=${retreat.id}&pray=${d.day}&from=${from}`);
   const row = el("div", { class: "pray-row" });
   if (s.kind === "started" && l?.last_step > 0) {
-    row.append(el("button", { type: "button", class: "big gold", text: "Continue praying", onclick: pray(l.last_step) }));
-    row.append(el("button", { type: "button", class: "secondary", text: "Start over", onclick: pray() }));
+    row.append(el("button", { type: "button", class: "big gold", onclick: pray("resume") }, icon("play", 18), " Continue praying"));
+    row.append(el("button", { type: "button", class: "secondary icon-text", title: "Start from the beginning", onclick: pray("start") }, icon("restart", 18), " Start over"));
   } else {
-    row.append(el("button", { type: "button", class: "big gold", text: "Pray this day", onclick: pray() }));
+    row.append(el("button", { type: "button", class: "big gold", text: "Pray this day", onclick: pray("start") }));
   }
   row.append(el("span", { class: "meta", text: total == null ? "" : `About ${formatMinutes(total)}` }));
   if (total == null) probeDurations(seq); // the length appears once the clips' durations are known
