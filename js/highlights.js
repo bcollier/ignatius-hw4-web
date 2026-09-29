@@ -5,7 +5,7 @@
 // the page and saved to the account; they're listed in Settings, marked again wherever
 // they appear, and can come back once a week by email or text.
 
-const HL_WHERE = "#stage-text, .passage, .exercise-text, .script";
+const HL_WHERE = "#stage-text, .passage, .exercise-text, .script, .intro-text";
 const HL_MAX = 1200;
 let hlSaved = []; // this person's highlights, newest first
 let hlLoaded = false;

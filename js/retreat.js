@@ -70,6 +70,7 @@ function renderRetreat() {
   $("progress").hidden = !making;
   if (!making) stopQuotes($("build-quote"));
   if (making) renderProgress();
+  renderIntroduction(plan, making);
   $("days-area").hidden = !plan || making;
   if (plan && !making) {
     renderStrip();
@@ -607,4 +608,24 @@ function renderBuildBar() {
   drawBuildBar($("build-bar"), p.segments);
   $("build-bar").setAttribute("aria-valuenow", String(p.percent));
   $("build-step").textContent = `${p.text} · ${p.percent}%`;
+}
+
+
+// The handout's own front matter (a week's introduction and its graces), word for word,
+// before Day 1. Open until the first day is prayed; then folded, a tap away.
+function renderIntroduction(plan, making) {
+  const intro = plan?.introduction;
+  const box = $("retreat-intro");
+  box.hidden = !intro || making;
+  if (box.hidden) return;
+  const onlyGraces = !intro.text;
+  $("retreat-intro-title").textContent = onlyGraces ? "This week's graces" : "Before you begin: the introduction";
+  const body = $("retreat-intro-body");
+  body.replaceChildren(
+    ...(intro.text ? intro.text.split(/\n{2,}/).map((p) => el("p", { text: p })) : []),
+    intro.graces ? el("p", { class: "grace" }, el("span", { class: "rubric-inline", text: "I pray for the following graces: " }), intro.graces) : "");
+  const key = `intro.open.${retreat.id}`;
+  const firstPrayed = !!retreat.days?.["1"]?.prayed_at;
+  box.open = store.get(key, !firstPrayed);
+  box.ontoggle = () => store.set(key, box.open);
 }

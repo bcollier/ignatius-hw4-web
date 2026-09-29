@@ -1099,3 +1099,9 @@ mark.user-hl { background: color-mix(in srgb, var(--gold-flat) 45%, transparent)
 .hl-item .meta { margin: 4px 0 0 15px; }
 .hl-item button { margin-left: 15px; }
 #me-highlights .check .meta { display: block; margin-top: 2px; }
+
+/* the handout's front matter before Day 1 (retreat.js renderIntroduction) */
+.retreat-intro { margin: 0 0 18px; }
+.retreat-intro summary { cursor: pointer; font: 600 1.15rem var(--display, var(--serif)); }
+.intro-text p { margin: 0.8em 0 0; line-height: 1.6; }
+.intro-text .grace { font-style: italic; }
