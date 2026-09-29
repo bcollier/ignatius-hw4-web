@@ -234,7 +234,9 @@ async function showCalendarFeed() {
     if (!feed.on) return;
     $("me-cal-google").href = `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(feed.webcal)}`;
     $("me-cal-apple").href = feed.webcal;
-    $("me-cal-copy").onclick = () => navigator.clipboard?.writeText(feed.https).then(() => toast("Copied the calendar address."), () => toast(feed.https));
+    $("me-cal-url").value = feed.https;
+    $("me-cal-url").onfocus = (e) => e.target.select();
+    $("me-cal-copy").onclick = () => navigator.clipboard?.writeText(feed.https).then(() => toast("Copied. Now open Google Calendar's add-from-URL page and paste it."), () => { $("me-cal-url").select(); toast("Select the address above and copy it."); });
   };
   try {
     show(await api("/api/calendar/feed"));
