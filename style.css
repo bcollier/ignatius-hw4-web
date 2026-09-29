@@ -1129,3 +1129,13 @@ mark.user-hl { background: color-mix(in srgb, var(--gold-flat) 45%, transparent)
 .health-button.sent { opacity: 0.7; pointer-events: none; }
 .after-health:empty { display: none; }
 .after-health { margin: 10px 0; }
+
+/* Small pictures (look.js): never stretched past about 1.6 times their own size */
+.frame.lowres-host { position: relative; display: grid; place-items: center; background: #15110c; }
+.frame.lowres-host::before { content: ""; position: absolute; inset: -40px; background: var(--lowres-bg) center / cover no-repeat;
+  filter: blur(26px) saturate(1.1) brightness(0.55); }
+.frame img.lowres { position: relative; z-index: 1; width: auto !important; height: auto !important; object-fit: contain !important;
+  max-width: min(86%, calc(var(--nw) * 1.6px)); max-height: 86%; min-width: min(60%, calc(var(--nw) * 1px)); animation: none !important;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.45); border-radius: 2px; }
+.stage-img.lowres { inset: 0 !important; margin: auto; width: min(88%, calc(var(--nw) * 1.6px)) !important; height: auto !important;
+  max-height: 78%; box-shadow: 0 14px 40px rgb(0 0 0 / 0.5); }

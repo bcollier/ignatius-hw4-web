@@ -181,3 +181,22 @@ function readableOn(color) {
   const ivory = [246, 236, 216], ink = [28, 23, 18];
   return contrast(bg, ivory) >= contrast(bg, ink) ? "#f6ecd8" : "#1c1712";
 }
+
+// ---------------------------------------------------------------- small pictures
+// Many handouts embed their pictures tiny (a 275-pixel photo). Stretched to fill a frame
+// they turn to mush; instead they're shown at a size they can hold, set on a soft blurred
+// wash of their own colours. Applies to every painting frame and the prayer screen.
+const LOWRES_WIDTH = 600;
+document.addEventListener("load", (e) => {
+  const img = e.target;
+  if (img.tagName !== "IMG") return;
+  const host = img.closest(".frame, .stage");
+  if (!host) return;
+  const small = img.naturalWidth > 0 && img.naturalWidth < LOWRES_WIDTH && img.naturalHeight < LOWRES_WIDTH * 1.4;
+  img.classList.toggle("lowres", small);
+  img.style.setProperty("--nw", String(img.naturalWidth));
+  if (host.classList.contains("frame")) {
+    host.classList.toggle("lowres-host", small);
+    if (small) host.style.setProperty("--lowres-bg", `url("${img.currentSrc || img.src}")`);
+  }
+}, true);
