@@ -10,7 +10,7 @@ const QUOTES = [
   { text: "Go, sit in your cell, and your cell will teach you everything.", who: "Abba Moses", where: "Sayings of the Desert Fathers" },
   { text: "If you will, you can become all flame.", who: "Abba Joseph of Panephysis", where: "Sayings of the Desert Fathers" },
   { text: "It is possible to be a solitary in one's mind while living in a crowd, and it is possible for one who is a solitary to live in the crowd of his own thoughts.", who: "Amma Syncletica", where: "Sayings of the Desert Mothers" },
-  { text: "I saw the snares that the enemy spreads out over the world and I said, groaning, “What can get through from such snares?” Then I heard a voice saying to me, “Humility.”", who: "Abba Anthony the Great", where: "Sayings of the Desert Fathers" },
+  { text: "I saw the snares that the enemy spreads out over the world and I said, groaning, ‘What can get through from such snares?’ Then I heard a voice saying to me, ‘Humility.’", who: "Abba Anthony the Great", where: "Sayings of the Desert Fathers" },
   { text: "Just as the trees, if they have not stood before the winter's storms, cannot bear fruit, so it is with us.", who: "Amma Theodora", where: "Sayings of the Desert Mothers" },
   { text: "Teach your mouth to say that which you have in your heart.", who: "Abba Poemen", where: "Sayings of the Desert Fathers" },
   { text: "Do not give your heart to that which does not satisfy your heart.", who: "Abba Poemen", where: "Sayings of the Desert Fathers" },
@@ -30,7 +30,7 @@ const QUOTES = [
 
   // Julian of Norwich
   { text: "All shall be well, and all shall be well, and all manner of thing shall be well.", who: "Julian of Norwich", where: "Revelations of Divine Love, 27" },
-  { text: "He did not say, “You shall not be tempest-tossed, you shall not be work-weary, you shall not be discomforted.” But he said, “You shall not be overcome.”", who: "Julian of Norwich", where: "Revelations of Divine Love, 68" },
+  { text: "He did not say, ‘You shall not be tempest-tossed, you shall not be work-weary, you shall not be discomforted.’ But he said, ‘You shall not be overcome.’", who: "Julian of Norwich", where: "Revelations of Divine Love, 68" },
   { text: "The fullness of joy is to behold God in everything.", who: "Julian of Norwich", where: "Revelations of Divine Love, 35" },
   { text: "Love was his meaning.", who: "Julian of Norwich", where: "Revelations of Divine Love, 86" },
 
@@ -52,7 +52,7 @@ const QUOTES = [
   // Twentieth-century teachers
   { text: "My Lord God, I have no idea where I am going. I do not see the road ahead of me.", who: "Thomas Merton", where: "Thoughts in Solitude" },
   { text: "The beginning of love is to let those we love be perfectly themselves.", who: "Thomas Merton", where: "No Man Is an Island" },
-  { text: "The prayer preceding all prayers is, “May it be the real I who speaks. May it be the real Thou that I speak to.”", who: "C. S. Lewis", where: "Letters to Malcolm" },
+  { text: "The prayer preceding all prayers is, ‘May it be the real I who speaks. May it be the real Thou that I speak to.’", who: "C. S. Lewis", where: "Letters to Malcolm" },
   { text: "We are not necessarily doubting that God will do the best for us; we are wondering how painful the best will turn out to be.", who: "C. S. Lewis", where: "Letters" },
   { text: "We do not think ourselves into new ways of living; we live ourselves into new ways of thinking.", who: "Richard Rohr", where: "" },
   { text: "Everything belongs.", who: "Richard Rohr", where: "Everything Belongs" },

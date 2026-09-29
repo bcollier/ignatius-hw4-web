@@ -73,13 +73,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=102">
-  <link rel="icon" href="icons/icon-192.png?v=102" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=102">
+  <link rel="manifest" href="manifest.webmanifest?v=103">
+  <link rel="icon" href="icons/icon-192.png?v=103" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=103">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=102">
+  <link rel="stylesheet" href="style.css?v=103">
 </head>
 <body>
   <header class="topbar">
@@ -616,6 +616,15 @@
         <a href="./?agents" data-nav="agents" class="button secondary">Open the agents</a>
       </div>
 
+      <div id="me-boot" hidden>
+        <h2>Server start-up</h2>
+        <div class="card">
+          <p id="me-boot-lede">How long people wait for the server when they open the app.</p>
+          <div id="me-boot-chart" class="boot-chart"></div>
+          <p class="hint">The server sleeps after 15 quiet minutes (Render's free tier), and the next person to open the app waits while it starts: that is a cold start. Every visit records its wait, and a daily check at 5:17 a.m. Eastern adds one even on days nobody visits.</p>
+        </div>
+      </div>
+
       <div id="me-account-box" hidden>
         <h2>Account</h2>
         <div class="card">
@@ -1024,26 +1033,26 @@
 
   <script src="vendor/supabase.js?v=2.117.2"></script>
   <script src="vendor/qrcode.js?v=2.0.4"></script> <!-- qrcode-generator 2.0.4 (MIT), for the sign-in QR code --> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=102"></script>
+  <script src="config.js?v=103"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=102"></script>
-  <script src="js/look.js?v=102"></script>
-  <script src="js/settings.js?v=102"></script>
-  <script src="js/router.js?v=102"></script>
-  <script src="js/library.js?v=102"></script>
-  <script src="js/new-retreat.js?v=102"></script>
-  <script src="js/retreat.js?v=102"></script>
-  <script src="js/build-log.js?v=102"></script>
-  <script src="js/research.js?v=102"></script>
-  <script src="js/pray.js?v=102"></script>
-  <script src="js/about-me.js?v=102"></script>
-  <script src="js/waiting.js?v=102"></script>
-  <script src="js/talk.js?v=102"></script>
-  <script src="js/agents.js?v=102"></script>
-  <script src="js/evals.js?v=102"></script>
-  <script src="js/costs.js?v=102"></script>
-  <script src="js/practice.js?v=102"></script>
-  <script src="js/quotes.js?v=102"></script>
-  <script src="js/start.js?v=102"></script>
+  <script src="js/core.js?v=103"></script>
+  <script src="js/look.js?v=103"></script>
+  <script src="js/settings.js?v=103"></script>
+  <script src="js/router.js?v=103"></script>
+  <script src="js/library.js?v=103"></script>
+  <script src="js/new-retreat.js?v=103"></script>
+  <script src="js/retreat.js?v=103"></script>
+  <script src="js/build-log.js?v=103"></script>
+  <script src="js/research.js?v=103"></script>
+  <script src="js/pray.js?v=103"></script>
+  <script src="js/about-me.js?v=103"></script>
+  <script src="js/waiting.js?v=103"></script>
+  <script src="js/talk.js?v=103"></script>
+  <script src="js/agents.js?v=103"></script>
+  <script src="js/evals.js?v=103"></script>
+  <script src="js/costs.js?v=103"></script>
+  <script src="js/practice.js?v=103"></script>
+  <script src="js/quotes.js?v=103"></script>
+  <script src="js/start.js?v=103"></script>
 </body>
 </html>

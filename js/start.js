@@ -1,9 +1,24 @@
 // ================================================================ start-up
 
+// How long this visit waited for the server, recorded so Settings can chart it: a wait
+// longer than the server's uptime means this visit woke it (a cold start). Once per load.
+let bootReported = false;
+
+function reportBootWait(waitMs, health) {
+  if (bootReported) return;
+  bootReported = true;
+  const up = typeof health?.up_seconds === "number" ? health.up_seconds : null;
+  const cold = up !== null && up * 1000 < waitMs + 5000;
+  fetch(`${API}/api/boot-timing`, { method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true,
+    body: JSON.stringify({ wait_ms: Math.round(waitMs), cold, up_seconds: up, version: (() => { try { return RUNNING_VERSION || ""; } catch { return ""; } })() }) }).catch(() => {});
+}
+
 async function checkServer() {
   const status = $("server-status");
   try {
-    await api("/api/health");
+    const began = performance.now();
+    const health = await api("/api/health");
+    reportBootWait(performance.now() - began, health);
     options = await api("/api/options");
     status.hidden = true;
     return true;
