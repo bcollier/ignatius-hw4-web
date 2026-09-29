@@ -27,6 +27,7 @@ async function openMe() {
     toast(`Pause before it answers: ${pause.value}.`);
   };
   showBootTimes();
+  showMyHighlights();
   $("me-debug").checked = debugMode();
   $("me-evals-link").hidden = !debugMode();
   showWaitingPreviews();

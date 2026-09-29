@@ -1087,3 +1087,15 @@ span.ev-has-tip:hover, span.ev-has-tip:focus { color: var(--rubric); outline: no
 .boot-warm { fill: none; stroke: var(--ink); stroke-width: 1.3; }
 .boot-probe { fill: var(--gold-flat); stroke: var(--ink); stroke-width: 0.8; }
 .boot-typical { stroke: var(--rubric); stroke-dasharray: 5 4; stroke-width: 1.2; }
+
+/* highlights (highlights.js) */
+mark.user-hl { background: color-mix(in srgb, var(--gold-flat) 45%, transparent); color: inherit; border-radius: 2px; padding: 0 1px; }
+.stage-text mark.user-hl { background: color-mix(in srgb, var(--gold-flat) 38%, transparent); }
+.hl-button { position: fixed; z-index: 60; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px;
+  background: var(--ink); color: var(--page); border: 0; font: 600 1rem var(--serif); box-shadow: 0 6px 20px rgb(0 0 0 / 0.25); }
+.hl-swatch { width: 14px; height: 14px; border-radius: 3px; background: var(--gold-flat); }
+.hl-list { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 14px; max-height: 60vh; overflow-y: auto; }
+.hl-item blockquote { margin: 0; padding-left: 12px; border-left: 3px solid var(--gold-flat); font-style: italic; }
+.hl-item .meta { margin: 4px 0 0 15px; }
+.hl-item button { margin-left: 15px; }
+#me-highlights .check .meta { display: block; margin-top: 2px; }

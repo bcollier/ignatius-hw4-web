@@ -34,7 +34,7 @@ async function checkServer() {
 // their own buttons wire them as they draw.)
 function wireForms() {
   // Each group on its own, so one missing element can't stop the app from starting.
-  for (const wire of [wireSignIn, wireNewRetreat, wireRetreatPage, wireAboutMeAndTalk, wireCompanionPrompt, wirePlayer]) {
+  for (const wire of [wireSignIn, wireNewRetreat, wireRetreatPage, wireAboutMeAndTalk, wireCompanionPrompt, wirePlayer, wireHighlights]) {
     try {
       wire();
     } catch (err) {

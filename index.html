@@ -73,13 +73,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=103">
-  <link rel="icon" href="icons/icon-192.png?v=103" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=103">
+  <link rel="manifest" href="manifest.webmanifest?v=104">
+  <link rel="icon" href="icons/icon-192.png?v=104" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=104">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=103">
+  <link rel="stylesheet" href="style.css?v=104">
 </head>
 <body>
   <header class="topbar">
@@ -610,6 +610,20 @@
         <p class="hint">Hands-free works like a voice conversation with Claude: after the companion speaks, it listens, and it waits a little longer after just a word or two, or after "and…" or "um…". You can pause listening, send at once, or interrupt the companion with the button. Tap to talk is better somewhere noisy.</p>
       </div>
 
+      <div id="me-highlights" hidden>
+        <h2>Your highlights <span id="me-hl-count" class="meta"></span></h2>
+        <div class="card">
+          <p class="hint">Select words in a passage, a reflection, a deep dive or on the prayer screen, then tap <strong>Highlight</strong>. They're kept here, on every device you sign in on.</p>
+          <ol id="me-hl-list" class="hl-list"></ol>
+          <h3>One each week</h3>
+          <p class="hint">One of your highlights, the one sent longest ago, comes back to you once a week.</p>
+          <label class="check"><input id="me-hl-email" type="checkbox"> Email me one each week <span id="me-hl-email-note" class="meta"></span></label>
+          <label class="check"><input id="me-hl-sms" type="checkbox"> Text me one each week <span id="me-hl-sms-note" class="meta"></span></label>
+          <label id="me-hl-phone-label" hidden>Mobile number, with country code <input id="me-hl-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+1 412 555 0100"></label>
+          <button type="button" id="me-hl-weekly-save" class="secondary">Save</button>
+        </div>
+      </div>
+
       <h2>Agents</h2>
       <div class="card">
         <p>Every AI agent in the app, from the planner to the prayer companion: what it does, the prompt it follows, and the model it uses. Read them, make your own versions, or choose a different model.</p>
@@ -1033,26 +1047,27 @@
 
   <script src="vendor/supabase.js?v=2.117.2"></script>
   <script src="vendor/qrcode.js?v=2.0.4"></script> <!-- qrcode-generator 2.0.4 (MIT), for the sign-in QR code --> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=103"></script>
+  <script src="config.js?v=104"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=103"></script>
-  <script src="js/look.js?v=103"></script>
-  <script src="js/settings.js?v=103"></script>
-  <script src="js/router.js?v=103"></script>
-  <script src="js/library.js?v=103"></script>
-  <script src="js/new-retreat.js?v=103"></script>
-  <script src="js/retreat.js?v=103"></script>
-  <script src="js/build-log.js?v=103"></script>
-  <script src="js/research.js?v=103"></script>
-  <script src="js/pray.js?v=103"></script>
-  <script src="js/about-me.js?v=103"></script>
-  <script src="js/waiting.js?v=103"></script>
-  <script src="js/talk.js?v=103"></script>
-  <script src="js/agents.js?v=103"></script>
-  <script src="js/evals.js?v=103"></script>
-  <script src="js/costs.js?v=103"></script>
-  <script src="js/practice.js?v=103"></script>
-  <script src="js/quotes.js?v=103"></script>
-  <script src="js/start.js?v=103"></script>
+  <script src="js/core.js?v=104"></script>
+  <script src="js/look.js?v=104"></script>
+  <script src="js/settings.js?v=104"></script>
+  <script src="js/router.js?v=104"></script>
+  <script src="js/library.js?v=104"></script>
+  <script src="js/new-retreat.js?v=104"></script>
+  <script src="js/retreat.js?v=104"></script>
+  <script src="js/build-log.js?v=104"></script>
+  <script src="js/research.js?v=104"></script>
+  <script src="js/pray.js?v=104"></script>
+  <script src="js/about-me.js?v=104"></script>
+  <script src="js/waiting.js?v=104"></script>
+  <script src="js/talk.js?v=104"></script>
+  <script src="js/agents.js?v=104"></script>
+  <script src="js/evals.js?v=104"></script>
+  <script src="js/costs.js?v=104"></script>
+  <script src="js/practice.js?v=104"></script>
+  <script src="js/quotes.js?v=104"></script>
+  <script src="js/highlights.js?v=104"></script>
+  <script src="js/start.js?v=104"></script>
 </body>
 </html>

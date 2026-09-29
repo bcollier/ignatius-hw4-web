@@ -223,6 +223,7 @@ async function signedInAs(newSession) {
     return showMessage(err.message);
   }
   await loadMyAgents(); // the person's own agent prompts: New retreat starts from them
+  loadHighlights(); // marked wherever they appear again
   fillSettings();
   if (session && !me.anonymous) applyMyDefaults(); // the defaults saved to the account, on this device too
   $("account").hidden = !session;
@@ -237,6 +238,7 @@ function showSignedOut() {
   retreat = null;
   $("account").hidden = true;
   myAgents = {}; // one person's prompts never carry over to the next
+  hlSaved = []; // nor their highlights
   if (typeof stopPractice === "function") stopPractice();
   clearPracticeDrafts(); // nor their unsaved journal answers
   $("guest-box").hidden = !options?.free_mode?.enabled;

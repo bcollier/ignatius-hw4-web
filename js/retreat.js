@@ -178,7 +178,7 @@ function renderDay() {
     panel.append(exercisePage(d, st, s));
     return colorDay(img);
   }
-  const page = el("div", { class: "page-text" }, ...dayHeading(d, s));
+  const page = el("div", { class: "page-text", "data-hl-day": d.day }, ...dayHeading(d, s));
   const line = listeningLine(st, s);
   if (line) page.append(el("p", { class: `state-line ${s.kind === "missed" ? "missed" : ""}`, text: line }));
   page.append(...dayActions(d, st, s));
@@ -223,14 +223,14 @@ function dayHeading(d, s) {
     out.push(el("p", { class: "grace" }, el("span", { class: "rubric-inline", text: "The grace " }), text));
   }
   out.push(el("p", { class: "fleuron", "aria-hidden": "true" }, icon("fleuron", 22)));
-  out.push(el("p", { class: "passage", text: d.passage_text }));
+  out.push(el("p", { class: "passage", "data-hl-part": "passage", text: d.passage_text }));
   return out;
 }
 
 // An exercise day: the handout's instruction, to go and do, then mark complete.
 function exercisePage(d, st, s) {
   const head = [retreat.plan.title, dayWords(d.day), s.date ? longWeekday(s.date) : "", s.today ? "today" : ""].filter(Boolean).join(" · ");
-  const page = el("div", { class: "page-text exercise" },
+  const page = el("div", { class: "page-text exercise", "data-hl-day": d.day },
     el("p", { class: "running-head", text: head }),
     el("p", { class: "rubric", text: s.today || !s.date ? "Today's exercise" : "An exercise" }),
     el("h2", { class: "day-title", text: dayTitle(d.title) }),
@@ -314,7 +314,7 @@ function journalBox(journal) {
 function renderTrack(key, track) {
   const box = el("div", { class: "track" }, el("h4", { text: `${TRACK_LABELS[key]}${track.seconds ? ` · ${formatClock(track.seconds)}` : ""}` }));
   box.append(el("audio", { controls: true, preload: "none", src: fileUrl(track.url), onplay: (e) => atVoiceSpeed(e.target) }));
-  const details = el("details", {}, el("summary", { text: track.trimmed ? "Script (trimmed to fit)" : "Script" }), el("p", { class: "script", text: track.script }));
+  const details = el("details", {}, el("summary", { text: track.trimmed ? "Script (trimmed to fit)" : "Script" }), el("p", { class: "script", "data-hl-part": key, text: track.script }));
   if (track.sources?.length) {
     details.append(el("p", { class: "meta", text: track.web_search ? `Sources checked with web search${track.research ? ` (${track.research})` : ""}:` : "Sources suggested by the model, not checked:" }));
     details.append(el("ul", { class: "sources" }, track.sources.map((line) => {
