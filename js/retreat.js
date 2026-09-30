@@ -186,6 +186,7 @@ function renderDay() {
   if (line) page.append(el("p", { class: `state-line ${s.kind === "missed" ? "missed" : ""}`, text: line }));
   page.append(...dayActions(d, st, s));
   if (st.journal?.word || st.journal?.note) page.append(journalBox(st.journal));
+  page.append(pageNotesBox(d, st));
   const tracks = Object.keys(TRACK_LABELS).filter((k) => st.tracks?.[k]?.status === "ready");
   if (tracks.length) {
     const parts = el("details", { class: "parts" }, el("summary", { text: "Listen to a part" }));
@@ -253,6 +254,7 @@ function exercisePage(d, st, s) {
         el("button", { type: "button", class: "big gold", text: "Mark as complete", onclick: (e) => { e.target.disabled = true; markPrayed(d.day, { prayed: true }); } })));
   }
   if (st.journal?.word || st.journal?.note) page.append(journalBox(st.journal));
+  page.append(pageNotesBox(d, st));
   return page;
 }
 
@@ -659,4 +661,61 @@ function googleCalendarLink(d, st) {
   const q = new URLSearchParams({ action: "TEMPLATE", text: dayEventTitle(d), dates: `${ymd(day)}/${ymd(next)}`,
     details: `${retreat.plan.title}\nThis day: ${link}\nIgnatius at Home: ${new URL("./", location.href).href}` });
   return `https://calendar.google.com/calendar/render?${q}`;
+}
+
+
+// ---------------------------------------------------------------- a photo of your page
+// Take a picture of the handout you prayed with: the handwriting is copied off it, the
+// words you underlined are highlighted in the app, and the photo with a page of notes is
+// kept as a small PDF with this day, beside the journal.
+function pageNotesBox(d, st) {
+  if (retreat.read_only) return "";
+  const box = el("div", { class: "page-notes" });
+  for (const n of st.page_notes || []) {
+    const kb = n.size ? ` · ${Math.max(1, Math.round(n.size / 1024))} KB` : "";
+    box.append(el("div", { class: "page-note" },
+      el("p", { class: "page-note-head" }, el("strong", { text: "Your page" }), ` · ${n.local_date || longDate(n.at)}`,
+        n.url ? el("a", { href: fileUrl(n.url), target: "_blank", rel: "noopener", text: `Open the PDF${kb}` }) : ""),
+      n.handwritten?.length ? el("div", {}, el("p", { class: "rubric small", text: "In your hand" }),
+        el("ul", { class: "handwritten" }, n.handwritten.map((h) => el("li", {}, el("span", { class: "ink", text: h.text }),
+          h.near ? el("span", { class: "meta", text: ` beside “${h.near}”` }) : "")))) : "",
+      n.marked?.length ? el("div", {}, el("p", { class: "rubric small", text: "What you marked" }),
+        el("ul", { class: "marked" }, n.marked.map((m) => el("li", { class: m.matched ? "in-app" : "" },
+          el("span", { text: m.text }), m.how ? el("span", { class: "meta", text: ` (${m.how})` }) : "")))) : "",
+      el("button", { type: "button", class: "link danger", text: "Remove this page", onclick: () => removePageNotes(d.day, n.id) })));
+  }
+  const input = el("input", { type: "file", accept: "image/*", capture: "environment", hidden: true,
+    onchange: () => input.files[0] && addPageNotes(d.day, input.files[0], button) });
+  const button = el("button", { type: "button", class: "secondary page-photo", onclick: () => input.click() },
+    icon("image", 18), (st.page_notes || []).length ? " Add another photo of your page" : " Add a photo of your page");
+  box.append(el("p", { class: "hint", text: (st.page_notes || []).length ? "" : "Wrote on the handout? Take a picture: your handwriting is copied off it, what you underlined is highlighted here, and it's kept as a PDF with this day." }), button, input);
+  return box;
+}
+
+async function addPageNotes(day, file, button) {
+  button.disabled = true;
+  button.replaceChildren("Reading your page", el("span", { class: "wait-dots", "aria-hidden": "true" }, el("i"), el("i"), el("i")));
+  const form = new FormData();
+  form.append("photo", file);
+  form.append("local_date", new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" }));
+  try {
+    retreat = await api(`/api/retreats/${retreat.id}/days/${day}/page-notes`, { method: "POST", body: form });
+    if (typeof loadHighlights === "function") await loadHighlights(); // the marked words, highlighted
+    renderRetreat();
+    toast("Your page is kept with this day. What you underlined is highlighted.");
+  } catch (err) {
+    toast(err.message);
+    button.disabled = false;
+    button.replaceChildren(icon("image", 18), " Add a photo of your page");
+  }
+}
+
+async function removePageNotes(day, id) {
+  try {
+    retreat = await api(`/api/retreats/${retreat.id}/days/${day}/page-notes/${id}`, { method: "DELETE" });
+    renderRetreat();
+    toast("Removed. Its highlights stay in Settings → Your highlights.");
+  } catch (err) {
+    toast(err.message);
+  }
 }

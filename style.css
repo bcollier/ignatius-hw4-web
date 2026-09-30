@@ -1187,3 +1187,13 @@ html.sleeping body { background: var(--bg); color: var(--ink); }
   .pray.view-both .stage-img.lowres { bottom: 0 !important; right: 50% !important; max-height: 70%; width: min(40%, calc(var(--nw) * 1.6px)) !important; }
 }
 .sleep-sound { display: grid; gap: 4px; max-width: 26rem; margin: 6px 0 14px; }
+
+/* A photo of your page (retreat.js pageNotesBox) */
+.page-notes { margin: 14px 0 6px; display: grid; gap: 12px; }
+.page-note { border-left: 2px solid var(--gold-flat); padding: 4px 0 4px 16px; display: grid; gap: 6px; }
+.page-note-head { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; }
+.page-note ul { margin: 2px 0 0; padding-left: 1.1em; display: grid; gap: 4px; }
+.page-note .ink { font-family: "Segoe Print", "Bradley Hand", "Noteworthy", cursive; font-size: 1.05rem; color: var(--ink); }
+.page-note .marked li.in-app span:first-child { background: linear-gradient(transparent 58%, rgb(232 196 110 / 0.35) 58%, rgb(232 196 110 / 0.35) 92%, transparent 92%); }
+.page-photo { justify-self: start; display: inline-flex; align-items: center; gap: 8px; }
+.page-photo .wait-dots { margin-left: 8px; }
