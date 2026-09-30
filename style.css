@@ -1090,7 +1090,11 @@ span.ev-has-tip:hover, span.ev-has-tip:focus { color: var(--rubric); outline: no
 
 /* highlights (highlights.js) */
 mark.user-hl { background: color-mix(in srgb, var(--gold-flat) 45%, transparent); color: inherit; border-radius: 2px; padding: 0 1px; }
-.stage-text mark.user-hl { background: color-mix(in srgb, var(--gold-flat) 38%, transparent); }
+/* A highlight on the prayer screen: one soft stroke of warm gold under the lower half of the
+   letters (no boxes), and the words themselves a little warmer. */
+.stage-text mark.user-hl { background: linear-gradient(transparent 58%, rgb(232 196 110 / 0.22) 58%, rgb(232 196 110 / 0.22) 92%, transparent 92%);
+  color: inherit; padding: 0; border-radius: 0; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.stage-text mark.user-hl span, .stage-text span mark.user-hl { color: #f3e1b0; }
 .hl-button { position: fixed; z-index: 60; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px;
   background: var(--ink); color: var(--page); border: 0; font: 600 1rem var(--serif); box-shadow: 0 6px 20px rgb(0 0 0 / 0.25); }
 .hl-swatch { width: 14px; height: 14px; border-radius: 3px; background: var(--gold-flat); }
@@ -1159,3 +1163,10 @@ mark.user-hl { background: color-mix(in srgb, var(--gold-flat) 45%, transparent)
 html.sleeping { --bg: #0d0b09; --page: #15120f; --field: #1b1814; --ink: #d9ccb4; --muted: #8f8269; --line: #2c261d;
   --line-strong: #4a3f2f; --rubric: #c47a66; color-scheme: dark; }
 html.sleeping body { background: var(--bg); color: var(--ink); }
+
+/* A small picture with the words (both): it stays in the picture's band above the text. */
+.pray.view-both .stage-img.lowres { top: calc(env(safe-area-inset-top) + 64px) !important; bottom: 56% !important; left: 0 !important; right: 0 !important;
+  height: auto !important; max-height: calc(44% - env(safe-area-inset-top) - 80px); margin: auto; }
+@media (min-width: 900px) {
+  .pray.view-both .stage-img.lowres { bottom: 0 !important; right: 50% !important; max-height: 70%; width: min(40%, calc(var(--nw) * 1.6px)) !important; }
+}

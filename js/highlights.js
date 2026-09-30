@@ -128,7 +128,7 @@ function wrapRange(range) {
     if (!range.intersectsNode(n)) continue;
     const start = n === range.startContainer ? range.startOffset : 0;
     const end = n === range.endContainer ? range.endOffset : n.length;
-    if (end > start && n.data.slice(start, end).trim()) pieces.push([n, start, end]);
+    if (end > start) pieces.push([n, start, end]);
   }
   for (const [n, start, end] of pieces.reverse()) hlWrap(n, start, end); // from the end, so offsets stay right
 }
@@ -164,7 +164,7 @@ function markHighlightsIn(where) {
       const s = spans.get(n);
       spans.set(n, s ? [s[0], i + 1] : [i, i + 1]);
     }
-    for (const [n, [a, b]] of [...spans].reverse()) if (n.data.slice(a, b).trim()) hlWrap(n, a, b);
+    for (const [n, [a, b]] of [...spans].reverse()) hlWrap(n, a, b); // spaces too, so the stroke is continuous
   }
   hlBusy = false;
 }
