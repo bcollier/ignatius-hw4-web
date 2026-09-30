@@ -42,6 +42,15 @@ function renderPracticeMenu(data) {
   $("practice-menu").hidden = false;
   const sleep = data.sessions.filter((s) => s.sleep);
   $("practice-sleep-box").hidden = !sleep.length;
+  // The same setting as Background sounds, chosen here too; a sleep prayer uses the chant when it's None.
+  const sleepSound = $("practice-sleep-sound");
+  fillSoundMenu(sleepSound);
+  sleepSound.options[0].text = "Gregorian chant (the default)";
+  sleepSound.value = MUSIC[store.get("practice.music", "none")] ? store.get("practice.music") : "none";
+  sleepSound.onchange = () => {
+    store.set("practice.music", sleepSound.value);
+    $("practice-music").value = sleepSound.value;
+  };
   $("practice-sleep").replaceChildren(...sleep.map((s) => practiceCard(s, "For bedtime")));
   $("practice-list").replaceChildren(...data.sessions.filter((s) => !s.sleep).map((s) => practiceCard(s)));
   $("practice-voice").value = store.get("practice.voice", "standard");
@@ -249,10 +258,27 @@ function cyclePicture() {
 // instrumental made with ElevenLabs Music, looping softly under the whole exercise. It
 // dips while the voice speaks and comes back up in the silences.
 
-const MUSIC = {
-  chant: ["veni-sancte-spiritus", "rorate-caeli", "ave-maria", "gregorian-chant", "salve-regina"],
-  instrumental: ["quiet-prayer-ai"],
-};
+// Twenty sounds to pray (or sleep) with, in three groups, plus all the chants in turn.
+// Each id plays its tracks in order, round and round; a nature sound is one seamless loop.
+const SOUND_GROUPS = [
+  ["Nature", [
+    ["rain", "Gentle rain"], ["rain-roof", "Rain on the roof"], ["distant-storm", "Rain and distant thunder"],
+    ["ocean", "Ocean waves"], ["stream", "Mountain stream"], ["dawn-birds", "Forest at dawn"],
+    ["night-crickets", "Summer night"], ["fire", "Crackling fire"], ["wind", "Wind in the pines"], ["garden", "Cloister garden"]]],
+  ["Sacred music", [
+    ["chant", "Gregorian chant (all five, in turn)"], ["veni-sancte-spiritus", "Veni Sancte Spiritus"], ["rorate-caeli", "Rorate Caeli"],
+    ["ave-maria", "Ave Maria"], ["gregorian-chant", "Gregorian chant"], ["salve-regina", "Salve Regina"],
+    ["satie", "Satie, Gymnopédie No. 1 (piano)"], ["bach", "Bach, Cello Suite No. 1, Prelude"]]],
+  ["Quiet", [["instrumental", "Quiet organ and strings (made with AI)"], ["bowls", "Singing bowls"], ["brown-noise", "Soft brown noise"]]],
+];
+const MUSIC = Object.fromEntries(SOUND_GROUPS.flatMap(([, items]) => items.map(([id]) => [id, [id]])));
+MUSIC.chant = ["veni-sancte-spiritus", "rorate-caeli", "ave-maria", "gregorian-chant", "salve-regina"];
+MUSIC.instrumental = ["quiet-prayer-ai"];
+
+function fillSoundMenu(select) {
+  select.replaceChildren(el("option", { value: "none", text: "None (silence)" }),
+    ...SOUND_GROUPS.map(([group, items]) => el("optgroup", { label: group }, items.map(([id, label]) => el("option", { value: id, text: label })))));
+}
 const backgroundMusic = new Audio();
 let musicList = [];
 let musicFade = null;
@@ -311,7 +337,8 @@ function duckMusic(speaking) {
 function wireMusic() {
   const choice = $("practice-music");
   const volume = $("practice-music-volume");
-  choice.value = store.get("practice.music", "none");
+  fillSoundMenu(choice);
+  choice.value = MUSIC[store.get("practice.music", "none")] ? store.get("practice.music") : "none";
   volume.value = musicLevel();
   volume.oninput = () => {
     store.set("practice.music.volume", volume.value);

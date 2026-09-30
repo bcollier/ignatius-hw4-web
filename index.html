@@ -73,13 +73,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ignatius">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest?v=115">
-  <link rel="icon" href="icons/icon-192.png?v=115" type="image/png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=115">
+  <link rel="manifest" href="manifest.webmanifest?v=116">
+  <link rel="icon" href="icons/icon-192.png?v=116" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=116">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="style.css?v=115">
+  <link rel="stylesheet" href="style.css?v=116">
 </head>
 <body>
   <header class="topbar">
@@ -909,7 +909,8 @@
         </section>
         <section class="practice-section" id="practice-sleep-box" hidden>
           <h2>Sleep with prayer</h2>
-          <p class="hint">For bedtime: a few verses about wonder and goodness, read slowly in a warm Irish voice, with long stretches of chant between. There are no bells, and the screen can go dark; the music fades away at the end. Lie down, press play, and let yourself fall asleep.</p>
+          <p class="hint">For bedtime: a few verses about wonder and goodness, read slowly in a warm Irish voice, with long stretches of chant (or the sound you choose below) between. There are no bells, and the screen can go dark; the music fades away at the end. Lie down, press play, and let yourself fall asleep.</p>
+          <label class="sleep-sound">Sound to fall asleep to <select id="practice-sleep-sound"></select></label>
           <div id="practice-sleep" class="practice-list"></div>
         </section>
         <section class="practice-section">
@@ -942,18 +943,16 @@
           </select>
         </label>
         <details class="card practice-advanced">
-          <summary>Advanced: background music</summary>
-          <p class="meta">Soft music under the whole exercise. It dips while the voice speaks and comes back up in the silences.</p>
-          <label>Music
+          <summary>Background sounds and music</summary>
+          <p class="meta">Soft sound under the whole exercise: nature, sacred music or quiet tones. It dips while the voice speaks and comes back up in the silences. The sleep prayers use it too.</p>
+          <label>Sound
             <select id="practice-music">
               <option value="none">None (silence)</option>
-              <option value="chant">Gregorian chant</option>
-              <option value="instrumental">Quiet organ and strings (made with AI)</option>
             </select>
           </label>
           <label>Volume <input type="range" id="practice-music-volume" min="0.05" max="1" step="0.05"></label>
           <p><button type="button" id="practice-music-sample" class="secondary">Play a sample</button></p>
-          <p class="meta small">Chant, from Wikimedia Commons: Veni Sancte Spiritus (public domain, Membeth); Rorate Caeli (Inritter, CC BY-SA 4.0); Ave Maria (Schola Gregoriana, CC BY-SA 3.0); “Gregorian Chant” (Kevin MacLeod, incompetech.com, CC BY 3.0); Salve Regina by Hermann Contract (Les Petits Chanteurs de Passy, CC BY-SA 3.0). The instrumental was made for this app with ElevenLabs Music.</p>
+          <p class="meta small">Chant, from Wikimedia Commons: Veni Sancte Spiritus (public domain, Membeth); Rorate Caeli (Inritter, CC BY-SA 4.0); Ave Maria (Schola Gregoriana, CC BY-SA 3.0); “Gregorian Chant” (Kevin MacLeod, incompetech.com, CC BY 3.0); Salve Regina by Hermann Contract (Les Petits Chanteurs de Passy, CC BY-SA 3.0). The instrumental was made for this app with ElevenLabs Music. Satie, Gymnopédie No. 1, and Bach, Cello Suite No. 1, Prelude: recordings released CC0 on Wikimedia Commons. The nature sounds and singing bowls were made for this app with ElevenLabs sound generation; the brown noise was generated for the app.</p>
         </details>
         <details id="practice-journal-box" class="card" hidden>
           <summary>My practice journal</summary>
@@ -1106,28 +1105,28 @@
 
   <script src="vendor/supabase.js?v=2.117.2"></script>
   <script src="vendor/qrcode.js?v=2.0.4"></script> <!-- qrcode-generator 2.0.4 (MIT), for the sign-in QR code --> <!-- supabase-js 2.117.2, served with the app -->
-  <script src="config.js?v=115"></script>
+  <script src="config.js?v=116"></script>
   <!-- The app, in plain scripts that share one global scope; order matters (core first, start last). -->
-  <script src="js/core.js?v=115"></script>
-  <script src="js/look.js?v=115"></script>
-  <script src="js/settings.js?v=115"></script>
-  <script src="js/router.js?v=115"></script>
-  <script src="js/library.js?v=115"></script>
-  <script src="js/new-retreat.js?v=115"></script>
-  <script src="js/retreat.js?v=115"></script>
-  <script src="js/build-log.js?v=115"></script>
-  <script src="js/research.js?v=115"></script>
-  <script src="js/pray.js?v=115"></script>
-  <script src="js/about-me.js?v=115"></script>
-  <script src="js/waiting.js?v=115"></script>
-  <script src="js/talk.js?v=115"></script>
-  <script src="js/agents.js?v=115"></script>
-  <script src="js/evals.js?v=115"></script>
-  <script src="js/costs.js?v=115"></script>
-  <script src="js/practice.js?v=115"></script>
-  <script src="js/quotes.js?v=115"></script>
-  <script src="js/highlights.js?v=115"></script>
-  <script src="js/health.js?v=115"></script>
-  <script src="js/start.js?v=115"></script>
+  <script src="js/core.js?v=116"></script>
+  <script src="js/look.js?v=116"></script>
+  <script src="js/settings.js?v=116"></script>
+  <script src="js/router.js?v=116"></script>
+  <script src="js/library.js?v=116"></script>
+  <script src="js/new-retreat.js?v=116"></script>
+  <script src="js/retreat.js?v=116"></script>
+  <script src="js/build-log.js?v=116"></script>
+  <script src="js/research.js?v=116"></script>
+  <script src="js/pray.js?v=116"></script>
+  <script src="js/about-me.js?v=116"></script>
+  <script src="js/waiting.js?v=116"></script>
+  <script src="js/talk.js?v=116"></script>
+  <script src="js/agents.js?v=116"></script>
+  <script src="js/evals.js?v=116"></script>
+  <script src="js/costs.js?v=116"></script>
+  <script src="js/practice.js?v=116"></script>
+  <script src="js/quotes.js?v=116"></script>
+  <script src="js/highlights.js?v=116"></script>
+  <script src="js/health.js?v=116"></script>
+  <script src="js/start.js?v=116"></script>
 </body>
 </html>

@@ -1186,3 +1186,4 @@ html.sleeping body { background: var(--bg); color: var(--ink); }
 @media (min-width: 900px) {
   .pray.view-both .stage-img.lowres { bottom: 0 !important; right: 50% !important; max-height: 70%; width: min(40%, calc(var(--nw) * 1.6px)) !important; }
 }
+.sleep-sound { display: grid; gap: 4px; max-width: 26rem; margin: 6px 0 14px; }
