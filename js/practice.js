@@ -209,7 +209,11 @@ function showStage(seg) {
   }
   $("practice-picture").hidden = false;
   stage.hidden = false;
-  stage.className = `practice-stage mode-${mode} ${seg.kind === "journal" ? "compact" : ""}`;
+  const look = `practice-stage mode-${mode} ${seg.kind === "journal" ? "compact" : ""}`;
+  if (stage.className !== look && !stage.hidden && stage.className) {
+    stage.animate?.([{ opacity: 0.35 }, { opacity: 1 }], { duration: 520, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)" }); // a new look fades in
+  }
+  stage.className = look;
   if (!stage.querySelector(".candle")) stage.append(candleSvg());
   const art = stageArt(practiceRun.session, seg.step);
   const current = stage.querySelector(".stage-art"); // the newest (each is prepended)

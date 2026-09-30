@@ -175,8 +175,10 @@ function markAllHighlights() {
 
 // New text on the page (a day opened, the next part on the prayer screen): mark it.
 let hlPending = 0;
-const hlObserver = new MutationObserver(() => {
-  if (hlBusy || !hlLoaded) return;
+const hlObserver = new MutationObserver((changes) => {
+  if (hlBusy || !hlLoaded || !hlSaved.length) return;
+  // Only new text worth marking (a day opened, the next part's words), not every clock tick.
+  if (!changes.some((c) => [...c.addedNodes].some((n) => n.nodeType === 1 && (n.matches?.(HL_WHERE) || n.querySelector?.(HL_WHERE) || n.closest?.(HL_WHERE))))) return;
   clearTimeout(hlPending);
   hlPending = setTimeout(markAllHighlights, 120);
 });

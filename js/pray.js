@@ -342,6 +342,7 @@ function showStepText(step, shown) {
   box.classList.toggle("still", !!source.still);
   box.scrollTop = 0;
   shownText = { source, starts, spans, current: -1, step: source.still ? null : step };
+  if (shownText.step && !followFrame && !$("player").paused) followFrame = requestAnimationFrame(followWord); // wake the follower
 }
 
 // Which word is being spoken: from the recording's word timings when it has them,
@@ -372,7 +373,8 @@ function followWord() {
       if (i !== t.current) highlightWord(i);
     }
   }
-  if (!player.paused) followFrame = requestAnimationFrame(followWord);
+  // Only while there are spoken words to follow: in a silence the loop sleeps (no frames to draw).
+  if (!player.paused && t?.step) followFrame = requestAnimationFrame(followWord);
 }
 
 function highlightWord(i) {
@@ -561,7 +563,9 @@ function fillCurrentSegment(currentTime) {
   if (!step) return;
   const total = steps.reduce((n, s) => n + (stepSeconds(s) || UNKNOWN_STEP_SECONDS), 0) || 1;
   const before = steps.slice(0, stepIndex).reduce((n, s) => n + (stepSeconds(s) || UNKNOWN_STEP_SECONDS), 0);
-  $("segments").style.setProperty("--p", Math.min(1, (before + currentTime) / total).toFixed(4));
+  const p = Math.min(1, (before + currentTime) / total).toFixed(3);
+  const beads = $("segments");
+  if (beads.style.getPropertyValue("--p") !== p) beads.style.setProperty("--p", p);
   if (step.pause) updateCandleTime(currentTime);
 }
 
@@ -587,9 +591,12 @@ function showCandle(step) {
   candleBlock = step.block;
   const total = silenceSteps(step.block).reduce((n, s) => n + (stepSeconds(s) || UNKNOWN_STEP_SECONDS), 0);
   const wax = $("candle-wax");
-  wax.style.animation = "none";
+  const wick = wax.parentElement.querySelector(".wick"); // the flame sinks with the wax
+  const seconds = Math.max(10, Math.round(total));
+  for (const part of [wax, wick]) part && (part.style.animation = "none");
   void wax.offsetWidth; // restart the burn
-  wax.style.animation = `burn ${Math.max(10, Math.round(total))}s linear forwards`;
+  wax.style.animation = `burn ${seconds}s linear forwards`;
+  if (wick) wick.style.animation = `burn-drop ${seconds}s linear forwards`;
   const bell = document.querySelector("#stage-candle .bell");
   bell.classList.remove("ringing");
   void bell.offsetWidth;
@@ -602,7 +609,9 @@ function updateCandleTime(currentTime) {
   const all = silenceSteps(step.block);
   const i = all.indexOf(step);
   const left = all.slice(i).reduce((n, s) => n + (stepSeconds(s) || UNKNOWN_STEP_SECONDS), 0) - currentTime;
-  $("candle-time").textContent = left > 0 ? formatClock(left) : "";
+  const text = left > 0 ? formatClock(left) : "";
+  const clock = $("candle-time");
+  if (clock.textContent !== text) clock.textContent = text; // only when the second changes
 }
 
 function wirePlayerButtons(player) {

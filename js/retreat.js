@@ -565,7 +565,7 @@ function drawBuildBar(bar, segments) {
   segments.forEach((s, i) => {
     const seg = bar.children[i];
     seg.className = `seg ${s.state}`;
-    seg.firstChild.style.width = `${Math.round(s.fill * 1000) / 10}%`;
+    seg.firstChild.style.setProperty("--fill", String(Math.round(s.fill * 1000) / 1000)); // scaled, not resized: smooth
   });
 }
 

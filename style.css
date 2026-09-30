@@ -138,8 +138,14 @@ button:disabled { opacity: 0.55; cursor: progress; }
 .gold, button.gold, .button.gold {
   background: var(--gold); background-size: 260% 100%; color: var(--gold-ink);
   box-shadow: inset 0 0 0 1px rgb(90 60 10 / 0.35), 0 6px 16px rgb(140 100 30 / 0.22);
-  animation: sheen 9s ease-in-out infinite alternate;
+  position: relative; overflow: hidden; isolation: isolate;
 }
+.gold::after, button.gold::after, .button.gold::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgb(255 250 228 / 0.38) 48%, rgb(255 250 228 / 0.1) 56%, transparent 70%);
+  transform: translateX(-120%); animation: gold-sweep 9s cubic-bezier(0.45, 0, 0.25, 1) infinite; will-change: transform;
+}
+@keyframes gold-sweep { 0%, 62% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
 .gold:hover, button.gold:hover, .button.gold:hover { color: var(--gold-ink); box-shadow: inset 0 0 0 1px rgb(90 60 10 / 0.45), 0 8px 20px rgb(140 100 30 / 0.3); }
 .button-note { font: 400 0.95rem var(--serif); }
 button.secondary, .button.secondary { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
@@ -390,23 +396,23 @@ summary { cursor: pointer; color: var(--rubric); }
   --level: 0; position: relative; width: 108px; height: 108px; margin: 18px auto; border-radius: 50%; justify-self: center;
   background: radial-gradient(circle at 35% 30%, #fffaf0, #efe0bf 50%, #c9a55d 100%);
   transform: scale(calc(1 + var(--level) * 0.26));
-  box-shadow: 0 0 calc(12px + var(--level) * 44px) calc(var(--level) * 10px) rgb(216 180 90 / 0.4);
-  transition: transform 0.09s linear, box-shadow 0.15s linear, background 0.6s ease;
+  box-shadow: 0 0 34px 4px rgb(216 180 90 / 0.4); will-change: transform;
+  transition: transform 0.09s linear, background 0.6s ease;
 }
 .talk-orb::before, .talk-orb::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
 .talk-orb::before { inset: -10px; border: 1px solid rgb(201 160 66 / 0.45); animation: orb-breathe 4.5s ease-in-out infinite; }
 .talk-orb::after { background: conic-gradient(from 0deg, transparent 0 20%, rgb(255 246 220 / 0.55) 30%, transparent 45% 70%, rgb(255 246 220 / 0.35) 80%, transparent 90%); opacity: 0; transition: opacity 0.4s ease; animation: orb-turn 6s linear infinite; mix-blend-mode: soft-light; }
-.talk-orb.speaking { background: radial-gradient(circle at 35% 30%, #fff6e3, #f3cf7a 42%, #c9942f 78%, #8d6a22 100%); box-shadow: 0 0 calc(18px + var(--level) * 60px) calc(4px + var(--level) * 14px) rgb(232 180 90 / 0.5); }
+.talk-orb.speaking { background: radial-gradient(circle at 35% 30%, #fff6e3, #f3cf7a 42%, #c9942f 78%, #8d6a22 100%); box-shadow: 0 0 48px 10px rgb(232 180 90 / 0.5); }
 .talk-orb.speaking::after { opacity: 1; }
 .talk-orb.speaking::before { animation-duration: 1.6s; }
-.talk-orb.listening { background: radial-gradient(circle at 35% 30%, #ffffff, #f6eedd 55%, #d9c7a0 100%); box-shadow: 0 0 calc(10px + var(--level) * 40px) calc(var(--level) * 10px) rgb(150 120 70 / 0.3); }
+.talk-orb.listening { background: radial-gradient(circle at 35% 30%, #ffffff, #f6eedd 55%, #d9c7a0 100%); box-shadow: 0 0 30px 4px rgb(150 120 70 / 0.3); }
 
 /* "Talk it over": an inked button with a moving voice, and a paper note that explains it. */
 .talk-cta { position: relative; display: inline-flex; }
 .talk-button { background: transparent; color: var(--ink); border: 1px solid var(--ink); gap: 10px; }
 .talk-button:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); }
 .talk-wave { display: inline-flex; gap: 3px; align-items: center; height: 16px; color: var(--rubric); }
-.talk-wave i { width: 2.5px; height: 6px; border-radius: 1px; background: currentColor; animation: talk-wave 1.2s ease-in-out infinite; }
+.talk-wave i { width: 2.5px; height: 16px; border-radius: 1px; background: currentColor; transform: scaleY(0.35); animation: talk-wave 1.2s ease-in-out infinite; }
 .talk-wave i:nth-child(2) { animation-delay: 0.15s; } .talk-wave i:nth-child(3) { animation-delay: 0.3s; } .talk-wave i:nth-child(4) { animation-delay: 0.45s; }
 .talk-cta.arrive .talk-button { animation: talk-arrive 0.7s var(--ease) both; }
 .talk-tip {
@@ -433,7 +439,9 @@ summary { cursor: pointer; color: var(--rubric); }
 .settings-dialog { border: 1px solid var(--line); border-radius: 3px; padding: 0; width: min(720px, calc(100vw - 24px)); max-height: calc(100vh - 40px); background: var(--page); color: var(--ink); box-shadow: var(--paper-shadow); }
 .settings-dialog::backdrop { background: rgb(20 14 8 / 0.5); }
 .dialog-inner { padding: 22px; display: grid; gap: 14px; }
-.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 12px 18px; border-radius: 2px; z-index: 60; max-width: calc(100vw - 32px); animation: toast-in 0.4s var(--ease) both; }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 12px 18px; border-radius: 2px; z-index: 60; max-width: calc(100vw - 32px); animation: toast-in 0.4s var(--ease) both; }
+.toast.leaving { animation: toast-out 0.35s var(--ease) both; }
+@keyframes toast-out { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, 8px); } }
 
 /* ================================================================ costs, build log */
 .cost-table { width: 100%; border-collapse: collapse; font-size: 0.98rem; margin: 6px 0 12px; }
@@ -523,7 +531,8 @@ body.praying { overflow: hidden; }
 .candle .wick { position: relative; width: 14px; height: 58px; }
 .candle .wick::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 2px; height: 12px; background: #3a2a1a; transform: translateX(-50%); }
 .candle .flame { position: absolute; left: 50%; bottom: 8px; width: 22px; height: 46px; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: radial-gradient(circle at 50% 72%, #fffbe9 0 16%, #ffd67a 34%, #f08a2b 68%, rgb(200 70 40 / 0) 100%); transform-origin: 50% 100%; animation: flame 2.2s ease-in-out infinite; }
-.candle .wax { width: 64px; height: 190px; border-radius: 5px 5px 2px 2px; background: linear-gradient(90deg, #d9c9a8, #f4ead3 40%, #e6d8b8 70%, #c9b690); }
+.stage-candle { --wax-h: 190px; }
+.candle .wax { width: 64px; height: var(--wax-h); transform-origin: 50% 100%; will-change: transform; border-radius: 5px 5px 2px 2px; background: linear-gradient(90deg, #d9c9a8, #f4ead3 40%, #e6d8b8 70%, #c9b690); }
 .candle .holder { width: 112px; height: 12px; border-radius: 50%; background: #3a2d1d; box-shadow: 0 6px 18px rgb(0 0 0 / 0.6); }
 .candle-time { font: 500 1.4rem var(--display); color: #e9dcc1; margin: 14px 0 0; min-height: 1.4em; }
 
@@ -543,7 +552,7 @@ body.praying { overflow: hidden; }
 .beads { position: relative; display: flex; justify-content: space-between; align-items: center; height: 30px; padding: 0 4px; }
 .beads::before, .beads::after { content: ""; position: absolute; left: 10px; top: 50%; height: 1px; }
 .beads::before { right: 10px; background: rgb(232 196 110 / 0.3); }
-.beads::after { width: calc((100% - 20px) * var(--p, 0)); background: rgb(232 196 110 / 0.85); transition: width 0.4s linear; }
+.beads::after { right: 10px; background: rgb(232 196 110 / 0.85); transform: scaleX(var(--p, 0)); transform-origin: left center; transition: transform 0.4s linear; }
 .bead {
   position: relative; z-index: 1; width: 12px; height: 12px; min-height: 0; padding: 0; border-radius: 50%;
   border: 1px solid rgb(232 196 110 / 0.65); background: #0d0b09; transition: transform 0.3s var(--ease);
@@ -551,7 +560,10 @@ body.praying { overflow: hidden; }
 .bead::before { content: ""; position: absolute; inset: -16px -8px; } /* a comfortable place to tap */
 .bead:hover { transform: scale(1.25); background: #0d0b09; }
 .bead.done { background: linear-gradient(135deg, #b98f33, #f3e1a0 45%, #c9a042); border-color: transparent; }
-.bead.now { width: 18px; height: 18px; background: #f3e1a0; border-color: transparent; animation: bead-glow 2.6s ease-in-out infinite; }
+.bead.now { width: 18px; height: 18px; background: #f3e1a0; border-color: transparent; }
+.bead.now::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgb(232 196 110 / 0.55) 0 38%, rgb(232 196 110 / 0.18) 55%, transparent 70%);
+  animation: bead-breathe 2.6s ease-in-out infinite; will-change: transform, opacity; }
 .controls { display: flex; justify-content: center; align-items: center; gap: 30px; }
 .ctl { background: none; color: var(--stage-ink); width: 48px; height: 48px; padding: 0; border-radius: 50%; }
 .ctl:hover { color: #fff; }
@@ -600,7 +612,7 @@ body.praying { overflow: hidden; }
    Slow, and mostly the paintings: they drift the way light moves across a wall. Moving
    around the app fades gently; covers settle in one after another. All of it stops for
    people who ask their device for less motion. */
-.drift { animation: drift 34s ease-in-out infinite alternate; transform-origin: 45% 40%; }
+.drift { animation: drift 34s ease-in-out infinite alternate; transform-origin: 45% 40%; will-change: transform; }
 @keyframes drift { from { transform: scale(1); } to { transform: scale(1.1) translate(-1%, 0.8%); } }
 @keyframes drift-long { from { transform: scale(1); } to { transform: scale(1.12) translate(-1.2%, -1%); } }
 @keyframes sheen { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
@@ -611,14 +623,16 @@ body.praying { overflow: hidden; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes pop { 0% { transform: scale(0.4); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
 @keyframes underline { from { background-size: 0% 2px; } to { background-size: 100% 2px; } }
+@keyframes bead-breathe { 0%, 100% { transform: scale(0.8); opacity: 0.55; } 50% { transform: scale(1.15); opacity: 1; } }
 @keyframes bead-glow { 0%, 100% { box-shadow: 0 0 0 0 rgb(232 196 110 / 0.55), 0 0 10px rgb(232 196 110 / 0.6); } 50% { box-shadow: 0 0 0 7px rgb(232 196 110 / 0), 0 0 18px rgb(232 196 110 / 0.9); } }
-@keyframes burn { from { height: 190px; } to { height: 46px; } }
+@keyframes burn { from { transform: scaleY(1); } to { transform: scaleY(0.242); } }
+@keyframes burn-drop { from { transform: translateY(0); } to { transform: translateY(calc(var(--wax-h, 190px) * 0.758)); } }
 @keyframes flame { 0%, 100% { transform: translateX(-50%) scale(1, 1) rotate(-1deg); } 25% { transform: translateX(-50%) scale(0.96, 1.06) rotate(2deg); } 50% { transform: translateX(-50%) scale(1.03, 0.95) rotate(-2deg); } 75% { transform: translateX(-50%) scale(0.98, 1.04) rotate(1deg); } }
 @keyframes halo { 0%, 100% { opacity: 0.55; } 50% { opacity: 0.85; } }
 @keyframes ring { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.7; } 100% { transform: translate(-50%, -50%) scale(2.6); opacity: 0; } }
 @keyframes gild { 0% { background-position: 120% 0; } 100% { background-position: -20% 0; } }
 @keyframes draw { to { stroke-dashoffset: 0; } }
-@keyframes talk-wave { 0%, 100% { height: 5px; opacity: 0.7; } 50% { height: 16px; opacity: 1; } }
+@keyframes talk-wave { 0%, 100% { transform: scaleY(0.32); opacity: 0.7; } 50% { transform: scaleY(1); opacity: 1; } }
 @keyframes talk-arrive { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes orb-breathe { 0%, 100% { transform: scale(0.96); opacity: 0.45; } 50% { transform: scale(1.06); opacity: 0.9; } }
 @keyframes orb-turn { to { transform: rotate(360deg); } }
@@ -628,7 +642,9 @@ body.praying { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
   .drift, .stage-img.shown, .candle .flame, .gold { animation: none !important; }
-  .candle .wax { animation: none !important; }
+  .candle .wax, .candle .wick { animation: none !important; }
+  .gold::after, .bead.now::after { animation: none !important; display: none; }
+  .talk-wave i { animation: none !important; transform: scaleY(0.6); }
   .illum-frame .vine { stroke-dashoffset: 0; }
   .talk-orb { transform: none; }
 }
@@ -650,14 +666,14 @@ body.praying { overflow: hidden; }
   .new-cover { min-height: 280px; }
   .day-title { font-size: 2.3rem; }
   .page-art .frame { height: 280px; }
-  .candle .wax { height: 150px; }
+  .stage-candle { --wax-h: 150px; }
   .candle-words { font-size: 1.5rem; }
 }
 
 /* ================================================================ the build, as a bar */
 .build-bar { display: flex; gap: 4px; height: 12px; margin: 14px 0 6px; }
 .build-bar .seg { flex: 1 1 0; background: color-mix(in srgb, var(--line) 70%, transparent); border-radius: 1px; overflow: hidden; position: relative; }
-.build-bar .seg i { display: block; height: 100%; width: 0; background: var(--gold); background-size: 300% 100%; transition: width 1.2s var(--ease); }
+.build-bar .seg i { display: block; height: 100%; width: 100%; background: var(--gold); background-size: 300% 100%; transform: scaleX(var(--fill, 0)); transform-origin: left center; transition: transform 1.2s var(--ease); }
 .build-bar .seg.now i { animation: sheen 2.4s ease-in-out infinite alternate; }
 .build-bar .seg.now { box-shadow: 0 0 0 1px var(--gold-flat); }
 .build-bar .seg.failed { background: color-mix(in srgb, var(--rubric) 25%, transparent); }
@@ -722,7 +738,7 @@ body.praying { overflow: hidden; }
 .my-examen textarea { width: 100%; }
 .my-examen .practice-card { background: var(--bg); }
 /* The Examen's stage: a painting drifting slowly, with a candle */
-.practice-stage { position: relative; height: min(46vh, 440px); overflow: hidden; border-radius: 3px; background: #0e0b08; margin-bottom: 6px; box-shadow: 0 18px 40px rgb(20 12 4 / .25); transition: height .8s ease; }
+.practice-stage { position: relative; height: min(46vh, 440px); overflow: hidden; border-radius: 3px; background: #0e0b08; margin-bottom: 6px; box-shadow: 0 18px 40px rgb(20 12 4 / .25); }
 .practice-stage.compact { height: 150px; }
 .stage-art { position: absolute; inset: 0; opacity: 0; transition: opacity 2.4s ease; }
 .stage-art.shown { opacity: 1; }
@@ -731,7 +747,7 @@ body.praying { overflow: hidden; }
 .stage-painting { object-fit: contain; opacity: .95; animation: stage-drift 48s ease-in-out infinite alternate; }
 .practice-stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgb(10 6 2 / .55)); }
 @keyframes stage-drift { from { transform: scale(1); } to { transform: scale(1.05); } }
-.candle { position: absolute; z-index: 1; left: 50%; bottom: 0; width: 46px; transform: translateX(-50%); filter: drop-shadow(0 0 12px rgb(255 200 120 / .35)); }
+.candle { position: absolute; z-index: 1; left: 50%; bottom: 0; width: 46px; transform: translateX(-50%); }
 .practice-stage.mode-painting .candle { left: auto; right: 18px; transform: none; width: 34px; }
 .practice-stage.mode-candle .candle { width: 70px; bottom: -20px; }
 .practice-stage.compact.mode-candle .candle { width: 40px; }

@@ -81,10 +81,15 @@ function confirmTwice(button, confirmText, action) {
   };
 }
 
+// One note at a time: a new one takes the old one's place; each leaves as gently as it came.
 function toast(text) {
+  document.querySelectorAll(".toast").forEach((old) => old.remove());
   const node = el("div", { class: "toast", role: "status", text });
   document.body.append(node);
-  setTimeout(() => node.remove(), 4500);
+  setTimeout(() => {
+    node.classList.add("leaving");
+    setTimeout(() => node.remove(), 380);
+  }, 4200);
 }
 
 const pad = (n) => String(n).padStart(2, "0");
